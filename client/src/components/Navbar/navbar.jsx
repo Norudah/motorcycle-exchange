@@ -1,18 +1,15 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { Navbar, Button, Image } from "@nextui-org/react";
+import Logo from "../../assets/Yamaha_logo.svg";
 
 function CustomNavbar() {
   return (
     <Navbar>
       <Navbar.Brand>
-        <Image
-          width={50}
-          src="https://play-lh.googleusercontent.com/CcTpODlVjkZJLgvRAoeTamFcJCYsjFtwgNK_SWGykfTzM0fLKPDSszws1Ga3kmxjhA"
-          alt="logo"
-        />
+        <Image width={50} src={Logo} alt="logo" />
       </Navbar.Brand>
-      {/* only if user is logged */}
+
       <Navbar.Content>
         <Navbar.Link>
           <NavLink to="/communication">Communication</NavLink>

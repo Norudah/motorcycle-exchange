@@ -7,6 +7,7 @@ import CustomNavbar from "./components/Navbar/navbar";
 
 import Login from "./routes/Login/login";
 import Signup from "./routes/Signup/signup";
+import Communication from "./routes/Communication/communication";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -16,7 +17,7 @@ function App() {
       <NextUIProvider>
         <CustomNavbar />
         <Routes>
-          <Route path="/communication" element={<h1>Communication</h1>} />
+          <Route path="/communication" element={<Communication />} />
           <Route path="/salon" element={<h1>Salon</h1>} />
           <Route path="/chat" element={<h1>Chat</h1>} />
           <Route path="/login" element={<Login />} />

@@ -76,6 +76,34 @@ const Signup = () => {
         scrollToFirstError
       >
         <Form.Item
+          name="firstname"
+          label="Firstname"
+          rules={[
+            {
+              required: true,
+              message: "Please input your firstname!",
+              whitespace: true,
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          name="lastname"
+          label="Lastname"
+          rules={[
+            {
+              required: true,
+              message: "Please input your lastname!",
+              whitespace: true,
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
           name="email"
           label="E-mail"
           rules={[
