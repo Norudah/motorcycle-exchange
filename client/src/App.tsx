@@ -4,7 +4,9 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import "./App.css";
 import CustomNavbar from "./components/Navbar/navbar";
+
 import Login from "./routes/Login/login";
+import Signup from "./routes/Signup/signup";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -18,7 +20,7 @@ function App() {
           <Route path="/salon" element={<h1>Salon</h1>} />
           <Route path="/chat" element={<h1>Chat</h1>} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<h1>Signup</h1>} />
+          <Route path="/signup" element={<Signup />} />
         </Routes>
       </NextUIProvider>
     </BrowserRouter>

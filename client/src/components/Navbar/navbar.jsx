@@ -1,16 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import {
-  Navbar,
-  Button,
-  Image,
-  Link,
-  Text,
-  Card,
-  Spacer,
-  Radio,
-  useTheme,
-} from "@nextui-org/react";
+import { Navbar, Button, Image } from "@nextui-org/react";
 
 function CustomNavbar() {
   return (
