@@ -21,3 +21,21 @@
 .signup-form {
   width: 400px;
 }
+
+.alignItemsCenter {
+  display: flex;
+  align-items: center;
+}
+
+.alignCenter {
+  display: flex;
+  justify-content: center;
+}
+
+.sticky-main {
+  background-color: #eeeee1;
+  height: 92.1vh;
+  max-height: 92.1vh;
+  overflow-y: scroll;
+  padding: 1rem;
+}

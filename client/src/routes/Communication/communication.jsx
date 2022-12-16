@@ -1,13 +1,8 @@
-import { Grid, Spacer } from "@nextui-org/react";
-import { Card } from "antd";
 import React, { useState } from "react";
+import { Grid, Spacer } from "@nextui-org/react";
 import CardAdvisor from "../../components/Card/card_advisor";
 
 const Communication = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
   const advisor = [
     {
       id: 1,
@@ -34,15 +29,17 @@ const Communication = () => {
 
       <Grid.Container gap={2} justify="center">
         {advisor.map((advisor) => (
-          <Grid sm={3}>
+          <Grid xs={4} sm={3} key={advisor.id}>
             <CardAdvisor
+              id={advisor.id}
               firstname={advisor.firstname}
               lastname={advisor.lastname}
-              id={advisor.id}
             />
           </Grid>
         ))}
       </Grid.Container>
+
+      <Spacer y={3} />
     </div>
   );
 };

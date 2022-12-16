@@ -18,7 +18,7 @@ function CustomNavbar() {
           <NavLink to="/salon">Salon</NavLink>
         </Navbar.Link>
         <Navbar.Link href="#">
-          <NavLink to="/chat">chat</NavLink>
+          <NavLink to="/chat">Chat</NavLink>
         </Navbar.Link>
       </Navbar.Content>
       <Navbar.Content>
