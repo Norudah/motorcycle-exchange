@@ -26,7 +26,7 @@ function CustomNavbar() {
           <NavLink to="/login">Login</NavLink>
         </Navbar.Link>
         <Navbar.Item>
-          <Button auto flat as="a" href="#">
+          <Button auto flat as="a">
             <NavLink to="/signup">Signup</NavLink>
           </Button>
         </Navbar.Item>
