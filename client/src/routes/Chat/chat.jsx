@@ -29,6 +29,54 @@ const Chat = () => {
       message: "I'm fine too, thanks for asking",
       date: "2021-05-01",
     },
+    {
+      id: 1,
+      id_person: 1,
+      firstname: "Romain",
+      lastname: "Pierron",
+      message: "Hello, how are you ?",
+      date: "2021-05-01",
+    },
+    {
+      id: 2,
+      id_person: 2,
+      firstname: "Rayan",
+      lastname: "Lekebab",
+      message: "Rallo team , im fine and you ?",
+      date: "2021-05-01",
+    },
+    {
+      id: 3,
+      id_person: 1,
+      firstname: "Romain",
+      lastname: "Pierron",
+      message: "I'm fine too, thanks for asking",
+      date: "2021-05-01",
+    },
+    {
+      id: 1,
+      id_person: 1,
+      firstname: "Romain",
+      lastname: "Pierron",
+      message: "Hello, how are you ?",
+      date: "2021-05-01",
+    },
+    {
+      id: 2,
+      id_person: 2,
+      firstname: "Rayan",
+      lastname: "Lekebab",
+      message: "Rallo team , im fine and you ?",
+      date: "2021-05-01",
+    },
+    {
+      id: 3,
+      id_person: 1,
+      firstname: "Romain",
+      lastname: "Pierron",
+      message: "I'm fine too, thanks for asking",
+      date: "2021-05-01",
+    },
   ]);
 
   const [people, setPeople] = useState([
@@ -59,7 +107,7 @@ const Chat = () => {
           </Col>
         </Grid>
         <Grid xs={9}>
-          <Col style={{}}>
+          <Col>
             <ChatBox messages={messages} />
           </Col>
         </Grid>
