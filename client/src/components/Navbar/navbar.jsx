@@ -3,27 +3,9 @@ import { NavLink } from "react-router-dom";
 import { Navbar, Button, Image } from "@nextui-org/react";
 import Logo from "../../assets/Yamaha_logo.svg";
 
-// if user is logged in as user, display the navbar with the following links:
-// - communication
-// - salon
-// - chat
-// - logout
-// if user is logged in as admin, display the navbar with the following links:
-// - communication
-// - salon
-// - chat
-// - admin
-// - logout
-// if user is not logged in, display the navbar with the following links:
-// - communication
-// - salon
-// - chat
-// - login
-// - signup
-
 const CustomNavbar = () => {
   const [isLogged, setIsLogged] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   return (
     <Navbar>
