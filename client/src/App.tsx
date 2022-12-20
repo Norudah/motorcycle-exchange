@@ -9,6 +9,7 @@ import Login from "./routes/Login/login";
 import Signup from "./routes/Signup/signup";
 import Communication from "./routes/Communication/communication";
 import Chat from "./routes/Chat/chat";
+import Salon from "./routes/Salon/salon";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -19,7 +20,7 @@ function App() {
         <CustomNavbar />
         <Routes>
           <Route path="/communication" element={<Communication />} />
-          <Route path="/salon" element={<h1>Salon</h1>} />
+          <Route path="/salon" element={<Salon />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
