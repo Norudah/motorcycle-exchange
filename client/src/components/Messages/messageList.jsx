@@ -8,8 +8,10 @@ const MessageList = (props) => {
     <div className="messageList">
       {messages.map((message) => (
         <Message
-          message={message.message}
+          key={message.id}
           id={message.id}
+          id_person={message.id_person}
+          message={message.message}
           firstname={message.firstname}
           lastname={message.lastname}
           date={message.date}

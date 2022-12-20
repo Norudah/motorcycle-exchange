@@ -62,3 +62,27 @@
   position: sticky;
   bottom: 30px;
 }
+
+.message {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.message--right {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.message--left {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.message__header__date {
+  font-size: 0.6rem;
+  color: #999;
+}
