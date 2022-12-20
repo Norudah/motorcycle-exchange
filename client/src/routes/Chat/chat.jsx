@@ -1,21 +1,32 @@
-import { Avatar, Card, Col, Grid, Row, Spacer, Text } from "@nextui-org/react";
 import React, { useState } from "react";
+import { Avatar, Card, Col, Grid, Row, Spacer, Text } from "@nextui-org/react";
 import ListPeople from "../../components/List/listPeople";
+import ChatBox from "../../components/Messages/chatBox";
 
 const Chat = () => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      firstname: "John",
-      lastname: "Doe",
+      id_person: 1,
+      firstname: "Romain",
+      lastname: "Pierron",
       message: "Hello, how are you ?",
       date: "2021-05-01",
     },
     {
       id: 2,
-      firstname: "Jane",
-      lastname: "Doe",
-      message: "Hello, how are you ?",
+      id_person: 2,
+      firstname: "Rayan",
+      lastname: "Lekebab",
+      message: "Rallo team , im fine and you ?",
+      date: "2021-05-01",
+    },
+    {
+      id: 3,
+      id_person: 1,
+      firstname: "Romain",
+      lastname: "Pierron",
+      message: "I'm fine too, thanks for asking",
       date: "2021-05-01",
     },
   ]);
@@ -23,13 +34,13 @@ const Chat = () => {
   const [people, setPeople] = useState([
     {
       id: 1,
-      firstname: "John",
-      lastname: "Doe",
+      firstname: "Romain",
+      lastname: "Pierron",
     },
     {
       id: 2,
-      firstname: "Jane",
-      lastname: "Doe",
+      firstname: "John",
+      lastname: "Leclerc",
     },
   ]);
 
@@ -49,7 +60,7 @@ const Chat = () => {
         </Grid>
         <Grid xs={9}>
           <Col style={{}}>
-            <p>pouet</p>
+            <ChatBox messages={messages} />
           </Col>
         </Grid>
       </Grid.Container>
