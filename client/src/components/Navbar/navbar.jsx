@@ -1,17 +1,32 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { Navbar, Button, Image } from "@nextui-org/react";
+import { Navbar, Button, Image, Switch } from "@nextui-org/react";
 import Logo from "../../assets/Yamaha_logo.svg";
 
+import { Check, Moon, ShieldCheck, SignIn, Sun, User } from "phosphor-react";
+
 const CustomNavbar = () => {
-  const [isLogged, setIsLogged] = useState(true);
+  const [isLogged, setIsLogged] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
   return (
     <Navbar>
-      <Navbar.Brand>
-        <Image width={50} src={Logo} alt="logo" />
-      </Navbar.Brand>
+      <Navbar.Content>
+        <Navbar.Brand>
+          <Image width={50} src={Logo} alt="logo" />
+        </Navbar.Brand>
+
+        <Switch
+          iconOn={<Check />}
+          iconOff={<SignIn />}
+          onChange={() => setIsLogged(!isLogged)}
+        />
+        <Switch
+          iconOn={<ShieldCheck />}
+          iconOff={<User />}
+          onChange={() => setIsAdmin(!isAdmin)}
+        />
+      </Navbar.Content>
 
       {isLogged && !isAdmin && (
         <Navbar.Content>
