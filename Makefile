@@ -1,3 +1,6 @@
+build:
+	docker compose build --pull --no-cache
+	
 init: start
 	docker compose exec api npx prisma migrate dev
 
