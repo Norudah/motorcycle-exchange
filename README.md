@@ -9,7 +9,8 @@
 
 1. Create _.env_ files base on _.env.example_ inside the /client and /api folders and complete them.
 2. Run `make init` to install the project dependencies and launch it
-3. Go to http://localhost:5173
+3. Make `cd client/` and run `npm i && npm run dev`
+4. Go to http://localhost:5173
 
 ## Usefull commands :
 
