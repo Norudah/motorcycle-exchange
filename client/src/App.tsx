@@ -11,8 +11,8 @@ import Communication from "./routes/Communication/communication";
 import Chat from "./routes/Chat/chat";
 import Salon from "./routes/Salon/salon";
 import NotFound from "./routes/NotFound/notFound";
-import AdminCommunication from "./routes/admin/Communication/communication";
-import AdminSalon from "./routes/admin/Salon/salon";
+import AdminCommunication from "./routes/Admin/Communication/communication";
+import AdminSalon from "./routes/Admin/Salon/salon";
 
 function App() {
   return (

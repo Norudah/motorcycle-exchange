@@ -5,8 +5,10 @@ WORKDIR /app
 # COPY package.json .
 
 # RUN npm install
-
-COPY . .
+COPY package.json ./
+RUN npm i --silent
+COPY . ./
+RUN npm run build
 
 EXPOSE 5173
 
