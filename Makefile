@@ -1,4 +1,4 @@
-turbostart: build start init
+turbostart: build init
 
 build:
 	docker compose build --pull --no-cache
