@@ -1,5 +1,5 @@
 import { Grid, Spacer } from "@nextui-org/react";
-import CardAdvisor from "../../components/Card/card_advisor";
+import CardAdminAdvisor from "../../../components/Card/card_admin_advisor";
 
 const Communication = () => {
   const advisor = [
@@ -23,13 +23,13 @@ const Communication = () => {
   return (
     <div className="main">
       <Spacer y={3} />
-      <h1>Sales advisor available</h1>
+      <h1>Communication request</h1>
       <Spacer y={1} />
 
       <Grid.Container gap={2} justify="center">
         {advisor.map((advisor) => (
           <Grid xs={4} sm={3} key={advisor.id}>
-            <CardAdvisor
+            <CardAdminAdvisor
               id={advisor.id}
               firstname={advisor.firstname}
               lastname={advisor.lastname}

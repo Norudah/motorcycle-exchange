@@ -1,5 +1,5 @@
-import { Grid, Spacer } from "@nextui-org/react";
-import CardSalon from "../../components/Card/card_salon";
+import { Grid, Spacer, Modal } from "@nextui-org/react";
+import CardSalon from "../../../components/Card/card_admin_salon";
 
 const Communication = () => {
   const salon = [

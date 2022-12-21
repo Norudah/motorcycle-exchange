@@ -11,6 +11,8 @@ import Communication from "./routes/Communication/communication";
 import Chat from "./routes/Chat/chat";
 import Salon from "./routes/Salon/salon";
 import NotFound from "./routes/NotFound/notFound";
+import AdminCommunication from "./routes/admin/Communication/communication";
+import AdminSalon from "./routes/admin/Salon/salon";
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
           <Route path="/chat" element={<Chat />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/admin/communication" element={<AdminCommunication />} />
+          <Route path="/admin/salon" element={<AdminSalon />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </NextUIProvider>

@@ -55,12 +55,10 @@ const CustomNavbar = () => {
       {isLogged && isAdmin && (
         <Navbar.Content variant="underline">
           <Navbar.Link isActive={location.pathname === "/admin/communication"}>
-            <NavLink to="/admin/communication">
-              Demande De Communication
-            </NavLink>
+            <NavLink to="/admin/communication">Communication request</NavLink>
           </Navbar.Link>
           <Navbar.Link isActive={location.pathname === "/admin/salon"}>
-            <NavLink to="/admin/salon">Gestion des Salons</NavLink>
+            <NavLink to="/admin/salon">Managed chat room</NavLink>
           </Navbar.Link>
           <Navbar.Link isActive={location.pathname === "/chat"}>
             <NavLink to="/chat">Chat</NavLink>
