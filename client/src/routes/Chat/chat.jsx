@@ -1,10 +1,58 @@
-import React, { useState } from "react";
-import { Avatar, Card, Col, Grid, Row, Spacer, Text } from "@nextui-org/react";
+import { useState } from "react";
+import { Col, Grid } from "@nextui-org/react";
 import ListPeople from "../../components/List/listPeople";
 import ChatBox from "../../components/Messages/chatBox";
 
 const Chat = () => {
   const [messages, setMessages] = useState([
+    {
+      id: 1,
+      id_person: 1,
+      firstname: "Romain",
+      lastname: "Pierron",
+      message: "Hello, how are you ?",
+      date: "2021-05-01",
+    },
+    {
+      id: 2,
+      id_person: 2,
+      firstname: "Rayan",
+      lastname: "Lekebab",
+      message: "Rallo team , im fine and you ?",
+      date: "2021-05-01",
+    },
+    {
+      id: 3,
+      id_person: 1,
+      firstname: "Romain",
+      lastname: "Pierron",
+      message: "I'm fine too, thanks for asking",
+      date: "2021-05-01",
+    },
+    {
+      id: 1,
+      id_person: 1,
+      firstname: "Romain",
+      lastname: "Pierron",
+      message: "Hello, how are you ?",
+      date: "2021-05-01",
+    },
+    {
+      id: 2,
+      id_person: 2,
+      firstname: "Rayan",
+      lastname: "Lekebab",
+      message: "Rallo team , im fine and you ?",
+      date: "2021-05-01",
+    },
+    {
+      id: 3,
+      id_person: 1,
+      firstname: "Romain",
+      lastname: "Pierron",
+      message: "I'm fine too, thanks for asking",
+      date: "2021-05-01",
+    },
     {
       id: 1,
       id_person: 1,

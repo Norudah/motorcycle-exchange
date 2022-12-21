@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Grid, Spacer } from "@nextui-org/react";
 import CardAdvisor from "../../components/Card/card_advisor";
 

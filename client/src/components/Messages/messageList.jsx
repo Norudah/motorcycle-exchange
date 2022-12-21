@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import Message from "./message";
 
 const MessageList = (props) => {

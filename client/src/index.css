@@ -49,7 +49,7 @@
 
 .messageList {
   position: sticky;
-  width: 100%;
+  width: 80%;
   height: 82vh;
   overflow-y: scroll;
   padding: 1rem;

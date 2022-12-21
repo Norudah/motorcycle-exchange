@@ -1,19 +1,29 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { Navbar, Button, Image, Switch } from "@nextui-org/react";
 import Logo from "../../assets/Yamaha_logo.svg";
 
-import { Check, Moon, ShieldCheck, SignIn, Sun, User } from "phosphor-react";
+import {
+  Bell,
+  BellSlash,
+  Check,
+  ShieldCheck,
+  SignIn,
+  User,
+} from "phosphor-react";
 
 const CustomNavbar = () => {
   const [isLogged, setIsLogged] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const location = useLocation();
 
   return (
     <Navbar>
       <Navbar.Content>
         <Navbar.Brand>
-          <Image width={50} src={Logo} alt="logo" />
+          <NavLink to="/">
+            <Image width={50} src={Logo} alt="logo" />
+          </NavLink>
         </Navbar.Brand>
 
         <Switch
@@ -29,30 +39,30 @@ const CustomNavbar = () => {
       </Navbar.Content>
 
       {isLogged && !isAdmin && (
-        <Navbar.Content>
-          <Navbar.Link>
+        <Navbar.Content variant="underline">
+          <Navbar.Link isActive={location.pathname === "/communication"}>
             <NavLink to="/communication">Communication</NavLink>
           </Navbar.Link>
-          <Navbar.Link href="#">
+          <Navbar.Link isActive={location.pathname === "/salon"}>
             <NavLink to="/salon">Salon</NavLink>
           </Navbar.Link>
-          <Navbar.Link href="#">
+          <Navbar.Link isActive={location.pathname === "/chat"}>
             <NavLink to="/chat">Chat</NavLink>
           </Navbar.Link>
         </Navbar.Content>
       )}
 
       {isLogged && isAdmin && (
-        <Navbar.Content>
-          <Navbar.Link>
+        <Navbar.Content variant="underline">
+          <Navbar.Link isActive={location.pathname === "/admin/communication"}>
             <NavLink to="/admin/communication">
               Demande De Communication
             </NavLink>
           </Navbar.Link>
-          <Navbar.Link href="#">
+          <Navbar.Link isActive={location.pathname === "/admin/salon"}>
             <NavLink to="/admin/salon">Gestion des Salons</NavLink>
           </Navbar.Link>
-          <Navbar.Link href="#">
+          <Navbar.Link isActive={location.pathname === "/chat"}>
             <NavLink to="/chat">Chat</NavLink>
           </Navbar.Link>
         </Navbar.Content>
@@ -71,6 +81,14 @@ const CustomNavbar = () => {
         </Navbar.Content>
       ) : (
         <Navbar.Content>
+          {isAdmin && (
+            <Switch
+              color="error"
+              size="xl"
+              iconOn={<BellSlash />}
+              iconOff={<Bell />}
+            />
+          )}
           <Navbar.Item>
             <Button auto flat as="a">
               <NavLink to="/logout">Logout</NavLink>

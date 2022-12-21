@@ -1,5 +1,4 @@
-import React from "react";
-import { Grid, Input, Loading } from "@nextui-org/react";
+import { Input } from "@nextui-org/react";
 
 import { Circle, PaperPlaneTilt } from "phosphor-react";
 import { SendButton } from "./sendButton";
