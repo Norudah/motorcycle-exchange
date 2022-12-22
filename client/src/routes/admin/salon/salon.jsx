@@ -22,13 +22,6 @@ const Communication = () => {
     }
   );
 
-  // when ModalSalonAdd is closed, refetch salon data
-  useEffect(() => {
-    if (!visible) {
-      refetch();
-    }
-  }, [visible]);
-
   const result = data?.salon;
 
   return (
@@ -41,7 +34,11 @@ const Communication = () => {
           Add a new chat room
         </Button>
       </Row>
-      <ModalSalonAdd visible={visible} closeHandler={closeHandler} />
+      <ModalSalonAdd
+        visible={visible}
+        closeHandler={closeHandler}
+        refetch={refetch()}
+      />
       <Spacer y={1} />
 
       {result?.length > 0 ? (

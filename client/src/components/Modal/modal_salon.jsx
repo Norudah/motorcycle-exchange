@@ -1,6 +1,11 @@
 import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 const ModalSalon = (props) => {
   const { id, visible, closeHandler, name, maxPerson } = props;
+
+  const [salonName, setSalonName] = useState(name);
+  const [salonMaxPerson, setSalonMaxPerson] = useState(maxPerson);
 
   return (
     <Modal
@@ -17,18 +22,23 @@ const ModalSalon = (props) => {
         </Text>
       </Modal.Header>
       <Modal.Body>
-        <Input label="Salon Name" value={name} bordered clearable />
+        <Input
+          label="Salon Name"
+          value={salonName}
+          bordered
+          clearable
+          onChange={(e) => setSalonName(e.target.value)}
+        />
         <Input
           label="Max person per salon"
-          value={maxPerson}
+          value={salonMaxPerson}
+          onChange={(e) => setSalonMaxPerson(e.target.value)}
           bordered
           clearable
         />
       </Modal.Body>
       <Modal.Footer>
-        <Button auto onClick={closeHandler}>
-          Submit
-        </Button>
+        <Button auto>Submit</Button>
       </Modal.Footer>
     </Modal>
   );

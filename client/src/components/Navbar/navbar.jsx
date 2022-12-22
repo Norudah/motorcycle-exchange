@@ -26,7 +26,7 @@ const CustomNavbar = () => {
     if (data) {
       setIsLogged(true);
 
-      if (data.user.role === "ADMIN") {
+      if (data?.user?.role === "ADMIN") {
         setIsAdmin(true);
       }
     }

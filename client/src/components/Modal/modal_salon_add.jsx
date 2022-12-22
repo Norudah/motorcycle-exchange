@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const ModalSalon = (props) => {
   const { id, visible, closeHandler, name, maxPerson } = props;
@@ -8,9 +8,12 @@ const ModalSalon = (props) => {
   const [salonName, setSalonName] = useState("");
   const [salonMaxPerson, setSalonMaxPerson] = useState("");
 
+  const queryClient = useQueryClient();
+
   const mutation = useMutation(addSalon, {
     onSuccess: (data) => {
       console.log(data);
+      queryClient.invalidateQueries("salon");
     },
     onError: (error) => {
       console.log(error);
@@ -46,7 +49,7 @@ const ModalSalon = (props) => {
       <Modal.Header>
         <Text id="modal-title" size={18}>
           <Text b size={18}>
-            Managed salon
+            Add salon
           </Text>
         </Text>
       </Modal.Header>

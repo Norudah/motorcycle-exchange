@@ -27,4 +27,19 @@ router.post("/salon/add", async (req, res) => {
   }
 });
 
+router.delete("/salon/delete/:id", async (req, res) => {
+  try {
+    // récupérer l'id du salon à supprimer dans l'url et le stocker en Int
+    const id = parseInt(req.params.id);
+    const salon = await prisma.ChatRoom.delete({
+      where: { id },
+    });
+    res.json({ salon });
+    console.log("Salon " + salon.name + " deleted with success");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error deleting salon");
+  }
+});
+
 export default router;
