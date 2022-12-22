@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { Button, Checkbox, Form, Input, Select } from "antd";
 import { Spacer } from "@nextui-org/react";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from "react-query";
 
 const { Option } = Select;
 
@@ -28,6 +35,24 @@ const tailFormItemLayout = {
 };
 
 const Signup = () => {
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation(
+    (values: any) => {
+      return fetch("/api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("users");
+      },
+    }
+  );
+
   const [form] = Form.useForm();
 
   const onFinish = (values: any) => {
