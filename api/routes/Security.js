@@ -4,11 +4,11 @@ import { PrismaClient } from "@prisma/client";
 const router = new Router();
 const prisma = new PrismaClient();
 
-router.post("/api/signup", async (req, res) => {
+router.post("/signup", async (req, res) => {
   try {
-    const { email, password, firstname, lastname } = req.body;
+    const { email, password, firstName, lastName } = req.body;
     const user = await prisma.user.create({
-      data: { email, password, firstname, lastname },
+      data: { email, password, firstName, lastName },
     });
     res.json({ user });
   } catch (error) {
