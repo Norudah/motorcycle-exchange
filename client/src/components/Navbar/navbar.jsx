@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { NavLink, useLocation } from "react-router-dom";
-import { Navbar, Button, Image, Switch } from "@nextui-org/react";
-import Logo from "../../assets/Yamaha_logo.svg";
+import { Navbar, Button, Image, Switch, Badge } from "@nextui-org/react";
 
+import Logo from "../../assets/Yamaha_logo.svg";
 import {
   Bell,
   BellSlash,
@@ -15,7 +16,21 @@ import {
 const CustomNavbar = () => {
   const [isLogged, setIsLogged] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isNotif, setIsNotif] = useState(false);
   const location = useLocation();
+  const queryClient = useQueryClient();
+
+  const data = queryClient.getQueryData({ queryKey: "user" });
+
+  useEffect(() => {
+    if (data) {
+      setIsLogged(true);
+
+      if (data.user.role === "ADMIN") {
+        setIsAdmin(true);
+      }
+    }
+  }, [data]);
 
   return (
     <Navbar>
@@ -25,17 +40,6 @@ const CustomNavbar = () => {
             <Image width={50} src={Logo} alt="logo" />
           </NavLink>
         </Navbar.Brand>
-
-        <Switch
-          iconOn={<Check />}
-          iconOff={<SignIn />}
-          onChange={() => setIsLogged(!isLogged)}
-        />
-        <Switch
-          iconOn={<ShieldCheck />}
-          iconOff={<User />}
-          onChange={() => setIsAdmin(!isAdmin)}
-        />
       </Navbar.Content>
 
       {isLogged && !isAdmin && (
@@ -86,6 +90,18 @@ const CustomNavbar = () => {
               iconOn={<BellSlash />}
               iconOff={<Bell />}
             />
+          )}
+
+          {isAdmin ? (
+            <Navbar.Item>
+              <Badge color="success" variant="flat">
+                Admin
+              </Badge>
+            </Navbar.Item>
+          ) : (
+            <Navbar.Item>
+              <Badge variant="flat">User</Badge>
+            </Navbar.Item>
           )}
           <Navbar.Item>
             <Button auto flat as="a">

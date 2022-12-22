@@ -37,4 +37,14 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.get("/logout", async (req, res) => {
+  try {
+    res.status(200).json({ user: null, token: null });
+    console.log("User logged out with success");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error logging out");
+  }
+});
+
 export default router;

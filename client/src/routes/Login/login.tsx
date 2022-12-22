@@ -6,17 +6,18 @@ import { Spacer } from "@nextui-org/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const login = () => {
-  const [test, setTest] = useState("");
   const [form] = Form.useForm();
-  const navigate = useNavigate();
-
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const mutation = useMutation(loginUser, {
     onSuccess: (data) => {
       queryClient.setQueryData(["user"], data);
-
-      console.log("success", data);
+      if (data.user.role === "ADMIN") {
+        navigate("/admin/communication");
+      } else {
+        navigate("/communication");
+      }
     },
     onError: () => {
       console.log("error");
@@ -46,7 +47,6 @@ const login = () => {
       <Spacer y={3} />
       <h1>Login</h1>
       <Spacer y={1} />
-      {test}
       <Form
         name="normal_login"
         form={form}
