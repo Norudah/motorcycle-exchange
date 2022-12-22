@@ -1,9 +1,6 @@
-import { useState } from "react";
 import { Button, Checkbox, Form, Input, Select } from "antd";
 import { Spacer } from "@nextui-org/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-const { Option } = Select;
+import { useMutation } from "@tanstack/react-query";
 
 const formItemLayout = {
   labelCol: {

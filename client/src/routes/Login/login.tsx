@@ -1,12 +1,39 @@
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Form, Input } from "antd";
 import { Link } from "react-router-dom";
 import { Spacer } from "@nextui-org/react";
+import { useMutation } from "@tanstack/react-query";
 
 const login = () => {
+  const [form] = Form.useForm();
+
   const onFinish = (values: any) => {
     console.log("Received values of form: ", values);
   };
+
+  const mutation = useMutation(loginUser, {
+    onSuccess: () => {
+      console.log("success");
+    },
+  });
+
+  async function loginUser() {
+    const res = await fetch("http://localhost:3000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: form.getFieldValue("email"),
+        password: form.getFieldValue("password"),
+      }),
+    });
+    return await res.json();
+  }
+
+  function handleSubmit(e: any) {
+    mutation.mutate();
+  }
 
   return (
     <div className="main">
@@ -15,17 +42,18 @@ const login = () => {
       <Spacer y={1} />
       <Form
         name="normal_login"
+        form={form}
         className="login-form"
         initialValues={{ remember: true }}
-        onFinish={onFinish}
+        onFinish={handleSubmit}
       >
         <Form.Item
-          name="username"
-          rules={[{ required: true, message: "Please input your Username!" }]}
+          name="email"
+          rules={[{ required: true, message: "Please input your Email!" }]}
         >
           <Input
             prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="Username"
+            placeholder="Email"
           />
         </Form.Item>
         <Form.Item
