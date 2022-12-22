@@ -1,11 +1,37 @@
 import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
-import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 const ModalSalon = (props) => {
   const { id, visible, closeHandler, name, maxPerson } = props;
 
   const [salonName, setSalonName] = useState(name);
   const [salonMaxPerson, setSalonMaxPerson] = useState(maxPerson);
+
+  // update salon
+  const mutation = useMutation((id) => {
+    return fetch(`http://localhost:3000/salon/update/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: salonName,
+        nbMaxUser: parseInt(salonMaxPerson),
+      }),
+    });
+  });
+
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    if (mutation.isSuccess) {
+      queryClient.invalidateQueries("salon");
+    }
+  }, [mutation.isSuccess]);
+
+  function submitHandler() {
+    mutation.mutate(id);
+    closeHandler();
+  }
 
   return (
     <Modal
@@ -38,7 +64,9 @@ const ModalSalon = (props) => {
         />
       </Modal.Body>
       <Modal.Footer>
-        <Button auto>Submit</Button>
+        <Button auto onPress={submitHandler}>
+          Submit
+        </Button>
       </Modal.Footer>
     </Modal>
   );

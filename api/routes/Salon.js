@@ -29,7 +29,6 @@ router.post("/salon/add", async (req, res) => {
 
 router.delete("/salon/delete/:id", async (req, res) => {
   try {
-    // récupérer l'id du salon à supprimer dans l'url et le stocker en Int
     const id = parseInt(req.params.id);
     const salon = await prisma.ChatRoom.delete({
       where: { id },
@@ -39,6 +38,22 @@ router.delete("/salon/delete/:id", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error deleting salon");
+  }
+});
+
+router.put("/salon/update/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { name, nbMaxUser } = req.body;
+    const salon = await prisma.ChatRoom.update({
+      where: { id },
+      data: { name, nbMaxUser },
+    });
+    res.json({ salon });
+    console.log("Salon " + salon.name + " updated with success");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating salon");
   }
 });
 
