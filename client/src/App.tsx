@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 
 import { NextUIProvider } from "@nextui-org/react";
 import CustomNavbar from "./components/Navbar/navbar";
@@ -15,30 +14,23 @@ import NotFound from "./routes/NotFound/notFound";
 import AdminCommunication from "./routes/Admin/Communication/communication";
 import AdminSalon from "./routes/Admin/Salon/salon";
 
-const queryClient = new QueryClient();
-
 function App() {
   return (
     <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <NextUIProvider>
-          <CustomNavbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/communication" element={<Communication />} />
-            <Route path="/salon" element={<Salon />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route
-              path="/admin/communication"
-              element={<AdminCommunication />}
-            />
-            <Route path="/admin/salon" element={<AdminSalon />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </NextUIProvider>
-      </QueryClientProvider>
+      <NextUIProvider>
+        <CustomNavbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/communication" element={<Communication />} />
+          <Route path="/salon" element={<Salon />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/admin/communication" element={<AdminCommunication />} />
+          <Route path="/admin/salon" element={<AdminSalon />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </NextUIProvider>
     </BrowserRouter>
   );
 }
