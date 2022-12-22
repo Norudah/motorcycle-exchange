@@ -32,6 +32,9 @@ const Signup = () => {
     onSuccess: () => {
       console.log("success");
     },
+    onError: () => {
+      console.log("error");
+    },
   });
 
   async function insertUser() {

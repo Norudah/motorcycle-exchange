@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
 import { Gear, TrashSimple } from "phosphor-react";
 import ModalSalon from "../Modal/modal_salon";
@@ -6,7 +6,7 @@ import ModalSalon from "../Modal/modal_salon";
 const CardAdvisor = (props) => {
   const { name, nbPerson, maxPerson, id } = props;
 
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = useState(false);
   const handler = () => setVisible(true);
 
   const closeHandler = () => {
