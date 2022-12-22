@@ -4,6 +4,7 @@ import CardSalon from "../../../components/Card/card_admin_salon";
 import { useQuery } from "@tanstack/react-query";
 
 import ModalSalonAdd from "../../../components/Modal/modal_salon_add";
+import { Row } from "antd";
 
 const Communication = () => {
   const [visible, setVisible] = useState(false);
@@ -13,10 +14,20 @@ const Communication = () => {
     setVisible(false);
   };
 
-  const { data, isError, isLoading, error } = useQuery(["salon"], async () => {
-    const response = await fetch("http://localhost:3000/salon");
-    return response.json();
-  });
+  const { data, isError, isLoading, error, refetch } = useQuery(
+    ["salon"],
+    async () => {
+      const response = await fetch("http://localhost:3000/salon");
+      return response.json();
+    }
+  );
+
+  // when ModalSalonAdd is closed, refetch salon data
+  useEffect(() => {
+    if (!visible) {
+      refetch();
+    }
+  }, [visible]);
 
   const result = data?.salon;
 
@@ -25,9 +36,11 @@ const Communication = () => {
       <Spacer y={3} />
       <h1>Chat room online</h1>
       <Spacer y={1} />
-      <Button flat color="secondary" auto onPress={handler}>
-        Add a new chat room
-      </Button>
+      <Row>
+        <Button flat color="secondary" auto onPress={handler}>
+          Add a new chat room
+        </Button>
+      </Row>
       <ModalSalonAdd visible={visible} closeHandler={closeHandler} />
       <Spacer y={1} />
 
