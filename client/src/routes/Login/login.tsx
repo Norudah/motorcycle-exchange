@@ -1,19 +1,25 @@
+import { useState } from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Spacer } from "@nextui-org/react";
 import { useMutation } from "@tanstack/react-query";
 
 const login = () => {
+  const [test, setTest] = useState("");
   const [form] = Form.useForm();
-
-  const onFinish = (values: any) => {
-    console.log("Received values of form: ", values);
-  };
+  const navigate = useNavigate();
 
   const mutation = useMutation(loginUser, {
-    onSuccess: () => {
-      console.log("success");
+    onSuccess: (data) => {
+      console.log("success", data);
+      const token = data.token;
+      localStorage.setItem("token", token);
+
+      navigate("/communication");
+    },
+    onError: () => {
+      console.log("error");
     },
   });
 
@@ -40,6 +46,7 @@ const login = () => {
       <Spacer y={3} />
       <h1>Login</h1>
       <Spacer y={1} />
+      {test}
       <Form
         name="normal_login"
         form={form}
