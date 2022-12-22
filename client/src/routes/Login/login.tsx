@@ -3,20 +3,20 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { Spacer } from "@nextui-org/react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const login = () => {
   const [test, setTest] = useState("");
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
+  const queryClient = useQueryClient();
+
   const mutation = useMutation(loginUser, {
     onSuccess: (data) => {
-      console.log("success", data);
-      const token = data.token;
-      localStorage.setItem("token", token);
+      queryClient.setQueryData(["user"], data);
 
-      navigate("/communication");
+      console.log("success", data);
     },
     onError: () => {
       console.log("error");
