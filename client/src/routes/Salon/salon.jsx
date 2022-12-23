@@ -31,6 +31,9 @@ const Communication = () => {
   });
   const result = data?.salon;
 
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user?.user.id;
+
   return (
     <div className="main">
       <Spacer y={3} />
@@ -44,9 +47,11 @@ const Communication = () => {
               <CardSalon
                 key={salon?.id}
                 id={salon?.id}
+                userId={userId}
                 name={salon?.name}
                 nbPerson={salon?.nbPerson}
                 maxPerson={salon?.maxPerson}
+                users={salon?.users}
               />
             </Grid>
           ))}

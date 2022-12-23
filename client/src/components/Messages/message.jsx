@@ -4,8 +4,6 @@ const Message = (props) => {
   const { message, id, firstname, lastname, date, id_person } = props;
   const [show, setShow] = useState(false);
 
-  console.table({ message, id_person });
-
   return (
     <div
       className={

@@ -6,7 +6,13 @@ const prisma = new PrismaClient();
 
 router.get("/salon", async (req, res) => {
   try {
-    const salon = await prisma.ChatRoom.findMany();
+    // const salon = await prisma.ChatRoom.findMany();
+    // know user in salon
+    const salon = await prisma.ChatRoom.findMany({
+      include: {
+        users: true,
+      },
+    });
     res.json({ salon });
   } catch (error) {
     console.error(error);
@@ -63,13 +69,57 @@ router.post("/salon/join/:id", async (req, res) => {
     const { userId } = req.body;
     const salon = await prisma.ChatRoom.update({
       where: { id },
-      data: { users: { connect: { id: userId } } },
+      data: {
+        users: {
+          connect: { id: userId },
+        },
+      },
     });
     res.json({ salon });
     console.log("User " + userId + " joined salon " + salon.name);
   } catch (error) {
     console.error(error);
     res.status(500).send("Error joining salon");
+  }
+});
+
+router.post("/salon/leave/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { userId } = req.body;
+    const salon = await prisma.ChatRoom.update({
+      where: { id },
+      data: {
+        users: {
+          disconnect: { id: userId },
+        },
+      },
+    });
+    res.json({ salon });
+    console.log("User " + userId + " left salon " + salon.name);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error leaving salon");
+  }
+});
+
+// fetch the salon join by the user
+router.get("/salon/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const salon = await prisma.ChatRoom.findMany({
+      where: {
+        users: {
+          some: {
+            id,
+          },
+        },
+      },
+    });
+    res.json({ salon });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error getting salon");
   }
 });
 

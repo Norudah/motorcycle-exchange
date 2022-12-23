@@ -14,6 +14,7 @@ const CardAdvisor = (props) => {
     setVisible(false);
   };
 
+  // Delete salon
   const mutation = useMutation((id) => {
     return fetch(`http://localhost:3000/salon/delete/${id}`, {
       method: "DELETE",
