@@ -50,7 +50,7 @@ const Communication = () => {
                 userId={userId}
                 name={salon?.name}
                 nbPerson={salon?.nbPerson}
-                maxPerson={salon?.maxPerson}
+                nbMaxUser={salon?.nbMaxUser}
                 users={salon?.users}
               />
             </Grid>

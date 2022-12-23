@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const CardAdvisor = (props) => {
-  const { name, nbPerson, maxPerson, id, userId, users } = props;
+  const { name, nbPerson, nbMaxUser, id, userId, users } = props;
   const navigate = useNavigate();
 
   const [isInSalon, setIsInSalon] = useState(false);
@@ -65,7 +65,6 @@ const CardAdvisor = (props) => {
 
   return (
     <Card css={{ w: "100%", h: "150px" }}>
-      {isInSalon ? <p>IN</p> : <p>OUT</p>}
       <Card.Header css={{ position: "absolute", zIndex: 1, top: 5 }}>
         <Col>
           <Row justify="center">
@@ -75,7 +74,7 @@ const CardAdvisor = (props) => {
           </Row>
           <Row justify="center">
             <Text>
-              {nbPerson ? nbPerson : 0} / {maxPerson} people
+              {nbPerson ? nbPerson : 0} / {nbMaxUser} people
             </Text>
           </Row>
         </Col>
