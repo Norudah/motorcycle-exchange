@@ -3,9 +3,6 @@ import { useEffect, useState } from "react";
 import CardSalon from "../../../components/Card/card_admin_salon";
 import { useQuery } from "@tanstack/react-query";
 
-import { io } from "socket.io-client";
-const socket = io("https://localhost:3000");
-
 import ModalSalonAdd from "../../../components/Modal/modal_salon_add";
 import { Row } from "antd";
 
@@ -24,8 +21,6 @@ const Communication = () => {
       return response.json();
     }
   );
-
-  socket.emit("message", "Hello there from client");
 
   const result = data?.salon;
 

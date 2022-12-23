@@ -1,6 +1,9 @@
 import { Grid, Spacer } from "@nextui-org/react";
 import CardSalon from "../../components/Card/card_salon";
 
+import { io } from "socket.io-client";
+const socket = io("http://localhost:3000");
+
 const Communication = () => {
   const salon = [
     {
@@ -16,6 +19,20 @@ const Communication = () => {
       maxPerson: "250",
     },
   ];
+
+  socket.on("connect", () => {
+    console.log("User connected with socketId: ", socket.id);
+  });
+
+  socket.on("message", (message) => {
+    console.log(`Received message from server: ${message}`);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Disconnected from server");
+  });
+
+  socket.emit("message", "Hello server!");
 
   return (
     <div className="main">

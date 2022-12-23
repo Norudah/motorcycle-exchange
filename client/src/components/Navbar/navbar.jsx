@@ -21,7 +21,6 @@ const CustomNavbar = () => {
   const queryClient = useQueryClient();
 
   let data = queryClient.getQueryData({ queryKey: "user" });
-  console.log(data);
 
   useEffect(() => {
     if (data) {

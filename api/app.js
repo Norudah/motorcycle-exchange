@@ -19,14 +19,18 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket) => {
-  console.log("a user connected");
+  console.log("A client has connected");
 
   // Send a message to client
-  socket.emit("message", "Hello from server");
+  socket.emit("message", "Hello from server Client!");
 
   // Listen to message from client
-  socket.on("clientMessage", (data) => {
-    console.log(data);
+  socket.on("clientMessage", (message) => {
+    console.log(message);
+  });
+
+  socket.on("message", (message) => {
+    console.log(`Received message from client: ${message}`);
   });
 
   socket.on("disconnect", () => {
@@ -47,12 +51,6 @@ app.use(cors({ credentials: true, origin: "*" }));
 
 app.get("/", (req, res) => {
   res.send("Hellow World!");
-});
-
-app.get("/test", (req, res) => {
-  res.status(200).json({
-    message: "Succes ! Connexion avec le node réussis",
-  });
 });
 
 app.use(SecurityRouter);
