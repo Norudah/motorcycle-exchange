@@ -12,6 +12,7 @@ const login = () => {
   const mutation = useMutation(loginUser, {
     onSuccess: (data) => {
       queryClient.setQueryData(["user"], data);
+      localStorage.setItem("user", JSON.stringify(data));
       if (data.user.role === "ADMIN") {
         navigate("/admin/communication");
       } else {

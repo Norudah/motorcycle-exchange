@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Navbar, Button, Image, Switch, Badge } from "@nextui-org/react";
 
 import Logo from "../../assets/Yamaha_logo.svg";
@@ -18,9 +18,10 @@ const CustomNavbar = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isNotif, setIsNotif] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  let data = queryClient.getQueryData({ queryKey: "user" });
+  const data = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     if (data) {
@@ -31,6 +32,13 @@ const CustomNavbar = () => {
       }
     }
   }, [data]);
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    queryClient.clear();
+    setIsLogged(false);
+    navigate("/");
+  };
 
   return (
     <Navbar>
@@ -104,7 +112,7 @@ const CustomNavbar = () => {
             </Navbar.Item>
           )}
           <Navbar.Item>
-            <Button auto flat as="a">
+            <Button auto flat onPress={logout}>
               <NavLink>Logout</NavLink>
             </Button>
           </Navbar.Item>
