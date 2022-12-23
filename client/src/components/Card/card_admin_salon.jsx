@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
 import { Gear, TrashSimple } from "phosphor-react";
 import ModalSalon from "../Modal/modal_salon";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const CardAdvisor = (props) => {
   const { name, nbPerson, maxPerson, id } = props;

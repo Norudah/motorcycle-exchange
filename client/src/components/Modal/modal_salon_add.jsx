@@ -12,12 +12,9 @@ const ModalSalon = (props) => {
 
   const mutation = useMutation(addSalon, {
     onSuccess: (data) => {
-      console.log(data);
       queryClient.invalidateQueries("salon");
     },
-    onError: (error) => {
-      console.log(error);
-    },
+    onError: (error) => {},
   });
 
   async function addSalon() {

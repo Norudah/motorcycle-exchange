@@ -20,7 +20,8 @@ const CustomNavbar = () => {
   const location = useLocation();
   const queryClient = useQueryClient();
 
-  const data = queryClient.getQueryData({ queryKey: "user" });
+  let data = queryClient.getQueryData({ queryKey: "user" });
+  console.log(data);
 
   useEffect(() => {
     if (data) {
@@ -105,7 +106,7 @@ const CustomNavbar = () => {
           )}
           <Navbar.Item>
             <Button auto flat as="a">
-              <NavLink to="/logout">Logout</NavLink>
+              <NavLink>Logout</NavLink>
             </Button>
           </Navbar.Item>
         </Navbar.Content>

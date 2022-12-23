@@ -1,5 +1,5 @@
-import * as dotenv from "dotenv";
 import express from "express";
+import * as dotenv from "dotenv";
 import cors from "cors";
 
 // Create Express server
