@@ -14,7 +14,7 @@ const CardAdvisor = (props) => {
           </Row>
           <Row justify="center">
             <Text>
-              {nbPerson} / {maxPerson} people
+              {nbPerson ? nbPerson : 0} / {maxPerson} people
             </Text>
           </Row>
         </Col>

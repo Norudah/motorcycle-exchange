@@ -2,24 +2,10 @@ import { Grid, Spacer } from "@nextui-org/react";
 import CardSalon from "../../components/Card/card_salon";
 
 import { io } from "socket.io-client";
+import { useQuery } from "@tanstack/react-query";
 const socket = io("http://localhost:3000");
 
 const Communication = () => {
-  const salon = [
-    {
-      id: 1,
-      name: "Patapatapon",
-      nbPerson: "2",
-      maxPerson: "4",
-    },
-    {
-      id: 2,
-      name: "PonPon",
-      nbPerson: "10",
-      maxPerson: "250",
-    },
-  ];
-
   socket.on("connect", () => {
     console.log("User connected with socketId: ", socket.id);
   });
@@ -34,25 +20,40 @@ const Communication = () => {
 
   socket.emit("message", "Hello server!");
 
+  const broadcastMessage = (room, message) => {
+    io.to(room).emit("message", message);
+  };
+
+  // Fetch Salon data from API
+  const { data, refetch } = useQuery(["salon"], async () => {
+    const response = await fetch("http://localhost:3000/salon");
+    return response.json();
+  });
+  const result = data?.salon;
+
   return (
     <div className="main">
       <Spacer y={3} />
       <h1>Chat room online</h1>
       <Spacer y={1} />
 
-      <Grid.Container gap={2} justify="center">
-        {salon.map((salon) => (
-          <Grid xs={4} sm={3} key={salon.id}>
-            <CardSalon
-              key={salon.id}
-              id={salon.id}
-              name={salon.name}
-              nbPerson={salon.nbPerson}
-              maxPerson={salon.maxPerson}
-            />
-          </Grid>
-        ))}
-      </Grid.Container>
+      {result?.length > 0 ? (
+        <Grid.Container gap={2} justify="center">
+          {result.map((salon) => (
+            <Grid xs={4} sm={3} key={salon.id}>
+              <CardSalon
+                key={salon?.id}
+                id={salon?.id}
+                name={salon?.name}
+                nbPerson={salon?.nbPerson}
+                maxPerson={salon?.maxPerson}
+              />
+            </Grid>
+          ))}
+        </Grid.Container>
+      ) : (
+        <h2>No chat room online</h2>
+      )}
 
       <Spacer y={3} />
     </div>

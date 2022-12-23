@@ -57,4 +57,20 @@ router.put("/salon/update/:id", async (req, res) => {
   }
 });
 
+router.post("/salon/join/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { userId } = req.body;
+    const salon = await prisma.ChatRoom.update({
+      where: { id },
+      data: { users: { connect: { id: userId } } },
+    });
+    res.json({ salon });
+    console.log("User " + userId + " joined salon " + salon.name);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error joining salon");
+  }
+});
+
 export default router;

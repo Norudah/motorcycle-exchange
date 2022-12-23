@@ -14,14 +14,11 @@ const Communication = () => {
     setVisible(false);
   };
 
-  const { data, isError, isLoading, error, refetch } = useQuery(
-    ["salon"],
-    async () => {
-      const response = await fetch("http://localhost:3000/salon");
-      return response.json();
-    }
-  );
-
+  // Fetch Salon data from API
+  const { data, refetch } = useQuery(["salon"], async () => {
+    const response = await fetch("http://localhost:3000/salon");
+    return response.json();
+  });
   const result = data?.salon;
 
   return (
