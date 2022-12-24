@@ -13,9 +13,10 @@ const login = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(["user"], data);
       localStorage.setItem("user", JSON.stringify(data));
+
       if (data.user.role === "ADMIN") {
         navigate("/admin/communication");
-      } else {
+      } else if (data.user.role === "USER") {
         navigate("/communication");
       }
     },

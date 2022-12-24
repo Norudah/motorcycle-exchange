@@ -27,9 +27,7 @@ const CustomNavbar = () => {
     if (data) {
       setIsLogged(true);
 
-      if (data?.user?.role === "ADMIN") {
-        setIsAdmin(true);
-      }
+      data?.user?.role === "ADMIN" ? setIsAdmin(true) : setIsAdmin(false);
     }
   }, [data]);
 

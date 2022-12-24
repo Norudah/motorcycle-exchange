@@ -1,6 +1,6 @@
-import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
 import { useNavigate } from "react-router-dom";
 
 const CardAdvisor = (props) => {
