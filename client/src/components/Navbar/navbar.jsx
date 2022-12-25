@@ -57,7 +57,7 @@ const CustomNavbar = () => {
             <NavLink to="/salon">Salon</NavLink>
           </Navbar.Link>
           <Navbar.Link isActive={location.pathname === "/chat"}>
-            <NavLink to="/chat">Chat</NavLink>
+            <NavLink to="/chats">Chats</NavLink>
           </Navbar.Link>
         </Navbar.Content>
       )}

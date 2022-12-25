@@ -14,9 +14,9 @@ const Communication = () => {
     console.log(`Received message from server: ${message}`);
   });
 
-  socket.on("disconnect", () => {
-    console.log("Disconnected from server");
-  });
+  // socket.on("disconnect", () => {
+  //   console.log("Disconnected from server");
+  // });
 
   socket.emit("message", "Hello server!");
 

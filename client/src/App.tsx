@@ -42,7 +42,13 @@ function App() {
 
           <Route path="/communication" element={<Communication />} />
           <Route path="/salon" element={<Salon />} />
-          <Route path="/chat" element={<Chat />} />
+          {/* <Route path="/chat" element={<Chat />} /> */}
+          {/* <Route path="/chat/:id" element={<Chat />} /> */}
+
+          <Route path="chats" element={<Chat />}>
+            <Route path="p/:contactId" element={<Chat />} />
+            <Route path="g/:roomId" element={<Chat />} />
+          </Route>
 
           <Route path="/admin/communication" element={<AdminCommunication />} />
           <Route path="/admin/salon" element={<AdminSalon />} />
