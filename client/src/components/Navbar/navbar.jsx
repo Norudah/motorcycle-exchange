@@ -56,7 +56,7 @@ const CustomNavbar = () => {
           <Navbar.Link isActive={location.pathname === "/salon"}>
             <NavLink to="/salon">Salon</NavLink>
           </Navbar.Link>
-          <Navbar.Link isActive={location.pathname === "/chat"}>
+          <Navbar.Link isActive={location.pathname === "/chats"}>
             <NavLink to="/chats">Chats</NavLink>
           </Navbar.Link>
         </Navbar.Content>
@@ -70,8 +70,8 @@ const CustomNavbar = () => {
           <Navbar.Link isActive={location.pathname === "/admin/salon"}>
             <NavLink to="/admin/salon">Managed chat room</NavLink>
           </Navbar.Link>
-          <Navbar.Link isActive={location.pathname === "/chat"}>
-            <NavLink to="/chat">Chat</NavLink>
+          <Navbar.Link isActive={location.pathname === "/chats"}>
+            <NavLink to="/chats">Chat</NavLink>
           </Navbar.Link>
         </Navbar.Content>
       )}

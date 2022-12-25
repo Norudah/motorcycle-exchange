@@ -43,7 +43,6 @@ const Chat = () => {
   const [messages, setMessages] = useState("");
 
   const { contactId, roomId } = useParams();
-  console.log("contactId: ", contactId, "roomId: ", roomId);
 
   // fetch list of salon joined by user
   const user = JSON.parse(localStorage.getItem("user"));

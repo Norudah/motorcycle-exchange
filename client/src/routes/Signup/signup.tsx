@@ -1,6 +1,7 @@
 import { Button, Checkbox, Form, Input, Select } from "antd";
 import { Spacer } from "@nextui-org/react";
 import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 const formItemLayout = {
   labelCol: {
@@ -28,9 +29,11 @@ const tailFormItemLayout = {
 const Signup = () => {
   const [form] = Form.useForm();
 
+  const navigate = useNavigate();
+
   const mutation = useMutation(insertUser, {
     onSuccess: () => {
-      console.log("success");
+      navigate("/login");
     },
     onError: () => {
       console.log("error");

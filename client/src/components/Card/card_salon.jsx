@@ -5,49 +5,46 @@ import { useNavigate } from "react-router-dom";
 
 const CardAdvisor = (props) => {
   const { name, nbPerson, nbMaxUser, id, userId, users } = props;
-  const navigate = useNavigate();
 
   const [isInSalon, setIsInSalon] = useState(false);
 
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const userInSalon = users?.find((user) => user.id === userId);
 
   // join salon
-  const mutation = useMutation((id) => {
-    return fetch(`http://localhost:3000/salon/join/${id}`, {
+  const mutation = useMutation(joinSalon, {
+    onSuccess: () => {
+      setIsInSalon(true);
+    },
+  });
+
+  async function joinSalon() {
+    const res = await fetch(`http://localhost:3000/salon/join/${id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ userId: userId }),
     });
-  });
+  }
 
   // quit salon
-  const mutationQuit = useMutation((id) => {
-    return fetch(`http://localhost:3000/salon/leave/${id}`, {
+  const mutationQuit = useMutation(quitSalon, {
+    onSuccess: () => {
+      setIsInSalon(false);
+    },
+  });
+
+  async function quitSalon() {
+    const res = await fetch(`http://localhost:3000/salon/leave/${id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ userId: userId }),
     });
-  });
-
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    if (mutation.isSuccess) {
-      setIsInSalon(true);
-      queryClient.invalidateQueries("salon");
-    }
-  }, [mutation.isSuccess]);
-
-  useEffect(() => {
-    setIsInSalon(false);
-    if (mutationQuit.isSuccess) {
-      queryClient.invalidateQueries("salon");
-    }
-  }, [mutationQuit.isSuccess]);
+  }
 
   useEffect(() => {
     if (userInSalon) {
