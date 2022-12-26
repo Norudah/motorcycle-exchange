@@ -5,24 +5,28 @@ const socket = io("http://localhost:3000");
 
 import { PaperPlaneTilt } from "phosphor-react";
 import { SendButton } from "./sendButton";
-// import MessageInput from "./messageInput";
-import MessageList from "./messageList";
 import Message from "./message";
+import MessageList from "./messageList";
+import { useParams } from "react-router-dom";
 
 const ChatBox = (props) => {
   const { id } = props;
   const [messages, setMessage] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
+  const params = useParams(id);
+
+  useEffect(() => {
+    setMessage([]);
+  }, [params]);
 
   useEffect(() => {
     socket.emit("join-room", id);
     console.log("SocketIO: join-room", id);
   }, [id]);
 
-  // ecouter les messages du salon
+  // Lisen to message from server
   useEffect(() => {
     socket.on("message", (message, room, from, messageId, date) => {
-      console.log("Receive from Room : ", room, " -> ", message);
       setMessage((messages) => [
         ...messages,
         {
@@ -35,6 +39,7 @@ const ChatBox = (props) => {
     });
   }, []);
 
+  // Send message to server
   const sendMessage = () => {
     if (inputMessage) {
       socket.emit("send-message", inputMessage, id);
@@ -63,21 +68,7 @@ const ChatBox = (props) => {
 
   return (
     <div className="mainChatbox">
-      {/* <MessageList messages={messages} /> */}
-
-      <div className="messageList">
-        {messages.map((message) => (
-          <Message
-            key={message.id}
-            id={message.id}
-            id_person={message.id_person}
-            message={message.message}
-            firstname={message.firstname}
-            lastname={message.lastname}
-            date={message.date}
-          />
-        ))}
-      </div>
+      <MessageList messages={messages} />
 
       <div className="messageInput">
         <Input
