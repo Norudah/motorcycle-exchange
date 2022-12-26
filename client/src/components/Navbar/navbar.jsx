@@ -4,19 +4,13 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Navbar, Button, Image, Switch, Badge } from "@nextui-org/react";
 
 import Logo from "../../assets/Yamaha_logo.svg";
-import {
-  Bell,
-  BellSlash,
-  Check,
-  ShieldCheck,
-  SignIn,
-  User,
-} from "phosphor-react";
+import { Bell, BellSlash } from "phosphor-react";
 
 const CustomNavbar = () => {
   const [isLogged, setIsLogged] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isNotif, setIsNotif] = useState(false);
+  const [isActive, setIsActive] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -95,6 +89,7 @@ const CustomNavbar = () => {
               size="xl"
               iconOn={<BellSlash />}
               iconOff={<Bell />}
+              checked={!isActive}
             />
           )}
 

@@ -19,7 +19,7 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket) => {
-  console.log("A client has connected");
+  console.log("A client has connected with ID: ", socket.id);
 
   // Send a message to client
   socket.emit("message", "Hello from server Client!");

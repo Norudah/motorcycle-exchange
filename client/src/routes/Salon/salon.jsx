@@ -1,29 +1,8 @@
 import { Grid, Spacer } from "@nextui-org/react";
 import CardSalon from "../../components/Card/card_salon";
-
-import { io } from "socket.io-client";
 import { useQuery } from "@tanstack/react-query";
-const socket = io("http://localhost:3000");
 
 const Communication = () => {
-  socket.on("connect", () => {
-    console.log("User connected with socketId: ", socket.id);
-  });
-
-  socket.on("message", (message) => {
-    console.log(`Received message from server: ${message}`);
-  });
-
-  // socket.on("disconnect", () => {
-  //   console.log("Disconnected from server");
-  // });
-
-  socket.emit("message", "Hello server!");
-
-  const broadcastMessage = (room, message) => {
-    io.to(room).emit("message", message);
-  };
-
   // Fetch Salon data from API
   const { data, refetch } = useQuery(["salon"], async () => {
     const response = await fetch("http://localhost:3000/salon");
