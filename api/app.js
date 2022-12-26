@@ -47,14 +47,16 @@ io.on("connection", (socket) => {
   });
 
   // ecouter les messages envoyer sur les salons
-  socket.on("send-message", (message, room) => {
-    console.log("Send from Room : ", room, " -> ", message);
+  socket.on("send-message", (message, room, userName) => {
+    console.log("Send from Room : ", room, " by : ", userName, " -> ", message);
 
     // add unique id to message
     let date = Date.now();
     let messageId = date + socket.id;
-    socket.to(room).emit("message", message, room, socket.id, messageId, date);
-    console.log("SocketIO: send-message", message, room, socket.id, messageId);
+    socket
+      .to(room)
+      .emit("message", message, room, socket.id, messageId, date, userName);
+    console.log("SocketIO: send-message", userName);
   });
 
   socket.on("disconnect", () => {

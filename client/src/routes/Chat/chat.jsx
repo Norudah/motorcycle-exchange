@@ -8,25 +8,6 @@ import { useParams } from "react-router-dom";
 import { Chats } from "phosphor-react";
 
 const Chat = () => {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      id_person: 1,
-      firstname: "Romain",
-      lastname: "Pierron",
-      message: "Hello, how are you ?",
-      date: "2021-05-01",
-    },
-    {
-      id: 2,
-      id_person: 2,
-      firstname: "Rayan",
-      lastname: "Lekebab",
-      message: "Rallo team , im fine and you ?",
-      date: "2021-05-01",
-    },
-  ]);
-
   const [people, setPeople] = useState([
     {
       id: 1,
@@ -84,7 +65,6 @@ const Chat = () => {
           </Col>
         </Grid>
         <Grid xs={9}>
-          {/* <ChatBox messages={messages} id={contactId || roomId} /> */}
           <Col>
             {contactId || roomId ? (
               <ChatBox id={contactId || roomId} />

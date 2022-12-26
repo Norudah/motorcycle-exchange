@@ -15,9 +15,8 @@ const MessageList = (props) => {
           id={message.id}
           id_person={message.id_person}
           message={message.message}
-          firstname={message.firstname}
-          lastname={message.lastname}
           date={message.date}
+          userName={message.userName}
         />
       ))}
     </div>

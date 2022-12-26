@@ -5,7 +5,6 @@ const socket = io("http://localhost:3000");
 
 import { PaperPlaneTilt } from "phosphor-react";
 import { SendButton } from "./sendButton";
-import Message from "./message";
 import MessageList from "./messageList";
 import { useParams } from "react-router-dom";
 
@@ -14,6 +13,9 @@ const ChatBox = (props) => {
   const [messages, setMessage] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const params = useParams(id);
+
+  const data = JSON.parse(localStorage.getItem("user"));
+  const userName = data?.user.firstName + " " + data?.user.lastName;
 
   useEffect(() => {
     setMessage([]);
@@ -26,7 +28,7 @@ const ChatBox = (props) => {
 
   // Lisen to message from server
   useEffect(() => {
-    socket.on("message", (message, room, from, messageId, date) => {
+    socket.on("message", (message, room, from, messageId, date, userName) => {
       setMessage((messages) => [
         ...messages,
         {
@@ -34,6 +36,7 @@ const ChatBox = (props) => {
           id_person: from,
           message: message,
           date: date,
+          userName: userName,
         },
       ]);
     });
@@ -42,7 +45,7 @@ const ChatBox = (props) => {
   // Send message to server
   const sendMessage = () => {
     if (inputMessage) {
-      socket.emit("send-message", inputMessage, id);
+      socket.emit("send-message", inputMessage, id, userName);
       setMessage((messages) => [
         ...messages,
         {
@@ -50,6 +53,7 @@ const ChatBox = (props) => {
           id_person: 1,
           message: inputMessage,
           date: Date.now(),
+          userName: userName,
         },
       ]);
       setInputMessage("");
