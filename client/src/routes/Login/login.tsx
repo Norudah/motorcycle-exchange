@@ -17,17 +17,17 @@ const login = () => {
       queryClient.setQueryData(["user"], data);
       localStorage.setItem("user", JSON.stringify(data));
 
-      const socket = io("http://localhost:3000");
+      // const socket = io("http://localhost:3000");
 
-      socket.on("connect", () => {
-        console.log("User connected with socketId: ", socket.id);
-        localStorage.setItem("socketId", socket.id);
+      // socket.on("connect", () => {
+      //   console.log("User connected with socketId: ", socket.id);
+      //   localStorage.setItem("socketId", socket.id);
 
-        // add the socket id to the user object on the local storage
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
-        user.socketId = socket.id;
-        localStorage.setItem("user", JSON.stringify(user));
-      });
+      //   // add the socket id to the user object on the local storage
+      //   const user = JSON.parse(localStorage.getItem("user") || "{}");
+      //   user.socketId = socket.id;
+      //   localStorage.setItem("user", JSON.stringify(user));
+      // });
 
       if (data.user.role === "ADMIN") {
         navigate("/admin/communication");

@@ -29,10 +29,7 @@ instrument(io, {
 });
 
 io.on("connection", (socket) => {
-  console.log("A client has connected with ID: ", socket.id);
-
-  // Send a message to client
-  socket.emit("message", "Hello from server Client!");
+  console.log("SocketIO: connected with ID: ", socket.id);
 
   // Listen to message from client
   socket.on("clientMessage", (message) => {
@@ -41,10 +38,26 @@ io.on("connection", (socket) => {
 
   socket.on("message", (message) => {
     console.log(`Received message from client: ${message}`);
+    socket.emit("message", message);
+  });
+
+  socket.on("join-room", (room) => {
+    socket.join(room);
+    console.log("SocketIO: join-room", room);
+  });
+
+  // ecouter les messages envoyer sur les salons
+  socket.on("send-message", (message, room) => {
+    console.log("Send to Room : ", room, " -> ", message);
+
+    // add unique id to message
+    let date = Date.now();
+    let messageId = date + socket.id;
+    socket.to(room).emit("message", message, room, socket.id, messageId, date);
   });
 
   socket.on("disconnect", () => {
-    console.log("user disconnected");
+    console.log("SocketIO: disconnected with ID", socket.id);
   });
 });
 
