@@ -14,27 +14,6 @@ const ChatBox = (props) => {
   const [messages, setMessage] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
 
-  // console.log(messages);
-
-  // const [messages, setMessages] = useState([
-  //   {
-  //     id: 1,
-  //     id_person: 1,
-  //     firstname: "Romain",
-  //     lastname: "Pierron",
-  //     message: "Hello, how are you ?",
-  //     date: "2021-05-01",
-  //   },
-  //   {
-  //     id: 2,
-  //     id_person: 2,
-  //     firstname: "Rayan",
-  //     lastname: "Lekebab",
-  //     message: "Rallo team , im fine and you ?",
-  //     date: "2021-05-01",
-  //   },
-  // ]);
-
   useEffect(() => {
     socket.emit("join-room", id);
     console.log("SocketIO: join-room", id);
@@ -43,7 +22,7 @@ const ChatBox = (props) => {
   // ecouter les messages du salon
   useEffect(() => {
     socket.on("message", (message, room, from, messageId, date) => {
-      console.log("Message: ", message, room, from, messageId, date);
+      console.log("Receive from Room : ", room, " -> ", message);
       setMessage((messages) => [
         ...messages,
         {
@@ -54,7 +33,7 @@ const ChatBox = (props) => {
         },
       ]);
     });
-  }, [messages]);
+  }, []);
 
   const sendMessage = () => {
     if (inputMessage) {
@@ -62,10 +41,10 @@ const ChatBox = (props) => {
       setMessage((messages) => [
         ...messages,
         {
-          id: messages.length + 1,
+          id: Date.now(),
           id_person: 1,
           message: inputMessage,
-          date: "2021-05-01",
+          date: Date.now(),
         },
       ]);
       setInputMessage("");

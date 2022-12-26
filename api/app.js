@@ -32,14 +32,14 @@ io.on("connection", (socket) => {
   console.log("SocketIO: connected with ID: ", socket.id);
 
   // Listen to message from client
-  socket.on("clientMessage", (message) => {
-    console.log(message);
-  });
+  // socket.on("clientMessage", (message) => {
+  //   console.log(message);
+  // });
 
-  socket.on("message", (message) => {
-    console.log(`Received message from client: ${message}`);
-    socket.emit("message", message);
-  });
+  // socket.on("message", (message) => {
+  //   console.log(`Received message from client: ${message}`);
+  //   socket.emit("message", message);
+  // });
 
   socket.on("join-room", (room) => {
     socket.join(room);
@@ -48,12 +48,13 @@ io.on("connection", (socket) => {
 
   // ecouter les messages envoyer sur les salons
   socket.on("send-message", (message, room) => {
-    console.log("Send to Room : ", room, " -> ", message);
+    console.log("Send from Room : ", room, " -> ", message);
 
     // add unique id to message
     let date = Date.now();
     let messageId = date + socket.id;
     socket.to(room).emit("message", message, room, socket.id, messageId, date);
+    console.log("SocketIO: send-message", message, room, socket.id, messageId);
   });
 
   socket.on("disconnect", () => {
