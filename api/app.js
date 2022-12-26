@@ -10,12 +10,22 @@ const port = process.env.API_PORT || 3000;
 // Socket.io
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { instrument } from "@socket.io/admin-ui";
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: [
+      "https://admin.socket.io",
+      "http://localhost:5173",
+      "http://localhost:3000",
+    ],
+    credentials: true,
   },
+});
+
+instrument(io, {
+  auth: false,
 });
 
 io.on("connection", (socket) => {
