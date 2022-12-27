@@ -2,10 +2,13 @@ import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 const ModalSalon = (props) => {
-  const { id, visible, closeHandler, name, maxPerson } = props;
+  const { id, visible, closeHandler, name, nbMaxUser, nbPerson } = props;
 
   const [salonName, setSalonName] = useState(name);
-  const [salonMaxPerson, setSalonMaxPerson] = useState(maxPerson);
+  const [salonMaxPerson, setSalonMaxPerson] = useState(nbMaxUser);
+
+  // si on essaye de mettre un nombre négatif, on met 0
+  // si on essaye de mettre un nombre inférieur au nombre de personne , on renvoie une erreur et cancel la mutation
 
   // update salon
   const mutation = useMutation((id) => {
