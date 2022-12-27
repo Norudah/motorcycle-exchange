@@ -1,13 +1,13 @@
 import { Avatar, Card, Row, Spacer, Text } from "@nextui-org/react";
 import { useNavigate } from "react-router-dom";
 
-const ListPeople = (props) => {
-  const { firstname, lastname, id } = props;
+const ListSalon = (props) => {
+  const { name, nbUser, nbMaxUser, id } = props;
 
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`p/${id}`);
+    navigate(`g/${id}`);
   };
 
   return (
@@ -16,11 +16,16 @@ const ListPeople = (props) => {
       <Card isPressable isHoverable onPress={handleClick}>
         <Card.Body>
           <Row className="alignItemsCenter">
-            <Avatar squared text={firstname} />
+            <Avatar squared text={name} />
             <Spacer x={1} />
-            <Text>
-              {firstname} {lastname}
-            </Text>
+            <Row>
+              <Text>{name}</Text>
+            </Row>
+            <Row>
+              <Text>
+                {nbUser ? nbUser : 0} / {nbMaxUser}
+              </Text>
+            </Row>
           </Row>
         </Card.Body>
       </Card>
@@ -28,4 +33,4 @@ const ListPeople = (props) => {
   );
 };
 
-export default ListPeople;
+export default ListSalon;

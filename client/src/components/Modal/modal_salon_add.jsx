@@ -1,16 +1,25 @@
-import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 const ModalSalon = (props) => {
   const { id, visible, closeHandler, name, maxPerson } = props;
 
-  const [salonName, setSalonName] = useState(name);
-  const [salonMaxPerson, setSalonMaxPerson] = useState(maxPerson);
+  const [salonName, setSalonName] = useState("");
+  const [salonMaxPerson, setSalonMaxPerson] = useState("");
 
-  // update salon
-  const mutation = useMutation((id) => {
-    return fetch(`http://localhost:3000/salon/update/${id}`, {
-      method: "PUT",
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation(addSalon, {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries("salon");
+    },
+    onError: (error) => {},
+  });
+
+  async function addSalon() {
+    const res = await fetch("http://localhost:3000/salon/add", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -19,17 +28,11 @@ const ModalSalon = (props) => {
         nbMaxUser: parseInt(salonMaxPerson),
       }),
     });
-  });
-
-  const queryClient = useQueryClient();
-  useEffect(() => {
-    if (mutation.isSuccess) {
-      queryClient.invalidateQueries("salon");
-    }
-  }, [mutation.isSuccess]);
+    return await res.json();
+  }
 
   function submitHandler() {
-    mutation.mutate(id);
+    mutation.mutate();
     closeHandler();
   }
 
@@ -43,24 +46,24 @@ const ModalSalon = (props) => {
       <Modal.Header>
         <Text id="modal-title" size={18}>
           <Text b size={18}>
-            Managed salon
+            Add salon
           </Text>
         </Text>
       </Modal.Header>
       <Modal.Body>
         <Input
           label="Salon Name"
-          value={salonName}
+          value={name}
           bordered
           clearable
           onChange={(e) => setSalonName(e.target.value)}
         />
         <Input
           label="Max person per salon"
-          value={salonMaxPerson}
-          onChange={(e) => setSalonMaxPerson(e.target.value)}
+          value={maxPerson}
           bordered
           clearable
+          onChange={(e) => setSalonMaxPerson(e.target.value)}
         />
       </Modal.Body>
       <Modal.Footer>

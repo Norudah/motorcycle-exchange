@@ -1,12 +1,63 @@
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input } from "antd";
-import { Link } from "react-router-dom";
+import { Button, Form, Input } from "antd";
+import { Link, useNavigate } from "react-router-dom";
 import { Spacer } from "@nextui-org/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+
+import { io } from "socket.io-client";
 
 const login = () => {
-  const onFinish = (values: any) => {
-    console.log("Received values of form: ", values);
-  };
+  const [form] = Form.useForm();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const mutation = useMutation(loginUser, {
+    onSuccess: (data) => {
+      queryClient.setQueryData(["user"], data);
+      localStorage.setItem("user", JSON.stringify(data));
+
+      // const socket = io("http://localhost:3000");
+
+      // socket.on("connect", () => {
+      //   console.log("User connected with socketId: ", socket.id);
+      //   localStorage.setItem("socketId", socket.id);
+
+      //   // add the socket id to the user object on the local storage
+      //   const user = JSON.parse(localStorage.getItem("user") || "{}");
+      //   user.socketId = socket.id;
+      //   localStorage.setItem("user", JSON.stringify(user));
+      // });
+
+      if (data.user.role === "ADMIN") {
+        navigate("/admin/communication");
+      } else if (data.user.role === "USER") {
+        navigate("/communication");
+      }
+    },
+    onError: () => {
+      console.log("error");
+    },
+  });
+
+  async function loginUser() {
+    const res = await fetch("http://localhost:3000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: form.getFieldValue("email"),
+        password: form.getFieldValue("password"),
+      }),
+    });
+
+    return await res.json();
+  }
+
+  function handleSubmit(e: any) {
+    mutation.mutate();
+  }
 
   return (
     <div className="main">
@@ -15,17 +66,18 @@ const login = () => {
       <Spacer y={1} />
       <Form
         name="normal_login"
+        form={form}
         className="login-form"
         initialValues={{ remember: true }}
-        onFinish={onFinish}
+        onFinish={handleSubmit}
       >
         <Form.Item
-          name="username"
-          rules={[{ required: true, message: "Please input your Username!" }]}
+          name="email"
+          rules={[{ required: true, message: "Please input your Email!" }]}
         >
           <Input
             prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="Username"
+            placeholder="Email"
           />
         </Form.Item>
         <Form.Item

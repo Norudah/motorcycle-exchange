@@ -1,21 +1,36 @@
-import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
-import { Navbar, Button, Image, Switch } from "@nextui-org/react";
-import Logo from "../../assets/Yamaha_logo.svg";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Navbar, Button, Image, Switch, Badge } from "@nextui-org/react";
 
-import {
-  Bell,
-  BellSlash,
-  Check,
-  ShieldCheck,
-  SignIn,
-  User,
-} from "phosphor-react";
+import Logo from "../../assets/Yamaha_logo.svg";
+import { Bell, BellSlash } from "phosphor-react";
 
 const CustomNavbar = () => {
   const [isLogged, setIsLogged] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isNotif, setIsNotif] = useState(false);
+  const [isActive, setIsActive] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const data = JSON.parse(localStorage.getItem("user"));
+
+  useEffect(() => {
+    if (data) {
+      setIsLogged(true);
+
+      data?.user?.role === "ADMIN" ? setIsAdmin(true) : setIsAdmin(false);
+    }
+  }, [data]);
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    queryClient.clear();
+    setIsLogged(false);
+    navigate("/");
+  };
 
   return (
     <Navbar>
@@ -25,17 +40,6 @@ const CustomNavbar = () => {
             <Image width={50} src={Logo} alt="logo" />
           </NavLink>
         </Navbar.Brand>
-
-        <Switch
-          iconOn={<Check />}
-          iconOff={<SignIn />}
-          onChange={() => setIsLogged(!isLogged)}
-        />
-        <Switch
-          iconOn={<ShieldCheck />}
-          iconOff={<User />}
-          onChange={() => setIsAdmin(!isAdmin)}
-        />
       </Navbar.Content>
 
       {isLogged && !isAdmin && (
@@ -46,8 +50,8 @@ const CustomNavbar = () => {
           <Navbar.Link isActive={location.pathname === "/salon"}>
             <NavLink to="/salon">Salon</NavLink>
           </Navbar.Link>
-          <Navbar.Link isActive={location.pathname === "/chat"}>
-            <NavLink to="/chat">Chat</NavLink>
+          <Navbar.Link isActive={location.pathname === "/chats"}>
+            <NavLink to="/chats">Chats</NavLink>
           </Navbar.Link>
         </Navbar.Content>
       )}
@@ -60,8 +64,8 @@ const CustomNavbar = () => {
           <Navbar.Link isActive={location.pathname === "/admin/salon"}>
             <NavLink to="/admin/salon">Managed chat room</NavLink>
           </Navbar.Link>
-          <Navbar.Link isActive={location.pathname === "/chat"}>
-            <NavLink to="/chat">Chat</NavLink>
+          <Navbar.Link isActive={location.pathname === "/chats"}>
+            <NavLink to="/chats">Chat</NavLink>
           </Navbar.Link>
         </Navbar.Content>
       )}
@@ -85,11 +89,24 @@ const CustomNavbar = () => {
               size="xl"
               iconOn={<BellSlash />}
               iconOff={<Bell />}
+              checked={!isActive}
             />
           )}
+
+          {isAdmin ? (
+            <Navbar.Item>
+              <Badge color="success" variant="flat">
+                Admin
+              </Badge>
+            </Navbar.Item>
+          ) : (
+            <Navbar.Item>
+              <Badge variant="flat">User</Badge>
+            </Navbar.Item>
+          )}
           <Navbar.Item>
-            <Button auto flat as="a">
-              <NavLink to="/logout">Logout</NavLink>
+            <Button auto flat onPress={logout}>
+              <NavLink>Logout</NavLink>
             </Button>
           </Navbar.Item>
         </Navbar.Content>

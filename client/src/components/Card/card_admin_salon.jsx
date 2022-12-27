@@ -1,17 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
 import { Gear, TrashSimple } from "phosphor-react";
 import ModalSalon from "../Modal/modal_salon";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const CardAdvisor = (props) => {
   const { name, nbPerson, maxPerson, id } = props;
 
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = useState(false);
   const handler = () => setVisible(true);
 
   const closeHandler = () => {
     setVisible(false);
   };
+
+  // Delete salon
+  const mutation = useMutation((id) => {
+    return fetch(`http://localhost:3000/salon/delete/${id}`, {
+      method: "DELETE",
+    });
+  });
+
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    if (mutation.isSuccess) {
+      queryClient.invalidateQueries("salon");
+    }
+  }, [mutation.isSuccess]);
+
+  function deleteSalon() {
+    mutation.mutate(id);
+  }
 
   return (
     <Card css={{ w: "100%", h: "220px" }}>
@@ -35,7 +54,14 @@ const CardAdvisor = (props) => {
               maxPerson={maxPerson}
             />
             <Spacer x={0.5} />
-            <Button flat auto rounded color="error" icon={<TrashSimple />} />
+            <Button
+              flat
+              auto
+              rounded
+              color="error"
+              icon={<TrashSimple />}
+              onPress={deleteSalon}
+            />
           </Row>
           <Row justify="center">
             <Text h3 color="black" position="center">
@@ -44,7 +70,7 @@ const CardAdvisor = (props) => {
           </Row>
           <Row justify="center">
             <Text>
-              {nbPerson} / {maxPerson} people
+              {nbPerson ? nbPerson : 0} / {maxPerson} people
             </Text>
           </Row>
         </Col>

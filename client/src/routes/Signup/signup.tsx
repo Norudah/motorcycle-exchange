@@ -1,8 +1,7 @@
-import { useState } from "react";
 import { Button, Checkbox, Form, Input, Select } from "antd";
 import { Spacer } from "@nextui-org/react";
-
-const { Option } = Select;
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 const formItemLayout = {
   labelCol: {
@@ -30,38 +29,49 @@ const tailFormItemLayout = {
 const Signup = () => {
   const [form] = Form.useForm();
 
-  const onFinish = (values: any) => {
-    console.log("Received values of form: ", values);
-  };
+  const navigate = useNavigate();
 
-  const [autoCompleteResult, setAutoCompleteResult] = useState<string[]>([]);
+  const mutation = useMutation(insertUser, {
+    onSuccess: () => {
+      navigate("/login");
+    },
+    onError: () => {
+      console.log("error");
+    },
+  });
 
-  const onWebsiteChange = (value: string) => {
-    if (!value) {
-      setAutoCompleteResult([]);
-    } else {
-      setAutoCompleteResult(
-        [".com", ".org", ".net"].map((domain) => `${value}${domain}`)
-      );
-    }
-  };
+  async function insertUser() {
+    const res = await fetch("http://localhost:3000/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        firstName: form.getFieldValue("firstname"),
+        lastName: form.getFieldValue("lastname"),
+        email: form.getFieldValue("email"),
+        password: form.getFieldValue("password"),
+      }),
+    });
+    return await res.json();
+  }
 
-  const websiteOptions = autoCompleteResult.map((website) => ({
-    label: website,
-    value: website,
-  }));
+  function handleSubmit(e: any) {
+    mutation.mutate();
+  }
 
   return (
     <div className="main">
       <Spacer y={3} />
       <h1>Sign up</h1>
       <Spacer y={1} />
+
       <Form
         {...formItemLayout}
         form={form}
         name="register"
         className="signup-form"
-        onFinish={onFinish}
+        onFinish={handleSubmit}
         scrollToFirstError
       >
         <Form.Item
@@ -77,7 +87,6 @@ const Signup = () => {
         >
           <Input />
         </Form.Item>
-
         <Form.Item
           name="lastname"
           label="Lastname"
@@ -91,7 +100,6 @@ const Signup = () => {
         >
           <Input />
         </Form.Item>
-
         <Form.Item
           name="email"
           label="E-mail"
@@ -108,7 +116,6 @@ const Signup = () => {
         >
           <Input />
         </Form.Item>
-
         <Form.Item
           name="password"
           label="Password"
@@ -122,7 +129,6 @@ const Signup = () => {
         >
           <Input.Password />
         </Form.Item>
-
         <Form.Item
           name="confirm"
           label="Confirm Password"
@@ -147,7 +153,6 @@ const Signup = () => {
         >
           <Input.Password />
         </Form.Item>
-
         <Form.Item
           name="agreement"
           valuePropName="checked"
