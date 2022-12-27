@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
-import { useNavigate } from "react-router-dom";
 
 const CardAdvisor = (props) => {
   const { name, nbPerson, nbMaxUser, id, userId, users } = props;
-
-  const navigate = useNavigate();
 
   const [isDisabled, setIsDisabled] = useState(false);
   const [isInSalon, setIsInSalon] = useState(false);
@@ -107,41 +104,6 @@ const CardAdvisor = (props) => {
         <Row>
           <Col>
             <Row justify="center">
-              {/* {!isInSalon ? (
-                <Button
-                  flat
-                  auto
-                  rounded
-                  color="secondary"
-                  onPress={submitHandler}
-                >
-                  <Text
-                    css={{ color: "inherit" }}
-                    size={12}
-                    weight="bold"
-                    transform="uppercase"
-                  >
-                    Join the salon
-                  </Text>
-                </Button>
-              ) : (
-                <Button
-                  flat
-                  auto
-                  rounded
-                  color="error"
-                  onPress={submitHandlerQuit}
-                >
-                  <Text
-                    css={{ color: "inherit" }}
-                    size={12}
-                    weight="bold"
-                    transform="uppercase"
-                  >
-                    Quit salon
-                  </Text>
-                </Button>
-              )} */}
               {isDisabled && !isInSalon ? (
                 <Button flat auto rounded color="error">
                   <Text
