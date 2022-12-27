@@ -6,9 +6,10 @@ import { useNavigate } from "react-router-dom";
 const CardAdvisor = (props) => {
   const { name, nbPerson, nbMaxUser, id, userId, users } = props;
 
-  const [isInSalon, setIsInSalon] = useState(false);
-
   const navigate = useNavigate();
+
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isInSalon, setIsInSalon] = useState(false);
   const queryClient = useQueryClient();
   const userInSalon = users?.find((user) => user.id === userId);
 
@@ -47,10 +48,24 @@ const CardAdvisor = (props) => {
   }
 
   useEffect(() => {
+    if (nbPerson === nbMaxUser) {
+      setIsDisabled(true);
+    } else {
+      setIsDisabled(false);
+    }
+  }, [nbPerson, nbMaxUser]);
+
+  useEffect(() => {
     if (userInSalon) {
       setIsInSalon(true);
     }
   }, [userInSalon]);
+
+  useEffect(() => {
+    if (mutation.isSuccess || mutationQuit.isSuccess) {
+      queryClient.invalidateQueries("salon");
+    }
+  }, [mutation.isSuccess, mutationQuit.isSuccess]);
 
   function submitHandler() {
     mutation.mutate(id);
@@ -92,7 +107,53 @@ const CardAdvisor = (props) => {
         <Row>
           <Col>
             <Row justify="center">
-              {!isInSalon ? (
+              {/* {!isInSalon ? (
+                <Button
+                  flat
+                  auto
+                  rounded
+                  color="secondary"
+                  onPress={submitHandler}
+                >
+                  <Text
+                    css={{ color: "inherit" }}
+                    size={12}
+                    weight="bold"
+                    transform="uppercase"
+                  >
+                    Join the salon
+                  </Text>
+                </Button>
+              ) : (
+                <Button
+                  flat
+                  auto
+                  rounded
+                  color="error"
+                  onPress={submitHandlerQuit}
+                >
+                  <Text
+                    css={{ color: "inherit" }}
+                    size={12}
+                    weight="bold"
+                    transform="uppercase"
+                  >
+                    Quit salon
+                  </Text>
+                </Button>
+              )} */}
+              {isDisabled && !isInSalon ? (
+                <Button flat auto rounded color="error">
+                  <Text
+                    css={{ color: "inherit" }}
+                    size={12}
+                    weight="bold"
+                    transform="uppercase"
+                  >
+                    Full
+                  </Text>
+                </Button>
+              ) : !isInSalon ? (
                 <Button
                   flat
                   auto

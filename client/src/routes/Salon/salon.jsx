@@ -1,28 +1,21 @@
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+
 import { Grid, Spacer } from "@nextui-org/react";
 import CardSalon from "../../components/Card/card_salon";
 
-import { useQuery } from "@tanstack/react-query";
-import { io } from "socket.io-client";
-
 const Communication = () => {
-  const socket = io("http://localhost:3000");
-
-  socket.on("connect", () => {
-    console.log("User connected with socketId: ", socket.id);
-  });
-
-  socket.on("message", (message) => {
-    console.log(`Received message from server: ${message}`);
-  });
-
-  socket.emit("message", "Hello server!");
+  const [result, setResult] = useState([]);
 
   // Fetch Salon data from API
   const { data, refetch } = useQuery(["salon"], async () => {
     const response = await fetch("http://localhost:3000/salon");
     return response.json();
   });
-  const result = data?.salon;
+
+  useEffect(() => {
+    setResult(data?.salon);
+  }, [data]);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.user.id;
@@ -42,7 +35,7 @@ const Communication = () => {
                 id={salon?.id}
                 userId={userId}
                 name={salon?.name}
-                nbPerson={salon?.nbPerson}
+                nbPerson={salon?.nbUser}
                 nbMaxUser={salon?.nbMaxUser}
                 users={salon?.users}
               />

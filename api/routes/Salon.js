@@ -70,13 +70,20 @@ router.post("/salon/join/:id", async (req, res) => {
     const salon = await prisma.ChatRoom.update({
       where: { id },
       data: {
+        nbUser: {
+          increment: 1,
+        },
         users: {
           connect: { id: userId },
         },
       },
     });
+
     res.json({ salon });
-    console.log("User " + userId + " joined salon " + salon.name);
+    console.log(
+      "User " + userId + " joined salon " + salon.name,
+      "nbUser: " + salon.nbUser
+    );
   } catch (error) {
     console.error(error);
     res.status(500).send("Error joining salon");
@@ -90,6 +97,9 @@ router.post("/salon/leave/:id", async (req, res) => {
     const salon = await prisma.ChatRoom.update({
       where: { id },
       data: {
+        nbUser: {
+          decrement: 1,
+        },
         users: {
           disconnect: { id: userId },
         },

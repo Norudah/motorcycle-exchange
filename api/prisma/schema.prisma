@@ -34,6 +34,7 @@ model User {
 model ChatRoom {
   id                   Int                    @id @default(autoincrement())
   name                 String?
+  nbUser               Int                    @default(0)
   nbMaxUser            Int
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
