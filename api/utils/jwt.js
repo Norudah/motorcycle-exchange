@@ -11,3 +11,12 @@ export async function verifyToken(token) {
   const { id } = jwt.verify(token, process.env.JWT_SECRET);
   return id;
 }
+
+export function checkToken(token) {
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    return decodedToken;
+  } catch (error) {
+    return false;
+  }
+}

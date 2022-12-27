@@ -11,9 +11,13 @@ const Home = () => {
       },
     });
 
-    socket.on("connect", () => {
+    socket.on("connection", () => {
       console.log("User connected with socketId: ", socket.id);
     });
+
+    return () => {
+      socket.off("connection");
+    };
   }, []);
 
   return (

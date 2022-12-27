@@ -11,6 +11,8 @@ import { Server } from "socket.io";
 import SalonRouter from "./routes/Salon.js";
 import SecurityRouter from "./routes/Security.js";
 
+import { checkToken } from "./utils/jwt.js";
+
 dotenv.config();
 
 const app = express();
@@ -50,11 +52,14 @@ const isConnected = (socket, next) => {
 
 const isConnectedMiddleware = (socket, next) => {
   const { token } = socket.handshake.auth;
+  const decodedToken = checkToken(token);
 
   // TODO : Vérifier avec la base de donnée si le token est valide
-  if (token) {
-    socket.isConnected = true; // Permet de garder le "isConnected" dans les autres events en dessous
+  if (decodedToken) {
+    socket.isConnected = true;
+    console.log("coucou c'est moi le POUET", token);
     console.log("coucou c'est moi le token", token);
+    console.log("coucou c'est moi le pouet", pouet);
     return next();
   }
 
@@ -83,6 +88,8 @@ adminNamespace.use(isAdminMiddleware);
 
 userNamespace.on("connection", (socket) => {
   console.log("Authenticated user connected");
+
+  socket.emit("message", "Bienvenue sur le chat");
 });
 
 // adminNamespace.on("connection", (socket) => {
