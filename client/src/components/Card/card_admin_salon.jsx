@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
-import { Gear, TrashSimple } from "phosphor-react";
+import { Gear, TrashSimple, User } from "phosphor-react";
 import ModalSalon from "../Modal/modal_salon";
+import ModalSalonUsers from "../Modal/modal_salon_users";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const CardAdvisor = (props) => {
@@ -11,13 +12,26 @@ const CardAdvisor = (props) => {
   const [isInSalon, setIsInSalon] = useState(false);
   const queryClient = useQueryClient();
   const userInSalon = users?.find((user) => user.id === userId);
+  const [visibleButton, setVisibleButton] = useState(false);
 
   const [visible, setVisible] = useState(false);
+  const [visibleModalUser, setVisibleModalUser] = useState(false);
   const handler = () => setVisible(true);
+  const handlerModalUser = () => setVisibleModalUser(true);
 
   const closeHandler = () => {
     setVisible(false);
   };
+
+  const closeHandlerModalUser = () => {
+    setVisibleModalUser(false);
+  };
+
+  useEffect(() => {
+    if (nbPerson > 0) {
+      setVisibleButton(true);
+    }
+  }, [nbPerson]);
 
   // Join salon
   const mutation = useMutation(joinSalon, {
@@ -102,7 +116,25 @@ const CardAdvisor = (props) => {
     <Card css={{ w: "100%", h: "220px" }}>
       <Card.Header css={{ position: "absolute", zIndex: 1, top: 5 }}>
         <Col>
-          <Row justify="end">
+          <Row justify="space-around">
+            {visibleButton && (
+              <Button
+                flat
+                auto
+                rounded
+                color="primary"
+                icon={<User />}
+                onClick={handlerModalUser}
+              />
+            )}
+
+            <ModalSalonUsers
+              key={id}
+              id={id}
+              visible={visibleModalUser}
+              closeHandler={closeHandlerModalUser}
+            />
+
             <Button
               flat
               auto
@@ -117,9 +149,10 @@ const CardAdvisor = (props) => {
               visible={visible}
               closeHandler={closeHandler}
               name={name}
+              nbPerson={nbPerson}
               nbMaxUser={nbMaxUser}
             />
-            <Spacer x={0.5} />
+
             <Button
               flat
               auto

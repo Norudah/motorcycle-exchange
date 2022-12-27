@@ -133,4 +133,43 @@ router.get("/salon/:id", async (req, res) => {
   }
 });
 
+router.get("/salon/users/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const salon = await prisma.ChatRoom.findUnique({
+      where: { id },
+      include: {
+        users: true,
+      },
+    });
+    res.json({ salon });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error getting salon");
+  }
+});
+
+router.post("/salon/user/delete/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { userId } = req.body;
+    console.log("id: " + id + " userId: " + userId);
+    const salon = await prisma.ChatRoom.update({
+      where: { id },
+      data: {
+        users: {
+          disconnect: { id: userId },
+        },
+        nbUser: {
+          decrement: 1,
+        },
+      },
+    });
+    res.json({ salon });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error getting salon");
+  }
+});
+
 export default router;
