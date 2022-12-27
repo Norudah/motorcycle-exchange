@@ -1,15 +1,18 @@
 import cors from "cors";
 import * as dotenv from "dotenv";
 import express from "express";
+
 // Socket.io
+import { instrument } from "@socket.io/admin-ui";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { instrument } from "@socket.io/admin-ui";
+
 // Import routes
 import SalonRouter from "./routes/Salon.js";
 import SecurityRouter from "./routes/Security.js";
 
 dotenv.config();
+
 const app = express();
 const port = process.env.API_PORT || 3000;
 
@@ -24,6 +27,74 @@ const io = new Server(httpServer, {
 instrument(io, {
   auth: false,
 });
+
+// Functions to use within middlewares
+
+const isAdmin = (socket, next) => {
+  if (socket.isAdmin) {
+    next();
+  } else {
+    socket.disconnect();
+  }
+};
+
+const isConnected = (socket, next) => {
+  if (socket.isConnected) {
+    next();
+  } else {
+    socket.disconnect();
+  }
+};
+
+// Middlewares
+
+const isConnectedMiddleware = (socket, next) => {
+  const { token } = socket.handshake.auth;
+
+  // TODO : Vérifier avec la base de donnée si le token est valide
+  if (token) {
+    socket.isConnected = true; // Permet de garder le "isConnected" dans les autres events en dessous
+    console.log("coucou c'est moi le token", token);
+    return next();
+  }
+
+  console.log("Pas connecté, donc déconnexion");
+  socket.disconnect();
+  next(new Error("Authentication error from userNamespace"));
+};
+
+const isAdminMiddleware = (socket, next) => {
+  // TODO : Middleware pour vérifier si l'utilisateur est admin
+  next();
+};
+
+// Namespaces
+
+const userNamespace = io.of("/user");
+
+userNamespace.use(isConnectedMiddleware);
+
+const adminNamespace = io.of("/admin");
+
+adminNamespace.use(isConnectedMiddleware);
+adminNamespace.use(isAdminMiddleware);
+
+// Events
+
+userNamespace.on("connection", (socket) => {
+  console.log("Authenticated user connected");
+});
+
+// adminNamespace.on("connection", (socket) => {
+//   console.log("A admin has connected");
+
+//   const { token } = socket.handshake.auth;
+//   console.log("token", token);
+
+//   socket.on("disconnect", () => {
+//     console.log("admin disconnected");
+//   });
+// });
 
 io.on("connection", (socket) => {
   console.log("SocketIO: connected with ID: ", socket.id);
@@ -56,26 +127,6 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("SocketIO: disconnected with ID", socket.id);
-  });
-});
-
-io.of("/admin").on("connection", (socket) => {
-  console.log("A admin has connected");
-
-  // Send a message to client
-  socket.emit("message", "Hello from server Admin!");
-
-  // Listen to message from client
-  socket.on("adminMessage", (message) => {
-    console.log(message);
-  });
-
-  socket.on("message", (message) => {
-    console.log(`Received message from admin: ${message}`);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("admin disconnected");
   });
 });
 

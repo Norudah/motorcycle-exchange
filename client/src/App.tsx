@@ -1,19 +1,19 @@
+import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { NextUIProvider } from "@nextui-org/react";
-import CustomNavbar from "./components/Navbar/navbar";
 import "./App.css";
+import CustomNavbar from "./components/Navbar/navbar";
 
-import Home from "./routes/Home/home";
-import Login from "./routes/Login/login";
-import Signup from "./routes/Signup/signup";
-import Communication from "./routes/Communication/communication";
-import Chat from "./routes/Chat/chat";
-import Salon from "./routes/Salon/salon";
-import NotFound from "./routes/NotFound/notFound";
 import AdminCommunication from "./routes/Admin/Communication/communication";
 import AdminSalon from "./routes/Admin/Salon/salon";
-import { useEffect, useState } from "react";
+import Chat from "./routes/Chat/chat";
+import Communication from "./routes/Communication/communication";
+import Home from "./routes/Home/home";
+import Login from "./routes/Login/login";
+import NotFound from "./routes/NotFound/notFound";
+import Salon from "./routes/Salon/salon";
+import Signup from "./routes/Signup/signup";
 
 function App() {
   const [isLogged, setIsLogged] = useState(false);
