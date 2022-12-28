@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { io } from "socket.io-client";
 
 import { Grid, Spacer } from "@nextui-org/react";
 import CardSalon from "../../components/Card/card_salon";
 
 const Communication = () => {
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const [result, setResult] = useState([]);
 
   // Fetch Salon data from API
@@ -12,6 +14,19 @@ const Communication = () => {
     const response = await fetch("http://localhost:3000/salon");
     return response.json();
   });
+
+  useEffect(() => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token,
+      },
+    });
+
+    socket.on("delete-room", (room) => {
+      refetch();
+      console.log("delete-room", room, "REFETCH!");
+    });
+  }, []);
 
   useEffect(() => {
     setResult(data?.salon);

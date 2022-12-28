@@ -88,20 +88,20 @@ userNamespace.on("connection", (socket) => {
 
 adminNamespace.on("connection", (socket) => {
   console.log("Authenticated admin connected");
+
+  socket.on("add-room", (room) => {
+    console.log("Add room in Admin : ", room);
+    userNamespace.emit("add-room", room);
+  });
+
+  socket.on("delete-room", (room) => {
+    console.log("Delete room in Admin : ", room);
+    userNamespace.emit("delete-room", room);
+  });
 });
 
 io.on("connection", (socket) => {
   console.log("SocketIO: connected with ID: ", socket.id);
-
-  // Listen to message from client
-  // socket.on("clientMessage", (message) => {
-  //   console.log(message);
-  // });
-
-  // socket.on("message", (message) => {
-  //   console.log(`Received message from client: ${message}`);
-  //   socket.emit("message", message);
-  // });
 
   socket.on("join-room", (room) => {
     socket.join(room);
@@ -139,7 +139,3 @@ app.get("/", (req, res) => {
 
 app.use(SecurityRouter);
 app.use(SalonRouter);
-
-// app.listen(port, () =>
-//   console.log(`Server running on port ${port}, http://localhost:${port}`)
-// );

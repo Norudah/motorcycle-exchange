@@ -20,7 +20,7 @@ const ModalSalon = (props) => {
       },
     });
     const data = await res.json();
-    setResult(data.salon.users);
+    setResult(data?.salon?.users);
   }
 
   const mutationDeleteUser = useMutation(deleteUserInSalon, {

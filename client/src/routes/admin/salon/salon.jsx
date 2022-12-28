@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { io } from "socket.io-client";
 
 import { Grid, Spacer, Modal, Button } from "@nextui-org/react";
 import { Row } from "antd";
@@ -7,8 +8,10 @@ import CardSalon from "../../../components/Card/card_admin_salon";
 import ModalSalonAdd from "../../../components/Modal/modal_salon_add";
 
 const Communication = () => {
+  const [result, setResult] = useState([]);
   const [visible, setVisible] = useState(false);
   const handler = () => setVisible(true);
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
 
   const closeHandler = () => {
     setVisible(false);
@@ -19,7 +22,10 @@ const Communication = () => {
     const response = await fetch("http://localhost:3000/salon");
     return response.json();
   });
-  const result = data?.salon;
+
+  useEffect(() => {
+    setResult(data?.salon);
+  }, [data]);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.user.id;
@@ -44,7 +50,7 @@ const Communication = () => {
       {result?.length > 0 ? (
         <Grid.Container gap={2} justify="center">
           {result.map((salon) => (
-            <Grid xs={4} sm={3} key={salon.id}>
+            <Grid xs={4} sm={3}>
               <CardSalon
                 key={salon?.id}
                 id={salon?.id}

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { io } from "socket.io-client";
+
 import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
 import { Gear, TrashSimple, User } from "phosphor-react";
 import ModalSalon from "../Modal/modal_salon";
 import ModalSalonUsers from "../Modal/modal_salon_users";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const CardAdvisor = (props) => {
   const { name, nbPerson, nbMaxUser, id, users, userId } = props;
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
 
   const [isDisabled, setIsDisabled] = useState(false);
   const [isInSalon, setIsInSalon] = useState(false);
@@ -18,6 +21,26 @@ const CardAdvisor = (props) => {
   const [visibleModalUser, setVisibleModalUser] = useState(false);
   const handler = () => setVisible(true);
   const handlerModalUser = () => setVisibleModalUser(true);
+
+  // useEffect(() => {
+  //   const socket = io("http://localhost:3000/admin", {
+  //     auth: {
+  //       token,
+  //     },
+  //   });
+
+  //   socket.on("connection", () => {
+  //     console.log("User connected with socketId: ", socket.id);
+  //   });
+
+  //   socket.on("disconnect", () => {
+  //     console.log("User disconnected");
+  //   });
+
+  //   return () => {
+  //     socket.off("connection");
+  //   };
+  // }, []);
 
   const closeHandler = () => {
     setVisible(false);
@@ -67,21 +90,22 @@ const CardAdvisor = (props) => {
     });
   }
 
-  // Delete salon
-  const mutationDelete = useMutation((id) => {
-    return fetch(`http://localhost:3000/salon/delete/${id}`, {
-      method: "DELETE",
-    });
+  const mutationDelete = useMutation(deleteSalon, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("salon");
+      const socket = io("http://localhost:3000/admin", {
+        auth: {
+          token,
+        },
+      });
+      socket.emit("delete-room", id);
+    },
   });
 
-  useEffect(() => {
-    if (mutationDelete.isSuccess) {
-      queryClient.invalidateQueries("salon");
-    }
-  }, [mutationDelete.isSuccess]);
-
-  function deleteSalon() {
-    mutationDelete.mutate(id);
+  async function deleteSalon() {
+    const res = await fetch(`http://localhost:3000/salon/delete/${id}`, {
+      method: "DELETE",
+    });
   }
 
   useEffect(() => {
@@ -103,6 +127,10 @@ const CardAdvisor = (props) => {
       queryClient.invalidateQueries("salon");
     }
   }, [mutation.isSuccess, mutationQuit.isSuccess]);
+
+  function submitHandlerDelete() {
+    mutationDelete.mutate();
+  }
 
   function submitHandler() {
     mutation.mutate(id);
@@ -159,7 +187,7 @@ const CardAdvisor = (props) => {
               rounded
               color="error"
               icon={<TrashSimple />}
-              onPress={deleteSalon}
+              onPress={submitHandlerDelete}
             />
           </Row>
           <Row justify="center">
