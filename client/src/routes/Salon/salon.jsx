@@ -1,8 +1,22 @@
 import { Grid, Spacer } from "@nextui-org/react";
 import CardSalon from "../../components/Card/card_salon";
+
 import { useQuery } from "@tanstack/react-query";
+import { io } from "socket.io-client";
 
 const Communication = () => {
+  const socket = io("http://localhost:3000");
+
+  socket.on("connect", () => {
+    console.log("User connected with socketId: ", socket.id);
+  });
+
+  socket.on("message", (message) => {
+    console.log(`Received message from server: ${message}`);
+  });
+
+  socket.emit("message", "Hello server!");
+
   // Fetch Salon data from API
   const { data, refetch } = useQuery(["salon"], async () => {
     const response = await fetch("http://localhost:3000/salon");

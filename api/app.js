@@ -1,31 +1,89 @@
-import express from "express";
-import * as dotenv from "dotenv";
 import cors from "cors";
-
-// Create Express server
-dotenv.config();
-const app = express();
-const port = process.env.API_PORT || 3000;
+import * as dotenv from "dotenv";
+import express from "express";
 
 // Socket.io
+import { instrument } from "@socket.io/admin-ui";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { instrument } from "@socket.io/admin-ui";
+
+// Import routes
+import SalonRouter from "./routes/Salon.js";
+import SecurityRouter from "./routes/Security.js";
+
+import { checkToken } from "./utils/jwt.js";
+
+dotenv.config();
+
+const app = express();
+const port = process.env.API_PORT || 3000;
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: [
-      "https://admin.socket.io",
-      "http://localhost:5173",
-      "http://localhost:3000",
-    ],
+    origin: ["https://admin.socket.io", "http://localhost:5173", "http://localhost:3000"],
     credentials: true,
   },
 });
 
 instrument(io, {
   auth: false,
+});
+
+// Middlewares
+
+const isConnectedMiddleware = (socket, next) => {
+  const { token } = socket.handshake.auth;
+  const { id, firstName, lastName, role } = checkToken(token);
+
+  if (id) {
+    console.log("IsConnectedMiddleware : Connected");
+    socket.user = {
+      id,
+      firstName,
+      lastName,
+      role,
+    };
+    return next();
+  }
+
+  console.log("IsConnectedMiddleware : Disconnected");
+  socket.disconnect();
+  next(new Error("Authentication error from userNamespace"));
+};
+
+const isAdminMiddleware = (socket, next) => {
+  const { user } = socket;
+
+  if (user.role === "ADMIN") {
+    console.log("IsAdminMiddleware : Connected");
+    return next();
+  }
+
+  console.log("IsAdminMiddleware : Disconnected");
+  socket.disconnect();
+  next(new Error("Authentication error from adminNamespace"));
+};
+
+// Namespaces
+
+const userNamespace = io.of("/user");
+
+userNamespace.use(isConnectedMiddleware);
+
+const adminNamespace = io.of("/admin");
+
+adminNamespace.use(isConnectedMiddleware);
+adminNamespace.use(isAdminMiddleware);
+
+// Events
+
+userNamespace.on("connection", (socket) => {
+  console.log("Authenticated user connected");
+});
+
+adminNamespace.on("connection", (socket) => {
+  console.log("Authenticated admin connected");
 });
 
 io.on("connection", (socket) => {
@@ -53,9 +111,7 @@ io.on("connection", (socket) => {
     // add unique id to message
     let date = Date.now();
     let messageId = date + socket.id;
-    socket
-      .to(room)
-      .emit("message", message, room, socket.id, messageId, date, userName);
+    socket.to(room).emit("message", message, room, socket.id, messageId, date, userName);
     console.log("SocketIO: send-message", userName);
   });
 
@@ -67,10 +123,6 @@ io.on("connection", (socket) => {
 httpServer.listen(port, () => {
   console.log(`Server listening on port ${port} , , http://localhost:${port}`);
 });
-
-// Import routes
-import SecurityRouter from "./routes/Security.js";
-import SalonRouter from "./routes/Salon.js";
 
 app.use(express.json());
 app.use(cors({ credentials: true, origin: "*" }));
