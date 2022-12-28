@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 
 export async function createToken(user) {
   const { id, firstName, lastName, role } = user;
-  console.log("LOGIN USER", user);
   const token = jwt.sign({ id, firstName, lastName, role }, process.env.JWT_SECRET, {
     expiresIn: "1y",
   });

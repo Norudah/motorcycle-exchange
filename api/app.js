@@ -30,31 +30,12 @@ instrument(io, {
   auth: false,
 });
 
-// Functions to use within middlewares
-
-const isAdmin = (socket, next) => {
-  if (socket.isAdmin) {
-    next();
-  } else {
-    socket.disconnect();
-  }
-};
-
-const isConnected = (socket, next) => {
-  if (socket.isConnected) {
-    next();
-  } else {
-    socket.disconnect();
-  }
-};
-
 // Middlewares
 
 const isConnectedMiddleware = (socket, next) => {
   const { token } = socket.handshake.auth;
   const { id, firstName, lastName, role } = checkToken(token);
 
-  // TODO : Vérifier avec la base de donnée si le token est valide
   if (id) {
     console.log("IsConnectedMiddleware : Connected");
     socket.user = {
@@ -104,17 +85,6 @@ userNamespace.on("connection", (socket) => {
 adminNamespace.on("connection", (socket) => {
   console.log("Authenticated admin connected");
 });
-
-// adminNamespace.on("connection", (socket) => {
-//   console.log("A admin has connected");
-
-//   const { token } = socket.handshake.auth;
-//   console.log("token", token);
-
-//   socket.on("disconnect", () => {
-//     console.log("admin disconnected");
-//   });
-// });
 
 io.on("connection", (socket) => {
   console.log("SocketIO: connected with ID: ", socket.id);
