@@ -84,24 +84,41 @@ adminNamespace.use(isAdminMiddleware);
 
 userNamespace.on("connection", (socket) => {
   console.log("Authenticated user connected");
+
+  socket.on("join-room", (room) => {
+    userNamespace.emit("join-room", room);
+  });
+
+  socket.on("leave-room", (room) => {
+    userNamespace.emit("leave-room", room);
+  });
 });
 
 adminNamespace.on("connection", (socket) => {
   console.log("Authenticated admin connected");
 
   socket.on("add-room", (room) => {
-    console.log("Add room in Admin : ", room);
     userNamespace.emit("add-room", room);
   });
 
+  socket.on("update-room", (room) => {
+    userNamespace.emit("update-room", room);
+  });
+
   socket.on("delete-room", (room) => {
-    console.log("Delete room in Admin : ", room);
     userNamespace.emit("delete-room", room);
   });
 
   socket.on("delete-user", (idUser, idRoom) => {
-    console.log("Delete user in Admin : ", idUser, idRoom);
     userNamespace.emit("delete-user", idUser, idRoom);
+  });
+
+  socket.on("join-room", (room) => {
+    userNamespace.emit("join-room", room);
+  });
+
+  socket.on("leave-room", (room) => {
+    userNamespace.emit("join-room", room);
   });
 });
 

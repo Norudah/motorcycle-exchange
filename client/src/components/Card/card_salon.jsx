@@ -17,6 +17,12 @@ const CardAdvisor = (props) => {
   const mutation = useMutation(joinSalon, {
     onSuccess: () => {
       setIsInSalon(true);
+      const socket = io("http://localhost:3000/user", {
+        auth: {
+          token,
+        },
+      });
+      socket.emit("join-room", id);
     },
   });
 
@@ -34,6 +40,12 @@ const CardAdvisor = (props) => {
   const mutationQuit = useMutation(quitSalon, {
     onSuccess: () => {
       setIsInSalon(false);
+      const socket = io("http://localhost:3000/user", {
+        auth: {
+          token,
+        },
+      });
+      socket.emit("leave-room", id);
     },
   });
 
@@ -58,6 +70,24 @@ const CardAdvisor = (props) => {
       if (idRoom === id && idUser === userId) {
         queryClient.invalidateQueries("salon");
         setIsInSalon(false);
+      }
+    });
+
+    socket.on("update-room", (idRoom) => {
+      if (idRoom === id) {
+        queryClient.invalidateQueries("salon");
+      }
+    });
+
+    socket.on("join-room", (idRoom) => {
+      if (idRoom === id) {
+        queryClient.invalidateQueries("salon");
+      }
+    });
+
+    socket.on("leave-room", (idRoom) => {
+      if (idRoom === id) {
+        queryClient.invalidateQueries("salon");
       }
     });
   }, []);

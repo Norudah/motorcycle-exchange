@@ -40,6 +40,12 @@ const CardAdvisor = (props) => {
   const mutation = useMutation(joinSalon, {
     onSuccess: () => {
       setIsInSalon(true);
+      const socket = io("http://localhost:3000/admin", {
+        auth: {
+          token,
+        },
+      });
+      socket.emit("join-room", id);
     },
   });
 
@@ -57,6 +63,12 @@ const CardAdvisor = (props) => {
   const mutationQuit = useMutation(quitSalon, {
     onSuccess: () => {
       setIsInSalon(false);
+      const socket = io("http://localhost:3000/admin", {
+        auth: {
+          token,
+        },
+      });
+      socket.emit("leave-room", id);
     },
   });
 
