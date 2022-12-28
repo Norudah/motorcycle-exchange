@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
+import { Button, Card, Col, Row, Spacer, Text } from "@nextui-org/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Gear, TrashSimple, User } from "phosphor-react";
+import { useEffect, useState } from "react";
 import ModalSalon from "../Modal/modal_salon";
 import ModalSalonUsers from "../Modal/modal_salon_users";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const CardAdvisor = (props) => {
   const { name, nbPerson, nbMaxUser, id, users, userId } = props;
@@ -16,6 +16,10 @@ const CardAdvisor = (props) => {
 
   const [visible, setVisible] = useState(false);
   const [visibleModalUser, setVisibleModalUser] = useState(false);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user.token;
+
   const handler = () => setVisible(true);
   const handlerModalUser = () => setVisibleModalUser(true);
 
@@ -45,6 +49,7 @@ const CardAdvisor = (props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify({ userId: userId }),
     });
@@ -62,6 +67,7 @@ const CardAdvisor = (props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify({ userId: userId }),
     });

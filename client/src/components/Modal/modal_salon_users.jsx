@@ -8,8 +8,8 @@ const ModalSalon = (props) => {
   const [result, setResult] = useState([]);
   const queryClient = useQueryClient();
 
-  console.log("POUET");
-  console.log("token", token);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user.token;
 
   useEffect(() => {
     getSalonUsers();
@@ -20,6 +20,7 @@ const ModalSalon = (props) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
     });
     const data = await res.json();
@@ -40,6 +41,7 @@ const ModalSalon = (props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify({
         userId: userId,

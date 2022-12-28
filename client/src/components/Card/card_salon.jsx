@@ -1,6 +1,6 @@
+import { Button, Card, Col, Row, Spacer, Text } from "@nextui-org/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
 
 const CardAdvisor = (props) => {
   const { name, nbPerson, nbMaxUser, id, userId, users } = props;
@@ -9,6 +9,9 @@ const CardAdvisor = (props) => {
   const [isInSalon, setIsInSalon] = useState(false);
   const queryClient = useQueryClient();
   const userInSalon = users?.find((user) => user.id === userId);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user.token;
 
   // join salon
   const mutation = useMutation(joinSalon, {
@@ -22,6 +25,7 @@ const CardAdvisor = (props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify({ userId: userId }),
     });
@@ -39,6 +43,7 @@ const CardAdvisor = (props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify({ userId: userId }),
     });
@@ -99,53 +104,25 @@ const CardAdvisor = (props) => {
           borderTop: "$borderWeights$light solid rgba(255, 255, 255, 0.2)",
           bottom: 0,
           zIndex: 1,
-        }}
-      >
+        }}>
         <Row>
           <Col>
             <Row justify="center">
               {isDisabled && !isInSalon ? (
                 <Button flat auto rounded color="error">
-                  <Text
-                    css={{ color: "inherit" }}
-                    size={12}
-                    weight="bold"
-                    transform="uppercase"
-                  >
+                  <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
                     Full
                   </Text>
                 </Button>
               ) : !isInSalon ? (
-                <Button
-                  flat
-                  auto
-                  rounded
-                  color="secondary"
-                  onPress={submitHandler}
-                >
-                  <Text
-                    css={{ color: "inherit" }}
-                    size={12}
-                    weight="bold"
-                    transform="uppercase"
-                  >
+                <Button flat auto rounded color="secondary" onPress={submitHandler}>
+                  <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
                     Join the salon
                   </Text>
                 </Button>
               ) : (
-                <Button
-                  flat
-                  auto
-                  rounded
-                  color="error"
-                  onPress={submitHandlerQuit}
-                >
-                  <Text
-                    css={{ color: "inherit" }}
-                    size={12}
-                    weight="bold"
-                    transform="uppercase"
-                  >
+                <Button flat auto rounded color="error" onPress={submitHandlerQuit}>
+                  <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
                     Quit salon
                   </Text>
                 </Button>

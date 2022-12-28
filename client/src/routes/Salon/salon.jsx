@@ -8,10 +8,8 @@ const Communication = () => {
   const [result, setResult] = useState([]);
 
   const user = JSON.parse(localStorage.getItem("user"));
-  const userId = user?.user.id;
   const token = user.token;
-
-  console.log("POUET", token);
+  const userId = user?.user.id;
 
   // Fetch Salon data from API
   const { data, refetch } = useQuery(["salon"], async () => {
