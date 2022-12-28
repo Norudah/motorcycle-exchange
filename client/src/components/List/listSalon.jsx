@@ -8,6 +8,7 @@ import { Avatar, Card, css, Row, Spacer, Text } from "@nextui-org/react";
 const ListSalon = (props) => {
   const { name, nbUser, nbMaxUser, id } = props;
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
+  const user = JSON.parse(localStorage.getItem("user")).user ?? null;
 
   const queryClient = useQueryClient();
   const params = useParams(id);
@@ -52,6 +53,11 @@ const ListSalon = (props) => {
       if (room === id) {
         queryClient.invalidateQueries("salons");
       }
+    });
+
+    socket.on("add-room", (room) => {
+      console.log("fetch add room");
+      queryClient.invalidateQueries("salons");
     });
   }, []);
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 
@@ -25,12 +25,15 @@ const Chat = () => {
 
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const { contactId, roomId } = useParams();
+
   const [result, setResult] = useState([]);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.user.id;
 
-  const query = useQuery(["salon"], fetchSalon, {
+  const queryClient = useQueryClient();
+
+  const { refetch } = useQuery(["salon"], fetchSalon, {
     onSuccess: (data) => {
       setResult(data.salon);
     },
@@ -41,6 +44,25 @@ const Chat = () => {
     const data = await response.json();
     return data;
   }
+
+  useEffect(() => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token,
+      },
+    });
+
+    socket.on("delete-user", (idOfUser) => {
+      console.table({
+        idRecu: idOfUser,
+        userId: userId,
+      });
+      if (idOfUser === userId) {
+        refetch();
+        queryClient.invalidateQueries("salons");
+      }
+    });
+  }, []);
 
   return (
     <div>

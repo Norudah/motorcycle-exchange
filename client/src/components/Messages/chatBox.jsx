@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { io } from "socket.io-client";
 
-import { PaperPlaneTilt } from "phosphor-react";
 import { Input } from "@nextui-org/react";
+import { PaperPlaneTilt } from "phosphor-react";
 import { SendButton } from "./sendButton";
 import MessageList from "./messageList";
 
@@ -14,7 +15,10 @@ const ChatBox = (props) => {
   const user = JSON.parse(localStorage.getItem("user")).user ?? null;
   const [messages, setMessage] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
-  const params = useParams(id);
+  const params = useParams();
+  const queryClient = useQueryClient();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const socket = io("http://localhost:3000/user", {
@@ -35,6 +39,19 @@ const ChatBox = (props) => {
             userLastname: user.lastName,
           },
         ]);
+      }
+    });
+
+    socket.on("delete-room", (room) => {
+      if (params.roomId == room) {
+        navigate("/chats");
+      }
+    });
+
+    socket.on("delete-user", (idOfUser, room) => {
+      if (params.roomId == room && idOfUser == user.id) {
+        navigate("/chats");
+        queryClient.invalidateQueries("salons");
       }
     });
   }, []);
