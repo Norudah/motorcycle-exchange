@@ -41,7 +41,7 @@ const isConnectedMiddleware = (socket, next) => {
   const { id, firstName, lastName, role } = checkToken(token);
 
   if (id) {
-    console.log("IsConnectedMiddleware : Connected");
+    // console.log("IsConnectedMiddleware : Connected");
     socket.user = {
       id,
       firstName,
@@ -51,7 +51,7 @@ const isConnectedMiddleware = (socket, next) => {
     return next();
   }
 
-  console.log("IsConnectedMiddleware : Disconnected");
+  // console.log("IsConnectedMiddleware : Disconnected");
   socket.disconnect();
   next(new Error("Authentication error from userNamespace"));
 };
@@ -83,7 +83,7 @@ adminNamespace.use(isAdminMiddleware);
 // Events
 
 userNamespace.on("connection", (socket) => {
-  console.log("Authenticated user connected");
+  // console.log("Authenticated user connected");
 
   socket.on("join-room", (room) => {
     userNamespace.emit("join-room", room);
@@ -95,7 +95,7 @@ userNamespace.on("connection", (socket) => {
 });
 
 adminNamespace.on("connection", (socket) => {
-  console.log("Authenticated admin connected");
+  // console.log("Authenticated admin connected");
 
   socket.on("add-room", (room) => {
     userNamespace.emit("add-room", room);

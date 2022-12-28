@@ -22,7 +22,6 @@ const ModalSalon = (props) => {
           token,
         },
       });
-      console.log(data.salon.id);
       socket.emit("update-room", data.salon.id);
     },
     onError: (error) => {},
