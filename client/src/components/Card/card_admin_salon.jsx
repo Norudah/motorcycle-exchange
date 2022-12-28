@@ -120,6 +120,28 @@ const CardAdvisor = (props) => {
     }
   }, [mutation.isSuccess, mutationQuit.isSuccess]);
 
+  useEffect(() => {
+    const socket = io("http://localhost:3000/admin", {
+      auth: {
+        token,
+      },
+    });
+    socket.on("user-joinded-room", (room) => {
+      console.log("user-joinded-room");
+      console.log(room, id);
+      if (room === id) {
+        queryClient.invalidateQueries("salon");
+      }
+    });
+    socket.on("user-leave-room", (room) => {
+      console.log("user-leaved-room");
+      console.log(room, id);
+      if (room === id) {
+        queryClient.invalidateQueries("salon");
+      }
+    });
+  }, []);
+
   function submitHandlerDelete() {
     mutationDelete.mutate();
   }
@@ -137,16 +159,14 @@ const CardAdvisor = (props) => {
       <Card.Header css={{ position: "absolute", zIndex: 1, top: 5 }}>
         <Col>
           <Row justify="space-around">
-            {visibleButton && (
-              <Button
-                flat
-                auto
-                rounded
-                color="primary"
-                icon={<User />}
-                onClick={handlerModalUser}
-              />
-            )}
+            <Button
+              flat
+              auto
+              rounded
+              color="primary"
+              icon={<User />}
+              onClick={handlerModalUser}
+            />
 
             <ModalSalonUsers
               key={id}

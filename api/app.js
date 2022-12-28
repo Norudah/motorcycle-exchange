@@ -87,10 +87,12 @@ userNamespace.on("connection", (socket) => {
 
   socket.on("join-room", (room) => {
     userNamespace.emit("join-room", room);
+    adminNamespace.emit("user-joinded-room", room);
   });
 
   socket.on("leave-room", (room) => {
     userNamespace.emit("leave-room", room);
+    adminNamespace.emit("user-leave-room", room);
   });
 
   socket.on("send-message", (message, room, user) => {
@@ -98,6 +100,8 @@ userNamespace.on("connection", (socket) => {
     console.log("send-message", message, room, user);
   });
 });
+
+//
 
 adminNamespace.on("connection", (socket) => {
   // console.log("Authenticated admin connected");
