@@ -52,25 +52,36 @@ const isConnected = (socket, next) => {
 
 const isConnectedMiddleware = (socket, next) => {
   const { token } = socket.handshake.auth;
-  const decodedToken = checkToken(token);
+  const { id, firstName, lastName, role } = checkToken(token);
 
   // TODO : Vérifier avec la base de donnée si le token est valide
-  if (decodedToken) {
-    socket.isConnected = true;
-    console.log("coucou c'est moi le POUET", token);
-    console.log("coucou c'est moi le token", token);
-    console.log("coucou c'est moi le pouet", pouet);
+  if (id) {
+    console.log("IsConnectedMiddleware : Connected");
+    socket.user = {
+      id,
+      firstName,
+      lastName,
+      role,
+    };
     return next();
   }
 
-  console.log("Pas connecté, donc déconnexion");
+  console.log("IsConnectedMiddleware : Disconnected");
   socket.disconnect();
   next(new Error("Authentication error from userNamespace"));
 };
 
 const isAdminMiddleware = (socket, next) => {
-  // TODO : Middleware pour vérifier si l'utilisateur est admin
-  next();
+  const { user } = socket;
+
+  if (user.role === "ADMIN") {
+    console.log("IsAdminMiddleware : Connected");
+    return next();
+  }
+
+  console.log("IsAdminMiddleware : Disconnected");
+  socket.disconnect();
+  next(new Error("Authentication error from adminNamespace"));
 };
 
 // Namespaces
@@ -88,8 +99,10 @@ adminNamespace.use(isAdminMiddleware);
 
 userNamespace.on("connection", (socket) => {
   console.log("Authenticated user connected");
+});
 
-  socket.emit("message", "Bienvenue sur le chat");
+adminNamespace.on("connection", (socket) => {
+  console.log("Authenticated admin connected");
 });
 
 // adminNamespace.on("connection", (socket) => {
