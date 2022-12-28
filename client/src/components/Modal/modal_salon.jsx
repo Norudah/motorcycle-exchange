@@ -1,18 +1,34 @@
-import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { io } from "socket.io-client";
+
+import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
 const ModalSalon = (props) => {
   const { id, visible, closeHandler, name, nbMaxUser, nbPerson } = props;
 
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const [salonName, setSalonName] = useState(name);
   const [salonMaxPerson, setSalonMaxPerson] = useState(nbMaxUser);
+  const queryClient = useQueryClient();
 
   // si on essaye de mettre un nombre négatif, on met 0
   // si on essaye de mettre un nombre inférieur au nombre de personne , on renvoie une erreur et cancel la mutation
 
-  // update salon
-  const mutation = useMutation((id) => {
-    return fetch(`http://localhost:3000/salon/update/${id}`, {
+  const mutation = useMutation(updateSalon, {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries("salon");
+      const socket = io("http://localhost:3000/admin", {
+        auth: {
+          token,
+        },
+      });
+      socket.emit("update-room", data.salon.id);
+    },
+    onError: (error) => {},
+  });
+
+  async function updateSalon() {
+    const res = await fetch(`http://localhost:3000/salon/update/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -22,17 +38,21 @@ const ModalSalon = (props) => {
         nbMaxUser: parseInt(salonMaxPerson),
       }),
     });
-  });
+    return await res.json();
+  }
 
-  const queryClient = useQueryClient();
   useEffect(() => {
-    if (mutation.isSuccess) {
-      queryClient.invalidateQueries("salon");
-    }
-  }, [mutation.isSuccess]);
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        submitUpdatehandler();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
-  function submitHandler() {
-    mutation.mutate(id);
+  function submitUpdatehandler() {
+    mutation.mutate();
     closeHandler();
   }
 
@@ -52,6 +72,7 @@ const ModalSalon = (props) => {
       </Modal.Header>
       <Modal.Body>
         <Input
+          autoFocus
           label="Salon Name"
           value={salonName}
           bordered
@@ -67,7 +88,7 @@ const ModalSalon = (props) => {
         />
       </Modal.Body>
       <Modal.Footer>
-        <Button auto onPress={submitHandler}>
+        <Button auto onPress={submitUpdatehandler}>
           Submit
         </Button>
       </Modal.Footer>

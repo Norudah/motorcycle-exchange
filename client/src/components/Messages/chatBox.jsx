@@ -1,64 +1,77 @@
-import { Input } from "@nextui-org/react";
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { io } from "socket.io-client";
-const socket = io("http://localhost:3000");
 
+import { Input } from "@nextui-org/react";
 import { PaperPlaneTilt } from "phosphor-react";
 import { SendButton } from "./sendButton";
 import MessageList from "./messageList";
-import { useParams } from "react-router-dom";
 
 const ChatBox = (props) => {
   const { id } = props;
+
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
+  const user = JSON.parse(localStorage.getItem("user")).user ?? null;
   const [messages, setMessage] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
-  const params = useParams(id);
+  const params = useParams();
+  const queryClient = useQueryClient();
 
-  const data = JSON.parse(localStorage.getItem("user"));
-  const userName = data?.user.firstName + " " + data?.user.lastName;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token,
+      },
+    });
+    socket.on("send-message", (message, room, user) => {
+      if (room === id) {
+        setMessage((messages) => [
+          ...messages,
+          {
+            id: Date.now(),
+            id_person: user.id,
+            message: message,
+            date: Date.now(),
+            userFirstname: user.firstName,
+            userLastname: user.lastName,
+          },
+        ]);
+      }
+    });
+
+    socket.on("delete-room", (room) => {
+      if (params.roomId == room) {
+        navigate("/chats");
+      }
+    });
+
+    socket.on("delete-user", (idOfUser, room) => {
+      if (params.roomId == room && idOfUser == user.id) {
+        navigate("/chats");
+        queryClient.invalidateQueries("salons");
+      }
+    });
+  }, []);
+
+  const sendMessage = () => {
+    if (inputMessage) {
+      const socket = io("http://localhost:3000/user", {
+        auth: {
+          token,
+        },
+      });
+
+      socket.emit("send-message", inputMessage, id, user);
+    }
+    setInputMessage("");
+  };
 
   useEffect(() => {
     setMessage([]);
   }, [params]);
-
-  useEffect(() => {
-    socket.emit("join-room", id);
-    console.log("SocketIO: join-room", id);
-  }, [id]);
-
-  // Lisen to message from server
-  useEffect(() => {
-    socket.on("message", (message, room, from, messageId, date, userName) => {
-      setMessage((messages) => [
-        ...messages,
-        {
-          id: messageId,
-          id_person: from,
-          message: message,
-          date: date,
-          userName: userName,
-        },
-      ]);
-    });
-  }, []);
-
-  // Send message to server
-  const sendMessage = () => {
-    if (inputMessage) {
-      socket.emit("send-message", inputMessage, id, userName);
-      setMessage((messages) => [
-        ...messages,
-        {
-          id: Date.now(),
-          id_person: 1,
-          message: inputMessage,
-          date: Date.now(),
-          userName: userName,
-        },
-      ]);
-      setInputMessage("");
-    }
-  };
 
   useEffect(() => {
     const handleKeyDown = (e) => {

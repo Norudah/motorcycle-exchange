@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { io } from "socket.io-client";
+
 import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
 
 const CardAdvisor = (props) => {
   const { name, nbPerson, nbMaxUser, id, userId, users } = props;
 
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const [isDisabled, setIsDisabled] = useState(false);
   const [isInSalon, setIsInSalon] = useState(false);
   const queryClient = useQueryClient();
@@ -14,6 +17,12 @@ const CardAdvisor = (props) => {
   const mutation = useMutation(joinSalon, {
     onSuccess: () => {
       setIsInSalon(true);
+      const socket = io("http://localhost:3000/user", {
+        auth: {
+          token,
+        },
+      });
+      socket.emit("join-room", id);
     },
   });
 
@@ -31,6 +40,12 @@ const CardAdvisor = (props) => {
   const mutationQuit = useMutation(quitSalon, {
     onSuccess: () => {
       setIsInSalon(false);
+      const socket = io("http://localhost:3000/user", {
+        auth: {
+          token,
+        },
+      });
+      socket.emit("leave-room", id);
     },
   });
 
@@ -43,6 +58,39 @@ const CardAdvisor = (props) => {
       body: JSON.stringify({ userId: userId }),
     });
   }
+
+  useEffect(() => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token,
+      },
+    });
+
+    socket.on("delete-user", (idUser, idRoom) => {
+      if (idRoom === id && idUser === userId) {
+        queryClient.invalidateQueries("salon");
+        setIsInSalon(false);
+      }
+    });
+
+    socket.on("update-room", (idRoom) => {
+      if (idRoom === id) {
+        queryClient.invalidateQueries("salon");
+      }
+    });
+
+    socket.on("join-room", (idRoom) => {
+      if (idRoom === id) {
+        queryClient.invalidateQueries("salon");
+      }
+    });
+
+    socket.on("leave-room", (idRoom) => {
+      if (idRoom === id) {
+        queryClient.invalidateQueries("salon");
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (nbPerson === nbMaxUser) {

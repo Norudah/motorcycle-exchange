@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { io } from "socket.io-client";
+
 import { Col, Grid } from "@nextui-org/react";
+import { Chats } from "phosphor-react";
 import ListPeople from "../../components/List/listPeople";
 import ChatBox from "../../components/Messages/chatBox";
 import ListSalon from "../../components/List/listSalon";
-import { useParams } from "react-router-dom";
-import { Chats } from "phosphor-react";
 
 const Chat = () => {
   const [people, setPeople] = useState([
@@ -21,18 +23,46 @@ const Chat = () => {
     },
   ]);
 
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const { contactId, roomId } = useParams();
 
-  // fetch list of salon joined by user
+  const [result, setResult] = useState([]);
+
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.user.id;
 
-  const { data } = useQuery(["salon"], async () => {
-    const response = await fetch(`http://localhost:3000/salon/${userId}`);
-    return response.json();
+  const queryClient = useQueryClient();
+
+  const { refetch } = useQuery(["salon"], fetchSalon, {
+    onSuccess: (data) => {
+      setResult(data.salon);
+    },
   });
 
-  const result = data?.salon;
+  async function fetchSalon() {
+    const response = await fetch(`http://localhost:3000/salon/${userId}`);
+    const data = await response.json();
+    return data;
+  }
+
+  useEffect(() => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token,
+      },
+    });
+
+    socket.on("delete-user", (idOfUser) => {
+      console.table({
+        idRecu: idOfUser,
+        userId: userId,
+      });
+      if (idOfUser === userId) {
+        refetch();
+        queryClient.invalidateQueries("salons");
+      }
+    });
+  }, []);
 
   return (
     <div>
