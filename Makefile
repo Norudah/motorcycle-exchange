@@ -22,3 +22,6 @@ init:
 turbostart: start startClient
 
 turboinstall: buildAPI start init buildClient
+
+reset:
+	docker compose exec api npx prisma migrate reset
