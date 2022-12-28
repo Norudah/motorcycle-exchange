@@ -92,6 +92,11 @@ userNamespace.on("connection", (socket) => {
   socket.on("leave-room", (room) => {
     userNamespace.emit("leave-room", room);
   });
+
+  socket.on("send-message", (message, room, user) => {
+    userNamespace.emit("send-message", message, room, user);
+    console.log("send-message", message, room, user);
+  });
 });
 
 adminNamespace.on("connection", (socket) => {
@@ -122,31 +127,31 @@ adminNamespace.on("connection", (socket) => {
   });
 });
 
-io.on("connection", (socket) => {
-  console.log("SocketIO: connected with ID: ", socket.id);
+// io.on("connection", (socket) => {
+//   console.log("SocketIO: connected with ID: ", socket.id);
 
-  socket.on("join-room", (room) => {
-    socket.join(room);
-    console.log("SocketIO: join-room", room);
-  });
+//   socket.on("join-room", (room) => {
+//     socket.join(room);
+//     console.log("SocketIO: join-room", room);
+//   });
 
-  // ecouter les messages envoyer sur les salons
-  socket.on("send-message", (message, room, userName) => {
-    console.log("Send from Room : ", room, " by : ", userName, " -> ", message);
+//   // ecouter les messages envoyer sur les salons
+//   socket.on("send-message", (message, room, userName) => {
+//     console.log("Send from Room : ", room, " by : ", userName, " -> ", message);
 
-    // add unique id to message
-    let date = Date.now();
-    let messageId = date + socket.id;
-    socket
-      .to(room)
-      .emit("message", message, room, socket.id, messageId, date, userName);
-    console.log("SocketIO: send-message", userName);
-  });
+//     // add unique id to message
+//     let date = Date.now();
+//     let messageId = date + socket.id;
+//     socket
+//       .to(room)
+//       .emit("message", message, room, socket.id, messageId, date, userName);
+//     console.log("SocketIO: send-message", userName);
+//   });
 
-  socket.on("disconnect", () => {
-    console.log("SocketIO: disconnected with ID", socket.id);
-  });
-});
+//   socket.on("disconnect", () => {
+//     console.log("SocketIO: disconnected with ID", socket.id);
+//   });
+// });
 
 httpServer.listen(port, () => {
   console.log(`Server listening on port ${port} , , http://localhost:${port}`);

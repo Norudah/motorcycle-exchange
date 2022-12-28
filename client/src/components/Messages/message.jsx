@@ -1,10 +1,18 @@
 import { useState } from "react";
 
 const Message = (props) => {
-  const { message, id, userName, date, id_person } = props;
+  const { message, id, firstname, lastname, date, id_person } = props;
   const [show, setShow] = useState(false);
+  const [isMyMessage, setIsMyMessage] = useState(false);
 
-  // convert date to string
+  const userId = JSON.parse(localStorage.getItem("user")).user.id ?? null;
+
+  useState(() => {
+    if (id_person === userId) {
+      setIsMyMessage(true);
+    }
+  }, []);
+
   const dateToString = (date) => {
     const dateObj = new Date(date);
     const dateStr = dateObj.toLocaleString();
@@ -14,13 +22,13 @@ const Message = (props) => {
   return (
     <div
       className={
-        id_person === 1 ? "message message--right" : "message message--left"
+        isMyMessage ? "message message--right" : "message message--left"
       }
     >
       <div className="message__main">
         <div className="message__header">
-          {id_person === 1 ? null : (
-            <p className="message__header">{userName}</p>
+          {isMyMessage ? null : (
+            <p className="message__header">{(firstname, lastname)}</p>
           )}
         </div>
         <p className="message__header__date ">{dateToString(date)}</p>
@@ -28,7 +36,7 @@ const Message = (props) => {
         <div className="message__content">
           <p
             className={
-              id_person === 1
+              isMyMessage
                 ? "message--right__content__text message__content__text"
                 : "message--left__content__text message__content__text"
             }
