@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { io } from "socket.io-client";
 
@@ -40,6 +40,16 @@ const ModalSalon = (props) => {
     return await res.json();
   }
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        submitHandler();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   function submitHandler() {
     mutation.mutate();
     closeHandler();
@@ -61,6 +71,7 @@ const ModalSalon = (props) => {
       </Modal.Header>
       <Modal.Body>
         <Input
+          autoFocus
           label="Salon Name"
           value={name}
           bordered

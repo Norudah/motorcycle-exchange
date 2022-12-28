@@ -41,7 +41,17 @@ const ModalSalon = (props) => {
     return await res.json();
   }
 
-  function submitHandler() {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        submitUpdatehandler();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  function submitUpdatehandler() {
     mutation.mutate();
     closeHandler();
   }
@@ -62,6 +72,7 @@ const ModalSalon = (props) => {
       </Modal.Header>
       <Modal.Body>
         <Input
+          autoFocus
           label="Salon Name"
           value={salonName}
           bordered
@@ -77,7 +88,7 @@ const ModalSalon = (props) => {
         />
       </Modal.Body>
       <Modal.Footer>
-        <Button auto onPress={submitHandler}>
+        <Button auto onPress={submitUpdatehandler}>
           Submit
         </Button>
       </Modal.Footer>
