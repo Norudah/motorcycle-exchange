@@ -22,26 +22,6 @@ const CardAdvisor = (props) => {
   const handler = () => setVisible(true);
   const handlerModalUser = () => setVisibleModalUser(true);
 
-  // useEffect(() => {
-  //   const socket = io("http://localhost:3000/admin", {
-  //     auth: {
-  //       token,
-  //     },
-  //   });
-
-  //   socket.on("connection", () => {
-  //     console.log("User connected with socketId: ", socket.id);
-  //   });
-
-  //   socket.on("disconnect", () => {
-  //     console.log("User disconnected");
-  //   });
-
-  //   return () => {
-  //     socket.off("connection");
-  //   };
-  // }, []);
-
   const closeHandler = () => {
     setVisible(false);
   };

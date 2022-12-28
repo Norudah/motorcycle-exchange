@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { io } from "socket.io-client";
+
 import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const ModalSalon = (props) => {
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const { id, visible, closeHandler, name, maxPerson } = props;
 
   const [salonName, setSalonName] = useState("");
@@ -12,7 +15,15 @@ const ModalSalon = (props) => {
 
   const mutation = useMutation(addSalon, {
     onSuccess: (data) => {
+      console.log(data);
       queryClient.invalidateQueries("salon");
+      const socket = io("http://localhost:3000/admin", {
+        auth: {
+          token,
+        },
+      });
+      socket.emit("add-room", data.salon.id);
+      console.log("socket emit add-room", data.salon.id);
     },
     onError: (error) => {},
   });

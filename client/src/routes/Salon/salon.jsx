@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { io } from "socket.io-client";
 
 import { Grid, Spacer } from "@nextui-org/react";
@@ -8,6 +8,10 @@ import CardSalon from "../../components/Card/card_salon";
 const Communication = () => {
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const [result, setResult] = useState([]);
+  const queryClient = useQueryClient();
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user?.user.id;
 
   // Fetch Salon data from API
   const { data, refetch } = useQuery(["salon"], async () => {
@@ -24,16 +28,23 @@ const Communication = () => {
 
     socket.on("delete-room", (room) => {
       refetch();
-      console.log("delete-room", room, "REFETCH!");
+    });
+
+    socket.on("add-room", (room) => {
+      refetch();
+    });
+
+    socket.on("delete-user", (idUser) => {
+      if (idUser === userId) {
+        refetch();
+        queryClient.invalidateQueries("salon");
+      }
     });
   }, []);
 
   useEffect(() => {
     setResult(data?.salon);
   }, [data]);
-
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userId = user?.user.id;
 
   return (
     <div className="main">

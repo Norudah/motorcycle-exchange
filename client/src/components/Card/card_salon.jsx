@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { io } from "socket.io-client";
+
 import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
 
 const CardAdvisor = (props) => {
   const { name, nbPerson, nbMaxUser, id, userId, users } = props;
 
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const [isDisabled, setIsDisabled] = useState(false);
   const [isInSalon, setIsInSalon] = useState(false);
   const queryClient = useQueryClient();
@@ -43,6 +46,23 @@ const CardAdvisor = (props) => {
       body: JSON.stringify({ userId: userId }),
     });
   }
+
+  useEffect(() => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token,
+      },
+    });
+
+    socket.on("delete-user", (idUser, idRoom) => {
+      console.log("idUser", idUser, "idRoom", idRoom);
+      console.log("id", id, "userId", userId);
+      if (idRoom === id && idUser === userId) {
+        queryClient.invalidateQueries("salon");
+        setIsInSalon(false);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (nbPerson === nbMaxUser) {

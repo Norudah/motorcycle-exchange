@@ -98,6 +98,11 @@ adminNamespace.on("connection", (socket) => {
     console.log("Delete room in Admin : ", room);
     userNamespace.emit("delete-room", room);
   });
+
+  socket.on("delete-user", (idUser, idRoom) => {
+    console.log("Delete user in Admin : ", idUser, idRoom);
+    userNamespace.emit("delete-user", idUser, idRoom);
+  });
 });
 
 io.on("connection", (socket) => {

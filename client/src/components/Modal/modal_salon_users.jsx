@@ -1,8 +1,12 @@
-import { Modal, Button, Text, Input, Table } from "@nextui-org/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { TrashSimple } from "phosphor-react";
 import { useEffect, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { io } from "socket.io-client";
+
+import { Modal, Button, Text, Table } from "@nextui-org/react";
+import { TrashSimple } from "phosphor-react";
+
 const ModalSalon = (props) => {
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const { id, visible, closeHandler } = props;
 
   const [result, setResult] = useState([]);
@@ -24,14 +28,22 @@ const ModalSalon = (props) => {
   }
 
   const mutationDeleteUser = useMutation(deleteUserInSalon, {
-    onSuccess: () => {
+    onSuccess: (data, variables, context) => {
+      console.log("data", data, "variables", variables, "context", context);
+
       getSalonUsers();
       queryClient.invalidateQueries("salons");
+      const socket = io("http://localhost:3000/admin", {
+        auth: {
+          token,
+        },
+      });
+
+      socket.emit("delete-user", variables, id);
     },
   });
 
   async function deleteUserInSalon(userId) {
-    console.log("target user id to mutation", userId);
     const userIdTest = 1;
     const res = await fetch(`http://localhost:3000/salon/user/delete/${id}`, {
       method: "POST",
@@ -47,7 +59,6 @@ const ModalSalon = (props) => {
   }
 
   function handleDeleteUser(userId) {
-    console.log("target user id to handler", userId);
     mutationDeleteUser.mutate(userId);
   }
 
