@@ -20,7 +20,6 @@ const CustomNavbar = () => {
   useEffect(() => {
     if (data) {
       setIsLogged(true);
-
       data?.user?.role === "ADMIN" ? setIsAdmin(true) : setIsAdmin(false);
     }
   }, [data]);

@@ -6,8 +6,6 @@ const prisma = new PrismaClient();
 
 router.get("/salon", async (req, res) => {
   try {
-    // const salon = await prisma.ChatRoom.findMany();
-    // know user in salon
     const salon = await prisma.ChatRoom.findMany({
       include: {
         users: true,

@@ -10,6 +10,7 @@ import { Server } from "socket.io";
 // Import routes
 import SalonRouter from "./routes/Salon.js";
 import SecurityRouter from "./routes/Security.js";
+import CommunicationRouter from "./routes/Communication.js";
 
 import { checkToken } from "./utils/jwt.js";
 
@@ -131,32 +132,6 @@ adminNamespace.on("connection", (socket) => {
   });
 });
 
-// io.on("connection", (socket) => {
-//   console.log("SocketIO: connected with ID: ", socket.id);
-
-//   socket.on("join-room", (room) => {
-//     socket.join(room);
-//     console.log("SocketIO: join-room", room);
-//   });
-
-//   // ecouter les messages envoyer sur les salons
-//   socket.on("send-message", (message, room, userName) => {
-//     console.log("Send from Room : ", room, " by : ", userName, " -> ", message);
-
-//     // add unique id to message
-//     let date = Date.now();
-//     let messageId = date + socket.id;
-//     socket
-//       .to(room)
-//       .emit("message", message, room, socket.id, messageId, date, userName);
-//     console.log("SocketIO: send-message", userName);
-//   });
-
-//   socket.on("disconnect", () => {
-//     console.log("SocketIO: disconnected with ID", socket.id);
-//   });
-// });
-
 httpServer.listen(port, () => {
   console.log(`Server listening on port ${port} , , http://localhost:${port}`);
 });
@@ -170,3 +145,4 @@ app.get("/", (req, res) => {
 
 app.use(SecurityRouter);
 app.use(SalonRouter);
+app.use("/communication", CommunicationRouter);
