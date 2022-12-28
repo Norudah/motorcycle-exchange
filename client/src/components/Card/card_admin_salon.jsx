@@ -117,50 +117,14 @@ const CardAdvisor = (props) => {
       <Card.Header css={{ position: "absolute", zIndex: 1, top: 5 }}>
         <Col>
           <Row justify="space-around">
-            {visibleButton && (
-              <Button
-                flat
-                auto
-                rounded
-                color="primary"
-                icon={<User />}
-                onClick={handlerModalUser}
-              />
-            )}
+            {visibleButton && <Button flat auto rounded color="primary" icon={<User />} onClick={handlerModalUser} />}
 
-            <ModalSalonUsers
-              key={id}
-              id={id}
-              visible={visibleModalUser}
-              closeHandler={closeHandlerModalUser}
-            />
+            <ModalSalonUsers key={id} id={id} visible={visibleModalUser} closeHandler={closeHandlerModalUser} />
 
-            <Button
-              flat
-              auto
-              rounded
-              color="warning"
-              icon={<Gear />}
-              onClick={handler}
-            />
-            <ModalSalon
-              key={id}
-              id={id}
-              visible={visible}
-              closeHandler={closeHandler}
-              name={name}
-              nbPerson={nbPerson}
-              nbMaxUser={nbMaxUser}
-            />
+            <Button flat auto rounded color="warning" icon={<Gear />} onClick={handler} />
+            <ModalSalon key={id} id={id} visible={visible} closeHandler={closeHandler} name={name} nbPerson={nbPerson} nbMaxUser={nbMaxUser} />
 
-            <Button
-              flat
-              auto
-              rounded
-              color="error"
-              icon={<TrashSimple />}
-              onPress={deleteSalon}
-            />
+            <Button flat auto rounded color="error" icon={<TrashSimple />} onPress={deleteSalon} />
           </Row>
           <Row justify="center">
             <Text h3 color="black" position="center">
@@ -183,54 +147,26 @@ const CardAdvisor = (props) => {
           borderTop: "$borderWeights$light solid rgba(255, 255, 255, 0.2)",
           bottom: 0,
           zIndex: 1,
-        }}
-      >
+        }}>
         <Row>
           <Col>
             <Spacer y={0.5} />
             <Row justify="center">
               {isDisabled && !isInSalon ? (
                 <Button flat auto rounded color="error">
-                  <Text
-                    css={{ color: "inherit" }}
-                    size={12}
-                    weight="bold"
-                    transform="uppercase"
-                  >
+                  <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
                     Full
                   </Text>
                 </Button>
               ) : !isInSalon ? (
-                <Button
-                  flat
-                  auto
-                  rounded
-                  color="secondary"
-                  onPress={submitHandler}
-                >
-                  <Text
-                    css={{ color: "inherit" }}
-                    size={12}
-                    weight="bold"
-                    transform="uppercase"
-                  >
+                <Button flat auto rounded color="secondary" onPress={submitHandler}>
+                  <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
                     Join the salon
                   </Text>
                 </Button>
               ) : (
-                <Button
-                  flat
-                  auto
-                  rounded
-                  color="error"
-                  onPress={submitHandlerQuit}
-                >
-                  <Text
-                    css={{ color: "inherit" }}
-                    size={12}
-                    weight="bold"
-                    transform="uppercase"
-                  >
+                <Button flat auto rounded color="error" onPress={submitHandlerQuit}>
+                  <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
                     Quit salon
                   </Text>
                 </Button>
