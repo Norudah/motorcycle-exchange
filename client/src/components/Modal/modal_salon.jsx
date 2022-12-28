@@ -1,4 +1,4 @@
-import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
+import { Button, Input, Modal, Text } from "@nextui-org/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 const ModalSalon = (props) => {
@@ -10,12 +10,16 @@ const ModalSalon = (props) => {
   // si on essaye de mettre un nombre négatif, on met 0
   // si on essaye de mettre un nombre inférieur au nombre de personne , on renvoie une erreur et cancel la mutation
 
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user.token;
+
   // update salon
   const mutation = useMutation((id) => {
     return fetch(`http://localhost:3000/salon/update/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify({
         name: salonName,
@@ -37,12 +41,7 @@ const ModalSalon = (props) => {
   }
 
   return (
-    <Modal
-      closeButton
-      aria-labelledby="modal-title"
-      open={visible}
-      onClose={closeHandler}
-    >
+    <Modal closeButton aria-labelledby="modal-title" open={visible} onClose={closeHandler}>
       <Modal.Header>
         <Text id="modal-title" size={18}>
           <Text b size={18}>
@@ -51,20 +50,8 @@ const ModalSalon = (props) => {
         </Text>
       </Modal.Header>
       <Modal.Body>
-        <Input
-          label="Salon Name"
-          value={salonName}
-          bordered
-          clearable
-          onChange={(e) => setSalonName(e.target.value)}
-        />
-        <Input
-          label="Max person per salon"
-          value={salonMaxPerson}
-          onChange={(e) => setSalonMaxPerson(e.target.value)}
-          bordered
-          clearable
-        />
+        <Input label="Salon Name" value={salonName} bordered clearable onChange={(e) => setSalonName(e.target.value)} />
+        <Input label="Max person per salon" value={salonMaxPerson} onChange={(e) => setSalonMaxPerson(e.target.value)} bordered clearable />
       </Modal.Body>
       <Modal.Footer>
         <Button auto onPress={submitHandler}>

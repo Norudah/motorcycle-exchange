@@ -77,6 +77,10 @@ const CardAdvisor = (props) => {
   const mutationDelete = useMutation((id) => {
     return fetch(`http://localhost:3000/salon/delete/${id}`, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
     });
   });
 
