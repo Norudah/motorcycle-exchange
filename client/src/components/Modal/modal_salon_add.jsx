@@ -15,7 +15,6 @@ const ModalSalon = (props) => {
 
   const mutation = useMutation(addSalon, {
     onSuccess: (data) => {
-      console.log(data);
       queryClient.invalidateQueries("salon");
       const socket = io("http://localhost:3000/admin", {
         auth: {
@@ -23,7 +22,6 @@ const ModalSalon = (props) => {
         },
       });
       socket.emit("add-room", data.salon.id);
-      console.log("socket emit add-room", data.salon.id);
     },
     onError: (error) => {},
   });

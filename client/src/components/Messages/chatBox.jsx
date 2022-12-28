@@ -23,7 +23,6 @@ const ChatBox = (props) => {
 
   useEffect(() => {
     socket.emit("join-room", id);
-    console.log("SocketIO: join-room", id);
   }, [id]);
 
   // Lisen to message from server

@@ -55,8 +55,6 @@ const CardAdvisor = (props) => {
     });
 
     socket.on("delete-user", (idUser, idRoom) => {
-      console.log("idUser", idUser, "idRoom", idRoom);
-      console.log("id", id, "userId", userId);
       if (idRoom === id && idUser === userId) {
         queryClient.invalidateQueries("salon");
         setIsInSalon(false);

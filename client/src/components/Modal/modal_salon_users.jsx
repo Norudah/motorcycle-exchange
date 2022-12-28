@@ -29,8 +29,6 @@ const ModalSalon = (props) => {
 
   const mutationDeleteUser = useMutation(deleteUserInSalon, {
     onSuccess: (data, variables, context) => {
-      console.log("data", data, "variables", variables, "context", context);
-
       getSalonUsers();
       queryClient.invalidateQueries("salons");
       const socket = io("http://localhost:3000/admin", {
