@@ -21,7 +21,11 @@ const port = process.env.API_PORT || 3000;
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: ["https://admin.socket.io", "http://localhost:5173", "http://localhost:3000"],
+    origin: [
+      "https://admin.socket.io",
+      "http://localhost:5173",
+      "http://localhost:3000",
+    ],
     credentials: true,
   },
 });
@@ -111,7 +115,9 @@ io.on("connection", (socket) => {
     // add unique id to message
     let date = Date.now();
     let messageId = date + socket.id;
-    socket.to(room).emit("message", message, room, socket.id, messageId, date, userName);
+    socket
+      .to(room)
+      .emit("message", message, room, socket.id, messageId, date, userName);
     console.log("SocketIO: send-message", userName);
   });
 

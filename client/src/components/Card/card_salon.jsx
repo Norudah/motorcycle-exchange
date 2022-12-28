@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
-import { useNavigate } from "react-router-dom";
 
 const CardAdvisor = (props) => {
   const { name, nbPerson, nbMaxUser, id, userId, users } = props;
 
+  const [isDisabled, setIsDisabled] = useState(false);
   const [isInSalon, setIsInSalon] = useState(false);
-
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const userInSalon = users?.find((user) => user.id === userId);
 
@@ -47,10 +45,24 @@ const CardAdvisor = (props) => {
   }
 
   useEffect(() => {
+    if (nbPerson === nbMaxUser) {
+      setIsDisabled(true);
+    } else {
+      setIsDisabled(false);
+    }
+  }, [nbPerson, nbMaxUser]);
+
+  useEffect(() => {
     if (userInSalon) {
       setIsInSalon(true);
     }
   }, [userInSalon]);
+
+  useEffect(() => {
+    if (mutation.isSuccess || mutationQuit.isSuccess) {
+      queryClient.invalidateQueries("salon");
+    }
+  }, [mutation.isSuccess, mutationQuit.isSuccess]);
 
   function submitHandler() {
     mutation.mutate(id);
@@ -92,7 +104,18 @@ const CardAdvisor = (props) => {
         <Row>
           <Col>
             <Row justify="center">
-              {!isInSalon ? (
+              {isDisabled && !isInSalon ? (
+                <Button flat auto rounded color="error">
+                  <Text
+                    css={{ color: "inherit" }}
+                    size={12}
+                    weight="bold"
+                    transform="uppercase"
+                  >
+                    Full
+                  </Text>
+                </Button>
+              ) : !isInSalon ? (
                 <Button
                   flat
                   auto

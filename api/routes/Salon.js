@@ -70,13 +70,20 @@ router.post("/salon/join/:id", async (req, res) => {
     const salon = await prisma.ChatRoom.update({
       where: { id },
       data: {
+        nbUser: {
+          increment: 1,
+        },
         users: {
           connect: { id: userId },
         },
       },
     });
+
     res.json({ salon });
-    console.log("User " + userId + " joined salon " + salon.name);
+    console.log(
+      "User " + userId + " joined salon " + salon.name,
+      "nbUser: " + salon.nbUser
+    );
   } catch (error) {
     console.error(error);
     res.status(500).send("Error joining salon");
@@ -90,6 +97,9 @@ router.post("/salon/leave/:id", async (req, res) => {
     const salon = await prisma.ChatRoom.update({
       where: { id },
       data: {
+        nbUser: {
+          decrement: 1,
+        },
         users: {
           disconnect: { id: userId },
         },
@@ -113,6 +123,45 @@ router.get("/salon/:id", async (req, res) => {
           some: {
             id,
           },
+        },
+      },
+    });
+    res.json({ salon });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error getting salon");
+  }
+});
+
+router.get("/salon/users/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const salon = await prisma.ChatRoom.findUnique({
+      where: { id },
+      include: {
+        users: true,
+      },
+    });
+    res.json({ salon });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error getting salon");
+  }
+});
+
+router.post("/salon/user/delete/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { userId } = req.body;
+    console.log("id: " + id + " userId: " + userId);
+    const salon = await prisma.ChatRoom.update({
+      where: { id },
+      data: {
+        users: {
+          disconnect: { id: userId },
+        },
+        nbUser: {
+          decrement: 1,
         },
       },
     });

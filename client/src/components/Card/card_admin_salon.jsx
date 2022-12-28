@@ -1,42 +1,140 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
-import { Gear, TrashSimple } from "phosphor-react";
+import { Gear, TrashSimple, User } from "phosphor-react";
 import ModalSalon from "../Modal/modal_salon";
+import ModalSalonUsers from "../Modal/modal_salon_users";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const CardAdvisor = (props) => {
-  const { name, nbPerson, maxPerson, id } = props;
+  const { name, nbPerson, nbMaxUser, id, users, userId } = props;
+
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isInSalon, setIsInSalon] = useState(false);
+  const queryClient = useQueryClient();
+  const userInSalon = users?.find((user) => user.id === userId);
+  const [visibleButton, setVisibleButton] = useState(false);
 
   const [visible, setVisible] = useState(false);
+  const [visibleModalUser, setVisibleModalUser] = useState(false);
   const handler = () => setVisible(true);
+  const handlerModalUser = () => setVisibleModalUser(true);
 
   const closeHandler = () => {
     setVisible(false);
   };
 
+  const closeHandlerModalUser = () => {
+    setVisibleModalUser(false);
+  };
+
+  useEffect(() => {
+    if (nbPerson > 0) {
+      setVisibleButton(true);
+    }
+  }, [nbPerson]);
+
+  // Join salon
+  const mutation = useMutation(joinSalon, {
+    onSuccess: () => {
+      setIsInSalon(true);
+    },
+  });
+
+  async function joinSalon() {
+    const res = await fetch(`http://localhost:3000/salon/join/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: userId }),
+    });
+  }
+
+  // Quit salon
+  const mutationQuit = useMutation(quitSalon, {
+    onSuccess: () => {
+      setIsInSalon(false);
+    },
+  });
+
+  async function quitSalon() {
+    const res = await fetch(`http://localhost:3000/salon/leave/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: userId }),
+    });
+  }
+
   // Delete salon
-  const mutation = useMutation((id) => {
+  const mutationDelete = useMutation((id) => {
     return fetch(`http://localhost:3000/salon/delete/${id}`, {
       method: "DELETE",
     });
   });
 
-  const queryClient = useQueryClient();
   useEffect(() => {
-    if (mutation.isSuccess) {
+    if (mutationDelete.isSuccess) {
       queryClient.invalidateQueries("salon");
     }
-  }, [mutation.isSuccess]);
+  }, [mutationDelete.isSuccess]);
 
   function deleteSalon() {
+    mutationDelete.mutate(id);
+  }
+
+  useEffect(() => {
+    if (nbPerson === nbMaxUser) {
+      setIsDisabled(true);
+    } else {
+      setIsDisabled(false);
+    }
+  }, [nbPerson, nbMaxUser]);
+
+  useEffect(() => {
+    if (userInSalon) {
+      setIsInSalon(true);
+    }
+  }, [userInSalon]);
+
+  useEffect(() => {
+    if (mutation.isSuccess || mutationQuit.isSuccess) {
+      queryClient.invalidateQueries("salon");
+    }
+  }, [mutation.isSuccess, mutationQuit.isSuccess]);
+
+  function submitHandler() {
     mutation.mutate(id);
+  }
+
+  function submitHandlerQuit() {
+    mutationQuit.mutate(id);
   }
 
   return (
     <Card css={{ w: "100%", h: "220px" }}>
       <Card.Header css={{ position: "absolute", zIndex: 1, top: 5 }}>
         <Col>
-          <Row justify="end">
+          <Row justify="space-around">
+            {visibleButton && (
+              <Button
+                flat
+                auto
+                rounded
+                color="primary"
+                icon={<User />}
+                onClick={handlerModalUser}
+              />
+            )}
+
+            <ModalSalonUsers
+              key={id}
+              id={id}
+              visible={visibleModalUser}
+              closeHandler={closeHandlerModalUser}
+            />
+
             <Button
               flat
               auto
@@ -51,9 +149,10 @@ const CardAdvisor = (props) => {
               visible={visible}
               closeHandler={closeHandler}
               name={name}
-              maxPerson={maxPerson}
+              nbPerson={nbPerson}
+              nbMaxUser={nbMaxUser}
             />
-            <Spacer x={0.5} />
+
             <Button
               flat
               auto
@@ -70,7 +169,7 @@ const CardAdvisor = (props) => {
           </Row>
           <Row justify="center">
             <Text>
-              {nbPerson ? nbPerson : 0} / {maxPerson} people
+              {nbPerson} / {nbMaxUser} people
             </Text>
           </Row>
         </Col>
@@ -90,16 +189,52 @@ const CardAdvisor = (props) => {
           <Col>
             <Spacer y={0.5} />
             <Row justify="center">
-              <Button flat auto rounded color="secondary">
-                <Text
-                  css={{ color: "inherit" }}
-                  size={12}
-                  weight="bold"
-                  transform="uppercase"
+              {isDisabled && !isInSalon ? (
+                <Button flat auto rounded color="error">
+                  <Text
+                    css={{ color: "inherit" }}
+                    size={12}
+                    weight="bold"
+                    transform="uppercase"
+                  >
+                    Full
+                  </Text>
+                </Button>
+              ) : !isInSalon ? (
+                <Button
+                  flat
+                  auto
+                  rounded
+                  color="secondary"
+                  onPress={submitHandler}
                 >
-                  Join the salon
-                </Text>
-              </Button>
+                  <Text
+                    css={{ color: "inherit" }}
+                    size={12}
+                    weight="bold"
+                    transform="uppercase"
+                  >
+                    Join the salon
+                  </Text>
+                </Button>
+              ) : (
+                <Button
+                  flat
+                  auto
+                  rounded
+                  color="error"
+                  onPress={submitHandlerQuit}
+                >
+                  <Text
+                    css={{ color: "inherit" }}
+                    size={12}
+                    weight="bold"
+                    transform="uppercase"
+                  >
+                    Quit salon
+                  </Text>
+                </Button>
+              )}
             </Row>
             <Spacer y={0.5} />
           </Col>

@@ -1,10 +1,10 @@
-import { Grid, Spacer, Modal, Button } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import CardSalon from "../../../components/Card/card_admin_salon";
 import { useQuery } from "@tanstack/react-query";
 
-import ModalSalonAdd from "../../../components/Modal/modal_salon_add";
+import { Grid, Spacer, Modal, Button } from "@nextui-org/react";
 import { Row } from "antd";
+import CardSalon from "../../../components/Card/card_admin_salon";
+import ModalSalonAdd from "../../../components/Modal/modal_salon_add";
 
 const Communication = () => {
   const [visible, setVisible] = useState(false);
@@ -20,6 +20,9 @@ const Communication = () => {
     return response.json();
   });
   const result = data?.salon;
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user?.user.id;
 
   return (
     <div className="main">
@@ -45,9 +48,11 @@ const Communication = () => {
               <CardSalon
                 key={salon?.id}
                 id={salon?.id}
+                userId={userId}
                 name={salon?.name}
-                nbPerson={salon?.nbPerson}
-                maxPerson={salon?.nbMaxUser}
+                nbPerson={salon?.nbUser}
+                nbMaxUser={salon?.nbMaxUser}
+                users={salon?.users}
               />
             </Grid>
           ))}
