@@ -1,4 +1,19 @@
+import { useEffect } from "react";
+
 const Home = () => {
+  console.log("pouet");
+
+  useEffect(() => {
+    const eventSource = new EventSource("http://localhost:3000/notification");
+
+    eventSource.onmessage = (event) => {
+      console.log(event.data);
+      // Affichez la notification à l'utilisateur
+    };
+
+    return () => eventSource.close();
+  }, []);
+
   return (
     <div className="main">
       <section className="bg-white dark:bg-gray-900">
