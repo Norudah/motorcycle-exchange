@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { io } from "socket.io-client";
 
-import { Card, Col, Row, Button, Text } from "@nextui-org/react";
+import {
+  Card,
+  Col,
+  Row,
+  Button,
+  Text,
+  Loading,
+  Spacer,
+} from "@nextui-org/react";
 
 const CardAdvisor = (props) => {
   const { nbAdvisorOnline } = props;
@@ -14,6 +22,33 @@ const CardAdvisor = (props) => {
 
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const userId = JSON.parse(localStorage.getItem("user")).user.id ?? null;
+
+  //fetch request only by me
+  const { data: pendingRequest } = useQuery(
+    ["pendingRequest"],
+    fetchPendingResquest,
+    {
+      onSuccess: (data) => {
+        if (data.communication.length > 0) {
+          setIsPending(true);
+        }
+      },
+    }
+  );
+
+  async function fetchPendingResquest() {
+    const response = await fetch(
+      `http://localhost:3000/communication/request/${userId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.json();
+  }
 
   const mutation = useMutation(createCommunicationRequest, {
     onSuccess: () => {
@@ -29,14 +64,13 @@ const CardAdvisor = (props) => {
 
   async function createCommunicationRequest() {
     const res = await fetch(
-      `http://localhost:3000/communication/request/create}`,
+      `http://localhost:3000/communication/request/create/${userId}`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ id: userId }),
       }
     );
   }
@@ -75,17 +109,10 @@ const CardAdvisor = (props) => {
           zIndex: 1,
         }}
       >
-        {/* {isPending ? (
-                  <Row justify="center">
-                    <Loading size="sm" />
-                    <Spacer x={0.5} />
-                    <Text>Waiting response</Text>
-                  </Row>
-                ) : ( */}
         <Row>
           <Col>
             <Row justify="center">
-              {canCreateRequest ? (
+              {canCreateRequest && !isPending ? (
                 <Button
                   flat
                   auto
@@ -101,6 +128,21 @@ const CardAdvisor = (props) => {
                   >
                     Create a request
                   </Text>
+                </Button>
+              ) : isPending ? (
+                <Button
+                  flat
+                  auto
+                  rounded
+                  disabled
+                  color="secondary"
+                  onClick={handleCreateCommunicationResquest}
+                >
+                  <Row justify="center">
+                    <Loading size="sm" />
+                    <Spacer x={0.5} />
+                    <Text>In validation by advisor</Text>
+                  </Row>
                 </Button>
               ) : (
                 <Button

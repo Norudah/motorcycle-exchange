@@ -57,12 +57,13 @@ router.get("/advisor/:id", async (req, res) => {
   }
 });
 
-router.post("/request/create", async (req, res) => {
+router.post("/request/create/:id", async (req, res) => {
   try {
+    const id = parseInt(req.params.id);
     const communication = await prisma.CommunicationRequest.create({
       data: {
         status: "PENDING",
-        userId: req.body.userId,
+        userId: id,
       },
     });
     res.json({ communication });
@@ -72,12 +73,27 @@ router.post("/request/create", async (req, res) => {
   }
 });
 
-//get pending request
 router.get("/pending-request", async (req, res) => {
   try {
     const communication = await prisma.CommunicationRequest.findMany({
       where: {
         status: "PENDING",
+      },
+    });
+    res.json({ communication });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error getting communication");
+  }
+});
+
+//get request by userId
+router.get("/request/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const communication = await prisma.CommunicationRequest.findMany({
+      where: {
+        userId: id,
       },
     });
     res.json({ communication });

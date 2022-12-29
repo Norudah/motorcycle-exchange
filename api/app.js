@@ -100,6 +100,10 @@ userNamespace.on("connection", (socket) => {
     userNamespace.emit("send-message", message, room, user);
     console.log("send-message", message, room, user);
   });
+
+  socket.on("create-communication-request", (userId) => {
+    adminNamespace.emit("create-communication-request", userId);
+  });
 });
 
 //

@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { io } from "socket.io-client";
 
 import { Grid, Spacer, Switch, Text, Row } from "@nextui-org/react";
@@ -26,6 +31,8 @@ const Communication = () => {
   ];
 
   const [isAvailable, setIsAvailable] = useState();
+  const [pendingRequests, setPendingRequest] = useState();
+  const queryClient = useQueryClient();
 
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const user = JSON.parse(localStorage.getItem("user"));
@@ -51,15 +58,11 @@ const Communication = () => {
   }
 
   //fetch request
-  const { data: pendingRequest } = useQuery(
-    ["pendingRequest"],
-    fetchPendingResquest,
-    {
-      onSuccess: (data) => {
-        console.log(data);
-      },
-    }
-  );
+  const { data: request } = useQuery(["pendingRequest"], fetchPendingResquest, {
+    onSuccess: (data) => {
+      setPendingRequest(data.communication);
+    },
+  });
 
   async function fetchPendingResquest() {
     const response = await fetch(
@@ -106,6 +109,10 @@ const Communication = () => {
       },
     });
     socket.emit("admin-update-availability", userId);
+
+    socket.on("create-communication-request", (userId) => {
+      queryClient.invalidateQueries(["pendingRequest"]);
+    });
   }, [isAvailable]);
 
   const handleSwitch = () => {
@@ -136,12 +143,12 @@ const Communication = () => {
       <Spacer y={1} />
 
       <Grid.Container gap={2} justify="center">
-        {advisor.map((advisor) => (
+        {pendingRequests?.map((advisor) => (
           <Grid xs={4} sm={3} key={advisor.id}>
             <CardAdminAdvisor
               id={advisor.id}
-              firstname={advisor.firstname}
-              lastname={advisor.lastname}
+              userId={advisor.userId}
+              status={advisor.status}
             />
           </Grid>
         ))}
