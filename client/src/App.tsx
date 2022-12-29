@@ -5,8 +5,8 @@ import { NextUIProvider } from "@nextui-org/react";
 import "./App.css";
 import CustomNavbar from "./components/Navbar/navbar";
 
-import AdminCommunication from "./routes/Admin/Communication/communication";
-import AdminSalon from "./routes/Admin/Salon/salon";
+import AdminCommunication from "./routes/admin/communication/communication";
+import AdminSalon from "./routes/admin/salon/salon";
 import Chat from "./routes/Chat/chat";
 import Communication from "./routes/Communication/communication";
 import Home from "./routes/Home/home";
