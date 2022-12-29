@@ -50,6 +50,30 @@ const Communication = () => {
     return response.json();
   }
 
+  //fetch request
+  const { data: pendingRequest } = useQuery(
+    ["pendingRequest"],
+    fetchPendingResquest,
+    {
+      onSuccess: (data) => {
+        console.log(data);
+      },
+    }
+  );
+
+  async function fetchPendingResquest() {
+    const response = await fetch(
+      `http://localhost:3000/communication/pending-request`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.json();
+  }
+
   const mutation = useMutation(updateAvailability, {
     onSuccess: (data) => {
       setIsAvailable(data.user.availability);
