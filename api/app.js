@@ -11,6 +11,7 @@ import { Server } from "socket.io";
 import SalonRouter from "./routes/Salon.js";
 import SecurityRouter from "./routes/Security.js";
 
+import { checkIsAuthenticated } from "./middlewares/checkIsAuthenticated.js";
 import { checkToken } from "./utils/jwt.js";
 
 dotenv.config();
@@ -21,11 +22,7 @@ const port = process.env.API_PORT || 3000;
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: [
-      "https://admin.socket.io",
-      "http://localhost:5173",
-      "http://localhost:3000",
-    ],
+    origin: ["https://admin.socket.io", "http://localhost:5173", "http://localhost:3000"],
     credentials: true,
   },
 });
@@ -165,4 +162,4 @@ app.get("/", (req, res) => {
 });
 
 app.use(SecurityRouter);
-app.use(SalonRouter);
+app.use("/salon", checkIsAuthenticated, SalonRouter);

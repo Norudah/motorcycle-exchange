@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
+import { Button, Input, Modal, Text } from "@nextui-org/react";
 
 const ModalSalon = (props) => {
-  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const { id, visible, closeHandler, name, maxPerson } = props;
 
   const [salonName, setSalonName] = useState("");
   const [salonMaxPerson, setSalonMaxPerson] = useState("");
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user.token;
 
   const queryClient = useQueryClient();
 
@@ -31,6 +33,7 @@ const ModalSalon = (props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify({
         name: salonName,
@@ -56,12 +59,7 @@ const ModalSalon = (props) => {
   }
 
   return (
-    <Modal
-      closeButton
-      aria-labelledby="modal-title"
-      open={visible}
-      onClose={closeHandler}
-    >
+    <Modal closeButton aria-labelledby="modal-title" open={visible} onClose={closeHandler}>
       <Modal.Header>
         <Text id="modal-title" size={18}>
           <Text b size={18}>
@@ -70,21 +68,8 @@ const ModalSalon = (props) => {
         </Text>
       </Modal.Header>
       <Modal.Body>
-        <Input
-          autoFocus
-          label="Salon Name"
-          value={name}
-          bordered
-          clearable
-          onChange={(e) => setSalonName(e.target.value)}
-        />
-        <Input
-          label="Max person per salon"
-          value={maxPerson}
-          bordered
-          clearable
-          onChange={(e) => setSalonMaxPerson(e.target.value)}
-        />
+        <Input autoFocus label="Salon Name" value={name} bordered clearable onChange={(e) => setSalonName(e.target.value)} />
+        <Input label="Max person per salon" value={maxPerson} bordered clearable onChange={(e) => setSalonMaxPerson(e.target.value)} />
       </Modal.Body>
       <Modal.Footer>
         <Button auto onPress={submitHandler}>

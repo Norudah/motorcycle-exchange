@@ -1,17 +1,19 @@
-import { useEffect, useState } from "react";
+import { Button, Grid, Spacer } from "@nextui-org/react";
 import { useQuery } from "@tanstack/react-query";
-import { io } from "socket.io-client";
-
-import { Grid, Spacer, Modal, Button } from "@nextui-org/react";
 import { Row } from "antd";
+import { useState } from "react";
 import CardSalon from "../../../components/Card/card_admin_salon";
 import ModalSalonAdd from "../../../components/Modal/modal_salon_add";
 
 const Communication = () => {
   const [result, setResult] = useState([]);
   const [visible, setVisible] = useState(false);
+
   const handler = () => setVisible(true);
-  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user.token;
+  const userId = user?.user.id;
 
   const closeHandler = () => {
     setVisible(false);
@@ -19,16 +21,19 @@ const Communication = () => {
 
   // Fetch Salon data from API
   const { data, refetch } = useQuery(["salon"], async () => {
-    const response = await fetch("http://localhost:3000/salon");
+    const response = await fetch("http://localhost:3000/salon", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
     return response.json();
   });
 
   useEffect(() => {
     setResult(data?.salon);
   }, [data]);
-
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userId = user?.user.id;
 
   return (
     <div className="main">
@@ -40,11 +45,7 @@ const Communication = () => {
           Add a new chat room
         </Button>
       </Row>
-      <ModalSalonAdd
-        visible={visible}
-        closeHandler={closeHandler}
-        refetch={refetch()}
-      />
+      <ModalSalonAdd visible={visible} closeHandler={closeHandler} refetch={refetch()} />
       <Spacer y={1} />
 
       {result?.length > 0 ? (

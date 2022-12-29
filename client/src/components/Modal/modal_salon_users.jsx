@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
+import { Button, Modal, Table, Text } from "@nextui-org/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { TrashSimple } from "phosphor-react";
+import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-import { Modal, Button, Text, Table } from "@nextui-org/react";
-import { TrashSimple } from "phosphor-react";
-
 const ModalSalon = (props) => {
-  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const { id, visible, closeHandler } = props;
 
   const [result, setResult] = useState([]);
   const queryClient = useQueryClient();
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user.token;
 
   useEffect(() => {
     getSalonUsers();
@@ -21,6 +22,7 @@ const ModalSalon = (props) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
     });
     const data = await res.json();
@@ -47,6 +49,7 @@ const ModalSalon = (props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify({
         userId: userId,
@@ -61,13 +64,7 @@ const ModalSalon = (props) => {
   }
 
   return (
-    <Modal
-      closeButton
-      aria-labelledby="modal-title"
-      open={visible}
-      onClose={closeHandler}
-      width="700px"
-    >
+    <Modal closeButton aria-labelledby="modal-title" open={visible} onClose={closeHandler} width="700px">
       <Modal.Header>
         <Text id="modal-title" size={18}>
           <Text b size={18}>
@@ -81,8 +78,7 @@ const ModalSalon = (props) => {
           css={{
             height: "auto",
             minWidth: "100%",
-          }}
-        >
+          }}>
           <Table.Header>
             <Table.Column>NAME</Table.Column>
             <Table.Column>ROLE</Table.Column>
@@ -98,14 +94,7 @@ const ModalSalon = (props) => {
                   <Table.Cell>{result?.role}</Table.Cell>
                   <Table.Cell>
                     {result?.role === "USER" && (
-                      <Button
-                        flat
-                        auto
-                        rounded
-                        color="error"
-                        icon={<TrashSimple />}
-                        onPress={() => handleDeleteUser(result?.id)}
-                      />
+                      <Button flat auto rounded color="error" icon={<TrashSimple />} onPress={() => handleDeleteUser(result?.id)} />
                     )}
                   </Table.Cell>
                 </Table.Row>
