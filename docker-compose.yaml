@@ -25,6 +25,8 @@ services:
       - ./api:/app
     command: sh -c "npm install && npm run dev"
 
+  # UNCOMMENT HERE to run the client with docker
+
   # client:
   #   build: ./client
   #   ports:
