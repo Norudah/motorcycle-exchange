@@ -67,6 +67,9 @@ const CustomNavbar = () => {
           <Navbar.Link isActive={location.pathname === "/chats"}>
             <NavLink to="/chats">Chat</NavLink>
           </Navbar.Link>
+          <Navbar.Link isActive={location.pathname === "/admin/notification"}>
+            <NavLink to="/admin/notification">Notification</NavLink>
+          </Navbar.Link>
         </Navbar.Content>
       )}
 
@@ -83,15 +86,7 @@ const CustomNavbar = () => {
         </Navbar.Content>
       ) : (
         <Navbar.Content>
-          {isAdmin && (
-            <Switch
-              color="error"
-              size="xl"
-              iconOn={<BellSlash />}
-              iconOff={<Bell />}
-              checked={!isActive}
-            />
-          )}
+          {isAdmin && <Switch color="error" size="xl" iconOn={<BellSlash />} iconOff={<Bell />} checked={!isActive} />}
 
           {isAdmin ? (
             <Navbar.Item>

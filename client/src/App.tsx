@@ -6,6 +6,7 @@ import "./App.css";
 import CustomNavbar from "./components/Navbar/navbar";
 
 import AdminCommunication from "./routes/admin/communication/communication";
+import AdminNotification from "./routes/admin/notification/notification";
 import AdminSalon from "./routes/admin/salon/salon";
 import Chat from "./routes/Chat/chat";
 import Communication from "./routes/Communication/communication";
@@ -52,6 +53,7 @@ function App() {
 
           <Route path="/admin/communication" element={<AdminCommunication />} />
           <Route path="/admin/salon" element={<AdminSalon />} />
+          <Route path="/admin/notification" element={<AdminNotification />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </NextUIProvider>
