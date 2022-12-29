@@ -9,8 +9,11 @@ const Home = () => {
 
   const [responseButton, setResponseButton] = useState([]);
 
+  const [historics, sethistorics] = useState([]);
+
   const [botResume, setBotResume] = useState([
     {
+      userId : null,
       step : null,
       lastMessageUser : null,
     },
@@ -23,18 +26,19 @@ const Home = () => {
       },
     });
 
-    socket.on("welcome-bot", (userId, message, response) => {
-      if(userId === user.id)
+    socket.on("welcome-bot", (botResume, message, response) => {
+      if(botResume.userId === user.id)
       {
-        console.log("welcome-bot", userId, message, response );
+        sethistorics(historics.concat(message));
         setResponseButton(Object.entries(response));
       }
     });
 
-    socket.on("bot-contact", (userId, message, step, response) => {
-      if(userId === user.id)
+    socket.on("bot-contact", (botResume, message, step, response) => {
+      if(botResume.userId === user.id)
       {
-        console.log("bot-contact", userId, message, step, response);
+        historics.concat(message);
+        console.log("historics", historics);
         setResponseButton(responseButton.concat(Object.entries(response)));
       }
     });
@@ -47,7 +51,14 @@ const Home = () => {
       },
     });
 
-    socket.emit("join-room-bot", (user.id));
+
+    setBotResume({
+      userId : user.id,
+      step : null,
+      lastMessageUser : null,
+    });
+
+    socket.emit("join-room-bot", botResume);
   };
 
   const sendResponse = (step, message) => {
@@ -78,7 +89,7 @@ const Home = () => {
     console.log(botResume);
 
     if(botResume.step != null && botResume.lastMessageUser != null)
-      socket.emit("send-message-bot", user.id, botResume);
+      socket.emit("send-message-bot", botResume);
   };
 
 
@@ -95,6 +106,13 @@ const Home = () => {
       </section>
       <section className="bg-white dark:bg-gray-900">
         <button className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded" onClick={handleClick}>connect to bot</button>
+        {
+          historics.map((item, index) => {
+            return (
+              <h3 key={index}>{item}</h3>
+            )
+          })
+        }
         {
           responseButton.map((item, index) => {
             return (
