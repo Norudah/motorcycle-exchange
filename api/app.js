@@ -130,6 +130,10 @@ adminNamespace.on("connection", (socket) => {
   socket.on("leave-room", (room) => {
     userNamespace.emit("join-room", room);
   });
+
+  socket.on("advisor-available-change", (user, isAvailable) => {
+    userNamespace.emit("advisor-available-change", user, isAvailable);
+  });
 });
 
 httpServer.listen(port, () => {

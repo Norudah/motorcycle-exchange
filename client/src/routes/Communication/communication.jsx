@@ -71,6 +71,10 @@ const Communication = () => {
             )
           )
         )}
+
+        {result?.length === 0 && (
+          <h4>There is no advisor online at the moment</h4>
+        )}
       </Grid.Container>
 
       <Spacer y={3} />

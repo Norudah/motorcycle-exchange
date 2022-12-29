@@ -19,8 +19,7 @@ model User {
   firstName            String?
   lastName             String?
   role                 Role                   @default(USER)
-  socketId             String?
-  availability         String?                @default("false")
+  availability         Boolean                @default(false)
   password             String
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt

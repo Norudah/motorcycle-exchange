@@ -82,16 +82,6 @@ const CustomNavbar = () => {
         </Navbar.Content>
       ) : (
         <Navbar.Content>
-          {isAdmin && (
-            <Switch
-              color="error"
-              size="xl"
-              iconOn={<BellSlash />}
-              iconOff={<Bell />}
-              checked={!isActive}
-            />
-          )}
-
           {isAdmin ? (
             <Navbar.Item>
               <Badge color="success" variant="flat">
