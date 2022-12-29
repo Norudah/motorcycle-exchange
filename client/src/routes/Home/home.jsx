@@ -16,6 +16,7 @@ const Home = () => {
       userId : null,
       step : null,
       lastMessageUser : null,
+      modifStep : null,
     },
   ]);
 
@@ -39,7 +40,6 @@ const Home = () => {
       {
       console.log("send-bot-message", botResume, message, response);
         historics.concat(message);
-        console.log("historics", historics);
         setResponseButton(responseButton.concat(Object.entries(response)));
       }
     });
@@ -69,7 +69,7 @@ const Home = () => {
       },
     });
 
-    if(botResume.step == null)
+    if(botResume.modifStep = 1)
     {
       console.log("in if");
       setBotResume({

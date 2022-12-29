@@ -128,6 +128,7 @@ userNamespace.on("connection", (socket) => {
       case '3':
         if(botResume.lastMessageUser === "par mail") {
           userNamespace.emit("send-bot-message", botResume, 4, "contact@motorcycle-exchange.com");
+          botResume.modifStep = 1;
           userNamespace.emit("send-bot-message", botResume, "Bonjour, comment puis-je vous aider ?", {
             1 : "Vérifier l'entretien de mon véhicule",
             2 : "Informations sur les véhicules",
@@ -136,6 +137,7 @@ userNamespace.on("connection", (socket) => {
           });
         } else if (botResume.lastMessageUser === "par téléphone") {
           userNamespace.emit("send-bot-message", botResume, 5, "01 23 45 67 89");
+          botResume.modifStep = 1;
           userNamespace.emit("send-bot-message", botResume, "Bonjour, comment puis-je vous aider ?", {
             1 : "Vérifier l'entretien de mon véhicule",
             2 : "Informations sur les véhicules",
@@ -153,6 +155,7 @@ userNamespace.on("connection", (socket) => {
         userNamespace.emit("disconnect-bot", botResume, "Merci, j'espère avoir été utile");
         break;
       default:
+        botResume.modifStep = 1;
         userNamespace.emit("welcome-bot", botResume, "Bonjour, comment puis-je vous aider ?", {
           1 : "Vérifier l'entretien de mon véhicule",
           2 : "Informations sur les véhicules",
