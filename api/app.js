@@ -107,10 +107,11 @@ userNamespace.on("connection", (socket) => {
     });
   });
 
-  socket.on("send-message-bot", (botResume) => { 
+  socket.on("response-message-bot", (botResume) => { 
+    console.log("response-message-bot", botResume);
     switch (botResume.step) {
       case '1':
-        userNamespace.emit("welcome-bot", botResume, "Veuillez nous indiquer votre immatriculation", {
+        userNamespace.emit("send-bot-message", botResume, "Veuillez nous indiquer votre immatriculation", {
           1 : "AB-123-CD",
           2 : "AB-456-CD",
           3 : "AB-789-CD",
@@ -118,7 +119,7 @@ userNamespace.on("connection", (socket) => {
         });
         break;
       case '2':
-        userNamespace.emit("welcome-bot", botResume, "Votre véhicule est en bon état", {
+        userNamespace.emit("send-bot-message", botResume, "Votre véhicule est en bon état", {
           1 : "Merci",
           2 : "Informations de contact",
           3 : "Merci et au revoir"
@@ -126,23 +127,23 @@ userNamespace.on("connection", (socket) => {
         break;
       case '3':
         if(botResume.lastMessageUser === "par mail") {
-          userNamespace.emit("bot-contact", botResume, 4, "contact@motorcycle-exchange.com");
-          userNamespace.emit("welcome-bot", botResume, "Bonjour, comment puis-je vous aider ?", {
+          userNamespace.emit("send-bot-message", botResume, 4, "contact@motorcycle-exchange.com");
+          userNamespace.emit("send-bot-message", botResume, "Bonjour, comment puis-je vous aider ?", {
             1 : "Vérifier l'entretien de mon véhicule",
             2 : "Informations sur les véhicules",
             3 : "Informations de contact",
             4 : "Merci et au revoir"
           });
         } else if (botResume.lastMessageUser === "par téléphone") {
-          userNamespace.emit("bot-contact", botResume, 5, "01 23 45 67 89");
-          userNamespace.emit("welcome-bot", botResume, "Bonjour, comment puis-je vous aider ?", {
+          userNamespace.emit("send-bot-message", botResume, 5, "01 23 45 67 89");
+          userNamespace.emit("send-bot-message", botResume, "Bonjour, comment puis-je vous aider ?", {
             1 : "Vérifier l'entretien de mon véhicule",
             2 : "Informations sur les véhicules",
             3 : "Informations de contact",
             4 : "Merci et au revoir"
           });
         } else {
-          userNamespace.emit("bot-contact", botResume, 3, "Souhaitez-vous nous contacter par mail ou téléphone ?", {
+          userNamespace.emit("send-bot-message", botResume, "Souhaitez-vous nous contacter par mail ou téléphone ?", {
             1 : "par mail",
             2 : "par téléphone"
           });

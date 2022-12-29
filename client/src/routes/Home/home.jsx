@@ -34,9 +34,10 @@ const Home = () => {
       }
     });
 
-    socket.on("bot-contact", (botResume, message, step, response) => {
+    socket.on("send-bot-message", (botResume, message, response) => {
       if(botResume.userId === user.id)
       {
+      console.log("send-bot-message", botResume, message, response);
         historics.concat(message);
         console.log("historics", historics);
         setResponseButton(responseButton.concat(Object.entries(response)));
@@ -72,6 +73,7 @@ const Home = () => {
     {
       console.log("in if");
       setBotResume({
+        userId : user.id,
         step : step,
         lastMessageUser : message,
       });
@@ -81,6 +83,7 @@ const Home = () => {
     {
       console.log("in else");
       setBotResume({
+        userId : user.id,
         step : botResume.step,
         lastMessageUser : message,
       });
@@ -89,7 +92,7 @@ const Home = () => {
     console.log(botResume);
 
     if(botResume.step != null && botResume.lastMessageUser != null)
-      socket.emit("send-message-bot", botResume);
+      socket.emit("response-message-bot", botResume);
   };
 
 
