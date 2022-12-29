@@ -10,6 +10,8 @@
 
 1. Create _.env_ files base on _.env.example_ inside the /client and /api folders and complete them.
 
+<br>
+
 2. Then, you have too choose between the 2 options below :
    <br>
    - **Option 1** (recommanded) : Run backend with docker and client locally
@@ -50,6 +52,30 @@ make start
 ```
 
 3.  Go to http://localhost:5173
+
+You can connect to the client with the follogins accounts :
+
+**Users** :
+email : user1@test.com / user2@test.com
+password : azerty
+features :
+
+- [x] Join a chatRooom
+- [ ] Request a concelor to discuss with him
+- [x] Send messages inside chatRooms
+- [ ] Send private messages to a concelor
+- [ ] Discuss with the chatbot
+
+---
+
+**Admin** :
+email : admin@test.com
+password : azerty
+features :
+
+- [x] All the user features
+- [x] Manage chatrooms
+- [ ] Accept / Refuse requests from users
 
 ## Usefull commands :
 

@@ -1,7 +1,7 @@
 import { Button, Grid, Spacer } from "@nextui-org/react";
 import { useQuery } from "@tanstack/react-query";
 import { Row } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CardSalon from "../../../components/Card/card_admin_salon";
 import ModalSalonAdd from "../../../components/Modal/modal_salon_add";
 

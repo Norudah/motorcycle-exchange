@@ -59,15 +59,15 @@ async function main() {
     update: {},
     create: {
       email: adminEmail,
-      firstName: "Jean",
-      lastName: "Didier",
+      firstName: "AdminDu",
+      lastName: "91",
       role: ROLE.ADMIN,
       password: encryptedPassword,
     },
   });
 
   const chatRoom2 = await prisma.ChatRoom.upsert({
-    where: { id: 2 },
+    where: { name: chatRoomGroup },
     update: {},
     create: {
       name: chatRoomGroup,
