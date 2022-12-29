@@ -10,18 +10,26 @@ down:
 buildAPI:
 	docker compose build --pull --no-cache
 
-buildClient:
+build:
+	docker compose build --pull --no-cache
+
+buildAndRunClient:
 	cd client/ && npm i && npm run dev
 
 startClient:
 	cd client/ && npm run dev
 
-init: 
+migrate:
 	docker compose exec api npx prisma migrate dev
+
+init: migrate seed
 
 turbostart: start startClient
 
-turboinstall: buildAPI start init buildClient
+turboinstall: buildAPI start init buildAndRunClient
 
 reset:
 	docker compose exec api npx prisma migrate reset
+
+seed:
+	docker compose exec api npx prisma db seed
