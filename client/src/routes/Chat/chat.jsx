@@ -6,6 +6,7 @@ import { io } from "socket.io-client";
 import { Col, Grid } from "@nextui-org/react";
 import { Chats } from "phosphor-react";
 import ListPeople from "../../components/List/listPeople";
+import CardChatBot from "../../components/List/cardChatBot";
 import ChatBox from "../../components/Messages/chatBox";
 import ListSalon from "../../components/List/listSalon";
 
@@ -92,6 +93,10 @@ const Chat = () => {
                 lastname={person.lastname}
               />
             ))}
+            <CardChatBot 
+              id="bot"
+              firstname="chatBot"
+            />
           </Col>
         </Grid>
         <Grid xs={9}>

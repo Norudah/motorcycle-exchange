@@ -97,6 +97,13 @@ userNamespace.on("connection", (socket) => {
     userNamespace.emit("send-message", message, room, user);
     console.log("send-message", message, room, user);
   });
+
+  socket.on("bot", () => {
+    userNamespace.emit('welcome message', 'Welcome to the chat!');
+    userNamespace.emit('predefined response', 'Response 1');
+    userNamespace.emit('predefined response', 'Response 2');
+    userNamespace.emit('predefined response', 'Response 3');
+  }
 });
 
 adminNamespace.on("connection", (socket) => {
