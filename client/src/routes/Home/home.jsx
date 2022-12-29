@@ -1,48 +1,86 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+
+import { Button } from "@nextui-org/react";
 
 const Home = () => {
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
+  const user = JSON.parse(localStorage.getItem("user")).user ?? null;
 
-  // useEffect(() => {
-  //   const socket = io("http://localhost:3000/user", {
-  //     auth: {
-  //       token,
-  //     },
-  //   });
+  const [responseButton, setResponseButton] = useState([]);
 
-  //   socket.on("connection", () => {
-  //     console.log("User connected with socketId: ", socket.id);
-  //   });
-
-  //   socket.on("disconnect", () => {
-  //     console.log("User disconnected");
-  //   });
-
-  //   return () => {
-  //     socket.off("connection");
-  //   };
-  // }, []);
+  const [botResume, setBotResume] = useState([
+    {
+      step : null,
+      lastMessageUser : null,
+    },
+  ]);
 
   useEffect(() => {
-    const socket = io("http://localhost:3000/admin", {
+    const socket = io("http://localhost:3000/user", {
       auth: {
         token,
       },
     });
 
-    socket.on("connection", () => {
-      console.log("User connected with socketId: ", socket.id);
+    socket.on("welcome-bot", (userId, message, response) => {
+      if(userId === user.id)
+      {
+        console.log("welcome-bot", userId, message, response );
+        setResponseButton(Object.entries(response));
+      }
     });
 
-    socket.on("disconnect", () => {
-      console.log("User disconnected");
+    socket.on("bot-contact", (userId, message, step, response) => {
+      if(userId === user.id)
+      {
+        console.log("bot-contact", userId, message, step, response);
+        setResponseButton(responseButton.concat(Object.entries(response)));
+      }
     });
-
-    return () => {
-      socket.off("connection");
-    };
   }, []);
+
+  const handleClick = () => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token,
+      },
+    });
+
+    socket.emit("join-room-bot", (user.id));
+  };
+
+  const sendResponse = (step, message) => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token,
+      },
+    });
+
+    if(botResume.step == null)
+    {
+      console.log("in if");
+      setBotResume({
+        step : step,
+        lastMessageUser : message,
+      });
+      console.log('after populate', botResume.step, step);
+    }
+    else
+    {
+      console.log("in else");
+      setBotResume({
+        step : botResume.step,
+        lastMessageUser : message,
+      });
+    }
+
+    console.log(botResume);
+
+    if(botResume.step != null && botResume.lastMessageUser != null)
+      socket.emit("send-message-bot", user.id, botResume);
+  };
+
 
   return (
     <div className="main">
@@ -54,6 +92,16 @@ const Home = () => {
             <p className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">This is the home page. </p>
           </div>
         </div>
+      </section>
+      <section className="bg-white dark:bg-gray-900">
+        <button className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded" onClick={handleClick}>connect to bot</button>
+        {
+          responseButton.map((item, index) => {
+            return (
+              <Button key={index} onPress={() => sendResponse(item[0], item[1])}>{item[1]}</Button>
+            )
+          })
+        }
       </section>
     </div>
   );

@@ -53,6 +53,10 @@ const Chat = () => {
       },
     });
 
+    socket.on("bot", (data) => {
+      console.log(data);
+    });
+
     socket.on("delete-user", (idOfUser) => {
       console.table({
         idRecu: idOfUser,

@@ -98,12 +98,58 @@ userNamespace.on("connection", (socket) => {
     console.log("send-message", message, room, user);
   });
 
-  socket.on("bot", () => {
-    userNamespace.emit('welcome message', 'Welcome to the chat!');
-    userNamespace.emit('predefined response', 'Response 1');
-    userNamespace.emit('predefined response', 'Response 2');
-    userNamespace.emit('predefined response', 'Response 3');
-  }
+  socket.on("join-room-bot", (userId) => {
+    userNamespace.emit("welcome-bot", userId, "Bonjour, comment puis-je vous aider ?", {
+      1 : "Vérifier l'entretien de mon véhicule",
+      2 : "Informations sur les véhicules",
+      3 : "Informations de contact",
+      4 : "Merci et au revoir"
+    });
+  });
+
+  socket.on("send-message-bot", (userId, botResume) => { 
+    console.log("send-message-bot", botResume.step);
+    switch (botResume.step) {
+      case '1':
+        userNamespace.emit("welcome-bot", userId, "Veuillez nous indiquer votre immatriculation", {
+          1 : "AB-123-CD",
+          2 : "AB-456-CD",
+          3 : "AB-789-CD",
+          4 : "AB-012-CD"
+        });
+        break;
+      case '2':
+        userNamespace.emit("welcome-bot", userId, "Votre véhicule est en bon état", {
+          1 : "Merci",
+          2 : "Informations de contact",
+          3 : "Merci et au revoir"
+        });
+        break;
+      case '3':
+        if(botResume.lastMessageUser === "par mail") {
+          userNamespace.emit("bot-contact", userId, 4, "contact@motorcycle-exchange.com");
+        } else if (botResume.lastMessageUser === "par téléphone") {
+          userNamespace.emit("bot-contact", userId, 5, "01 23 45 67 89");
+        } else {
+          userNamespace.emit("bot-contact", userId, 3, "Souhaitez-vous nous contacter par mail ou téléphone ?", {
+            1 : "par mail",
+            2 : "par téléphone"
+          });
+        }
+        break;
+      case '4':
+        userNamespace.emit("disconnect-bot", userId, "Merci, j'espère avoir été utile");
+        break;
+      default:
+        userNamespace.emit("welcome-bot", userId, "Bonjour, comment puis-je vous aider ?", {
+          1 : "Vérifier l'entretien de mon véhicule",
+          2 : "Informations sur les véhicules",
+          3 : "Informations de contact",
+          4 : "Merci et au revoir"
+        });
+        break;
+    } 
+  });
 });
 
 adminNamespace.on("connection", (socket) => {
