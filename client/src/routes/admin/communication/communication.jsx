@@ -1,8 +1,9 @@
-import { Grid, Spacer, Switch, Text } from "@nextui-org/react";
-import { useMutation } from "@tanstack/react-query";
-import { Row } from "antd";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { io } from "socket.io-client";
+
+import { Grid, Spacer, Switch, Text, Row } from "@nextui-org/react";
 import { BellSlash, Bell } from "phosphor-react";
-import { useState } from "react";
 import CardAdminAdvisor from "../../../components/Card/card_admin_advisor";
 
 const Communication = () => {
@@ -24,14 +25,34 @@ const Communication = () => {
     },
   ];
 
+  const [isAvailable, setIsAvailable] = useState();
+
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.user?.id;
 
-  const [isActive, setIsActive] = useState(false);
+  const { data } = useQuery(["advisor"], fetchAdvisor, {
+    onSuccess: (data) => {
+      setIsAvailable(data.user.availability);
+    },
+  });
+
+  async function fetchAdvisor() {
+    const response = await fetch(
+      `http://localhost:3000/communication/advisor/${userId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.json();
+  }
 
   const mutation = useMutation(updateAvailability, {
     onSuccess: (data) => {
-      console.log(data);
+      setIsAvailable(data.user.availability);
     },
     onError: (error) => {
       console.log(error);
@@ -39,7 +60,6 @@ const Communication = () => {
   });
 
   async function updateAvailability() {
-    console.log(userId, !isActive);
     const res = await fetch(
       `http://localhost:3000/communication/available/advisor/${userId}`,
       {
@@ -48,15 +68,23 @@ const Communication = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          available: !isActive,
+          availability: !isAvailable,
         }),
       }
     );
     return res.json();
   }
 
+  useEffect(() => {
+    const socket = io("http://localhost:3000/admin", {
+      auth: {
+        token: token,
+      },
+    });
+    socket.emit("admin-update-availability", userId);
+  }, [isAvailable]);
+
   const handleSwitch = () => {
-    setIsActive(!isActive);
     mutation.mutate();
   };
 
@@ -68,7 +96,7 @@ const Communication = () => {
 
       <Spacer y={1} />
 
-      <Row>
+      <Row justify="center">
         <Text h3>Show me to User : </Text>
         <Spacer x={1} />
         <Switch
@@ -76,7 +104,7 @@ const Communication = () => {
           size="xl"
           iconOn={<BellSlash />}
           iconOff={<Bell />}
-          checked={!isActive}
+          checked={!isAvailable}
           onChange={handleSwitch}
         />
       </Row>

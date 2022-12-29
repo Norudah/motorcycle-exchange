@@ -134,6 +134,10 @@ adminNamespace.on("connection", (socket) => {
   socket.on("advisor-available-change", (user, isAvailable) => {
     userNamespace.emit("advisor-available-change", user, isAvailable);
   });
+
+  socket.on("admin-update-availability", (userId) => {
+    userNamespace.emit("admin-update-availability", userId);
+  });
 });
 
 httpServer.listen(port, () => {

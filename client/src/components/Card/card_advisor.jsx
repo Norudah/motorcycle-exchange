@@ -1,7 +1,27 @@
+import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
+
 import { Card, Col, Row, Button, Text } from "@nextui-org/react";
+import { useQueryClient } from "@tanstack/react-query";
 
 const CardAdvisor = (props) => {
   const { firstname, lastname, id } = props;
+
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token: token,
+      },
+    });
+    socket.on("admin-update-availability", (idAdmin) => {
+      if (idAdmin === id) {
+        queryClient.invalidateQueries("advisors");
+      }
+    });
+  }, []);
 
   return (
     <Card css={{ w: "100%", h: "150px" }}>

@@ -1,33 +1,11 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { io } from "socket.io-client";
 
 import { Grid, Spacer } from "@nextui-org/react";
 import CardAdvisor from "../../components/Card/card_advisor";
 
 const Communication = () => {
-  const advisor = [
-    {
-      id: 1,
-      firstname: "John",
-      lastname: "Doe",
-    },
-    {
-      id: 2,
-      firstname: "Jane",
-      lastname: "Doe",
-    },
-    {
-      id: 3,
-      firstname: "Jean",
-      lastname: "Didier",
-    },
-  ];
-
-  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const [result, setResult] = useState([]);
-
-  // Fetch Salon data from API
 
   async function fetchAdvisor() {
     const response = await fetch(
