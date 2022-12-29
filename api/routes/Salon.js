@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
+import { checkIsAdmin } from "../middlewares/checkIsAdmin.js";
 
 const router = new Router();
 const prisma = new PrismaClient();
@@ -20,7 +21,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/add", async (req, res) => {
+router.post("/add", checkIsAdmin, async (req, res) => {
   try {
     const { name, nbMaxUser } = req.body;
     const salon = await prisma.ChatRoom.create({
@@ -33,7 +34,7 @@ router.post("/add", async (req, res) => {
   }
 });
 
-router.delete("/delete/:id", async (req, res) => {
+router.delete("/delete/:id", checkIsAdmin, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const salon = await prisma.ChatRoom.delete({
@@ -47,7 +48,7 @@ router.delete("/delete/:id", async (req, res) => {
   }
 });
 
-router.put("/update/:id", async (req, res) => {
+router.put("/update/:id", checkIsAdmin, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const { name, nbMaxUser } = req.body;
@@ -146,7 +147,7 @@ router.get("/users/:id", async (req, res) => {
   }
 });
 
-router.post("/user/delete/:id", async (req, res) => {
+router.post("/user/delete/:id", checkIsAdmin, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const { userId } = req.body;
