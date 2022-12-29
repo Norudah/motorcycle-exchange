@@ -6,12 +6,7 @@ import { Grid, Spacer } from "@nextui-org/react";
 import CardSalon from "../../components/Card/card_salon";
 
 const Communication = () => {
-  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const [result, setResult] = useState([]);
-  const queryClient = useQueryClient();
-
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userId = user?.user.id;
 
   const user = JSON.parse(localStorage.getItem("user"));
   const token = user.token;
