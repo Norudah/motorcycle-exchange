@@ -24,12 +24,6 @@ const CardAdvisor = (props) => {
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const userId = JSON.parse(localStorage.getItem("user")).user.id ?? null;
 
-  console.table({
-    canCreateRequest: canCreateRequest,
-    ispending: isPending,
-    isAccepted: isAccepted,
-  });
-
   //fetch request only by me
   const { data: pendingRequest, refetch } = useQuery(
     ["pendingRequest"],
@@ -149,28 +143,6 @@ const CardAdvisor = (props) => {
         }}
       >
         <Row>
-          {/* <Row justify="center">
-                    <Loading size="sm" />
-                    <Spacer x={0.5} />
-                    <Text>In validation by advisor</Text>
-                  </Row> */}
-
-          {/* <Button
-                  flat
-                  auto
-                  rounded
-                  color="secondary"
-                  onClick={handleCreateCommunicationResquest}
-                >
-                  <Text
-                    css={{ color: "inherit" }}
-                    size={12}
-                    weight="bold"
-                    transform="uppercase"
-                  >
-                    Create a request
-                  </Text>
-                </Button> */}
           <Col>
             <Row justify="center">
               {canCreateRequest && !isPending && !isAccepted ? (
@@ -230,7 +202,16 @@ const CardAdvisor = (props) => {
                   </Text>
                 </Button>
               ) : (
-                <p>ERROR</p>
+                <Button flat auto rounded color="secondary" disabled>
+                  <Text
+                    css={{ color: "inherit" }}
+                    size={12}
+                    weight="bold"
+                    transform="uppercase"
+                  >
+                    No advisor available
+                  </Text>
+                </Button>
               )}
             </Row>
           </Col>
