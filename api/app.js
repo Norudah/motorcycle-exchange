@@ -23,7 +23,11 @@ const port = process.env.API_PORT || 3000;
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: ["https://admin.socket.io", "http://localhost:5173", "http://localhost:3000"],
+    origin: [
+      "https://admin.socket.io",
+      "http://localhost:5173",
+      "http://localhost:3000",
+    ],
     credentials: true,
   },
 });
@@ -161,4 +165,4 @@ app.get("/", (req, res) => {
 
 app.use(SecurityRouter);
 app.use("/salon", checkIsAuthenticated, SalonRouter);
-app.use("/communication", CommunicationRouter);
+app.use("/communication", checkIsAuthenticated, CommunicationRouter);
