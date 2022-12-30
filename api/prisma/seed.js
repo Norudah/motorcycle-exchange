@@ -65,19 +65,6 @@ async function main() {
       password: encryptedPassword,
     },
   });
-
-  const chatRoom2 = await prisma.ChatRoom.upsert({
-    where: { name: chatRoomGroup },
-    update: {},
-    create: {
-      name: chatRoomGroup,
-      nbUser: 3,
-      nbMaxUser: 10,
-      users: {
-        connect: [{ id: user1.id }, { id: user2.id }, { id: admin.id }],
-      },
-    },
-  });
 }
 
 main()

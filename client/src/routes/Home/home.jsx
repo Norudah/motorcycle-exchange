@@ -1,23 +1,68 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const Home = () => {
+  const [facts, setFacts] = useState([]);
+  const [listening, setListening] = useState(false);
+
   useEffect(() => {
-    // const eventSource = new EventSource("http://localhost:3000/notification", {
-    //   headers: {
-    //     Method: "POST",
-    //   },
-    // });
+    const events = new EventSource("http://localhost:3000/events");
+    if (!listening) {
+      events.onmessage = (event) => {
+        console.log("SSE Event : ", event.data);
+      };
+      setListening(true);
+    }
+  }, [listening, facts]);
 
-    const eventSource = new EventSource("http://localhost:3000/notifications");
+  // useEffect(() => {
+  //   const url = "http://localhost:3000/stream";
 
-    eventSource.onmessage = (event) => {
-      console.log("Ici la future notification");
-      console.log(event.data);
-      // Affichez la notification à l'utilisateur
-    };
+  //   if ("EventSource" in window) {
+  //     let source = new EventSource(url, { withCredentials: true });
+  //   }
 
-    return () => eventSource.close();
-  }, []);
+  //   source.addEventListener(
+  //     "message",
+  //     function (e) {
+  //       console.log(e.data);
+  //     },
+  //     false
+  //   );
+
+  //   source.addEventListener(
+  //     "open",
+  //     function (e) {
+  //       // successful connection.
+  //     },
+  //     false
+  //   );
+
+  //   source.addEventListener(
+  //     "error",
+  //     function (e) {
+  //       // error occurred
+  //     },
+  //     false
+  //   );
+  // }, []);
+
+  // useEffect(() => {
+  //   // const eventSource = new EventSource("http://localhost:3000/notification", {
+  //   //   headers: {
+  //   //     Method: "POST",
+  //   //   },
+  //   // });
+
+  //   const eventSource = new EventSource("http://localhost:3000/notifications");
+
+  //   eventSource.onmessage = (event) => {
+  //     console.log("Ici la future notification");
+  //     console.log(event.data);
+  //     // Affichez la notification à l'utilisateur
+  //   };
+
+  //   return () => eventSource.close();
+  // }, []);
 
   return (
     <div className="main">

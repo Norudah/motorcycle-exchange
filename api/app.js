@@ -3,7 +3,7 @@ import * as dotenv from "dotenv";
 import express from "express";
 
 // SSE
-import SSE from "express-sse";
+// import SSE from "express-sse";
 
 // Socket.io
 import { instrument } from "@socket.io/admin-ui";
@@ -127,7 +127,7 @@ adminNamespace.on("connection", (socket) => {
   });
 });
 
-const stream = new SSE();
+// const stream = new SSE();
 
 httpServer.listen(port, () => {
   console.log(`Server listening on port ${port} , , http://localhost:${port}`);
@@ -171,12 +171,98 @@ app.use("/salon", checkIsAuthenticated, SalonRouter);
 //   res.write(`data: ${JSON.stringify({ message: `${messsage ?? "Nouvelle Notification"}` })}\n\n`);
 // });
 
-app.get("/notifications", stream.init);
+// app.get("/notifications", stream.init);
 
-app.post("/notifications", (req, res) => {
-  const message = req.body.message;
+// app.post("/notifications", (req, res) => {
+//   const message = req.body.message;
 
-  stream.send(message);
+//   stream.send(message);
 
-  res.send("Notification envoyée avec succès");
+//   res.send("Notification envoyée avec succès");
+// });
+
+// const emitSSE = (res, id, data) => {
+//   res.write("id: " + id + "\n");
+//   res.write("data: " + data + "\n\n");
+//   res.flush();
+// };
+
+// const handleSSE = (req, res) => {
+//   res.writeHead(200, {
+//     "Content-Type": "text/event-stream",
+//     "Cache-Control": "no-cache",
+//     Connection: "keep-alive",
+//   });
+//   const id = new Date().toLocaleTimeString();
+//   // Sends a SSE every 3 seconds on a single connection.
+//   setInterval(function () {
+//     emitSSE(res, id, new Date().toLocaleTimeString());
+//   }, 3000);
+
+//   emitSSE(res, id, new Date().toLocaleTimeString());
+// };
+
+// //use it
+
+// app.get("/stream", handleSSE);
+
+let clients = [];
+let testData = [];
+
+app.get("/events", (request, response, next) => {
+  const headers = {
+    "Content-Type": "text/event-stream",
+    Connection: "keep-alive",
+    "Cache-Control": "no-cache",
+  };
+
+  response.writeHead(200, headers);
+
+  const data = `data: ${JSON.stringify(testData)}\n\n`;
+
+  response.write(data);
+
+  const clientId = Date.now();
+
+  const newClient = {
+    id: clientId,
+    response,
+  };
+  /**
+   * register client's response stream which eventually
+   * will get used to send events to client
+   */
+
+  clients.push(newClient);
+
+  request.on("close", () => {
+    console.log(`${clientId} Connection closed`);
+    clients = clients.filter((client) => client.id !== clientId);
+  });
+});
+
+/**
+ * Route just to simulate the send events scenario,
+ * In your case it could be DB update or any async operation completion
+ */
+
+app.post("/notify", (request, res, next) => {
+  console.log("notification reçus du front");
+
+  const { title, message } = request.body;
+
+  if (!title || !message) {
+    return res.status(400).json({ error: "title and message are required" });
+  }
+
+  const notification = {
+    title,
+    message,
+  };
+
+  console.log("clients");
+  console.table(clients);
+
+  res.json(notification);
+  return clients.forEach((client) => client.response.write(`data: ${JSON.stringify(notification)}\n\n`));
 });

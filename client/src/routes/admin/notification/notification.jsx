@@ -10,17 +10,20 @@ const AdminNotification = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const token = user.token;
 
-  const sendNotification = async () =>
-    await fetch(`http://localhost:3000/notifications`, {
+  const sendNotification = async () => {
+    await fetch(`http://localhost:3000/notify`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
+        // Authorization: "Bearer " + token,
       },
       body: JSON.stringify({ title: "Promotion !", message: "Remise de 10% sur les échanges entre particuliers !" }),
     });
+    console.log("notification sent");
+  };
 
   const handleSubmit = async (e) => {
+    console.log("submit notif");
     try {
       await sendNotification();
     } catch (error) {
