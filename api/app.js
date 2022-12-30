@@ -228,6 +228,7 @@ app.get("/events", (request, response, next) => {
     id: clientId,
     response,
   };
+
   /**
    * register client's response stream which eventually
    * will get used to send events to client
