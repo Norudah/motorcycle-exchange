@@ -26,8 +26,8 @@ async function main() {
     update: {},
     create: {
       email: userEmail1,
-      firstName: "Jean",
-      lastName: "Didier",
+      firstName: "Didier",
+      lastName: "Raoul",
       role: ROLE.USER,
       password: encryptedPassword,
       chatRooms: {
@@ -62,8 +62,8 @@ async function main() {
     update: {},
     create: {
       email: adminEmail,
-      firstName: "AdminDu",
-      lastName: "91",
+      firstName: "Jean",
+      lastName: "Perrier",
       role: ROLE.ADMIN,
       password: encryptedPassword,
     },
