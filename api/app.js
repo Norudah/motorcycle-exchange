@@ -10,6 +10,7 @@ import { Server } from "socket.io";
 // Import routes
 import SalonRouter from "./routes/Salon.js";
 import SecurityRouter from "./routes/Security.js";
+import CommunicationRouter from "./routes/Communication.js";
 
 import { checkIsAuthenticated } from "./middlewares/checkIsAuthenticated.js";
 import { checkToken } from "./utils/jwt.js";
@@ -84,17 +85,25 @@ userNamespace.on("connection", (socket) => {
 
   socket.on("join-room", (room) => {
     userNamespace.emit("join-room", room);
+    adminNamespace.emit("user-joinded-room", room);
   });
 
   socket.on("leave-room", (room) => {
     userNamespace.emit("leave-room", room);
+    adminNamespace.emit("user-leave-room", room);
   });
 
   socket.on("send-message", (message, room, user) => {
     userNamespace.emit("send-message", message, room, user);
     console.log("send-message", message, room, user);
   });
+
+  socket.on("create-communication-request", (userId) => {
+    adminNamespace.emit("create-communication-request", userId);
+  });
 });
+
+//
 
 adminNamespace.on("connection", (socket) => {
   // console.log("Authenticated admin connected");
@@ -122,33 +131,22 @@ adminNamespace.on("connection", (socket) => {
   socket.on("leave-room", (room) => {
     userNamespace.emit("join-room", room);
   });
+
+  socket.on("advisor-available-change", (user, isAvailable) => {
+    userNamespace.emit("advisor-available-change", user, isAvailable);
+  });
+
+  socket.on("admin-update-availability", (userId) => {
+    userNamespace.emit("admin-update-availability", userId);
+  });
+
+  socket.on("accept-communication-request", (userId, idRequest) => {
+    userNamespace.emit("accept-communication-request", userId, idRequest);
+  });
+  socket.on("refuse-communication-request", (userId, idRequest) => {
+    userNamespace.emit("refuse-communication-request", userId, idRequest);
+  });
 });
-
-// io.on("connection", (socket) => {
-//   console.log("SocketIO: connected with ID: ", socket.id);
-
-//   socket.on("join-room", (room) => {
-//     socket.join(room);
-//     console.log("SocketIO: join-room", room);
-//   });
-
-//   // ecouter les messages envoyer sur les salons
-//   socket.on("send-message", (message, room, userName) => {
-//     console.log("Send from Room : ", room, " by : ", userName, " -> ", message);
-
-//     // add unique id to message
-//     let date = Date.now();
-//     let messageId = date + socket.id;
-//     socket
-//       .to(room)
-//       .emit("message", message, room, socket.id, messageId, date, userName);
-//     console.log("SocketIO: send-message", userName);
-//   });
-
-//   socket.on("disconnect", () => {
-//     console.log("SocketIO: disconnected with ID", socket.id);
-//   });
-// });
 
 httpServer.listen(port, () => {
   console.log(`Server listening on port ${port} , , http://localhost:${port}`);
@@ -163,3 +161,4 @@ app.get("/", (req, res) => {
 
 app.use(SecurityRouter);
 app.use("/salon", checkIsAuthenticated, SalonRouter);
+app.use("/communication", CommunicationRouter);

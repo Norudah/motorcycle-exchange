@@ -18,8 +18,7 @@ model User {
   firstName            String?
   lastName             String?
   role                 Role                   @default(USER)
-  socketId             String?
-  availability         String?
+  availability         Boolean                @default(false)
   password             String
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
@@ -31,28 +30,16 @@ model User {
 }
 
 model ChatRoom {
-  id                   Int                    @id @default(autoincrement())
-  name                 String?
-  nbUser               Int                    @default(0)
-  nbMaxUser            Int
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @updatedAt
-  deletedAt            DateTime?
-  users                User[]
-  messages             Message[]
-  CommunicationRequest CommunicationRequest[]
+  id        Int       @id @default(autoincrement())
+  name      String?
+  nbUser    Int       @default(0)
+  nbMaxUser Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  users     User[]
+  messages  Message[]
 }
-
-// model ChatRoomOnUser {
-//   id         Int       @id @default(autoincrement())
-//   user       User      @relation(fields: [userId], references: [id])
-//   userId     Int
-//   chatRoom   ChatRoom  @relation(fields: [chatRoomId], references: [id])
-//   chatRoomId Int
-//   createdAt  DateTime  @default(now())
-//   updatedAt  DateTime  @updatedAt
-//   deletedAt  DateTime?
-// }
 
 // create many to many relation between user and ChatRoom
 model Notification {
@@ -91,12 +78,11 @@ model Message {
 }
 
 model CommunicationRequest {
-  id         Int       @id @default(autoincrement())
-  user       User      @relation(fields: [userId], references: [id])
-  userId     Int
-  chatRoom   ChatRoom  @relation(fields: [chatRoomId], references: [id])
-  chatRoomId Int
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  deletedAt  DateTime?
+  id        Int       @id @default(autoincrement())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int
+  status    String    @default("PENDING")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 }

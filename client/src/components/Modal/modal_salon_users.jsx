@@ -17,6 +17,28 @@ const ModalSalon = (props) => {
     getSalonUsers();
   }, []);
 
+  useEffect(() => {
+    const socket = io("http://localhost:3000/admin", {
+      auth: {
+        token,
+      },
+    });
+
+    socket.on("user-joinded-room", (room) => {
+      console.log("user-joinded-room");
+      if (room === id) {
+        getSalonUsers();
+      }
+    });
+
+    socket.on("user-leave-room", (room) => {
+      console.log("user-leave-room");
+      if (room === id) {
+        getSalonUsers();
+      }
+    });
+  }, []);
+
   async function getSalonUsers() {
     const res = await fetch(`http://localhost:3000/salon/users/${id}`, {
       method: "GET",
