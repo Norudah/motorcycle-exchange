@@ -12,6 +12,7 @@ import SalonRouter from "./routes/Salon.js";
 import SecurityRouter from "./routes/Security.js";
 
 import { checkToken } from "./utils/jwt.js";
+import { getYear, getDate, isDateMoreThanOneYearAway } from "./utils/helps.js";
 
 dotenv.config();
 
@@ -108,51 +109,101 @@ userNamespace.on("connection", (socket) => {
   });
 
   socket.on("response-message-bot", (botResume) => { 
-    console.log("response-message-bot", botResume);
+    console.log("response-message-bot", botResume.newMessageUser);
+    console.log("response-message-bot", botResume.step);
     switch (botResume.step) {
       case '1':
-        userNamespace.emit("send-bot-message", botResume, "Veuillez nous indiquer votre immatriculation", {
-          1 : "AB-123-CD",
-          2 : "AB-456-CD",
-          3 : "AB-789-CD",
-          4 : "AB-012-CD"
-        });
-        break;
+
+        const yearRegex = /\b(?:20|19)\d{2}\b/;
+        const dateRegex = /\b\d{2}\/\d{2}\/\d{4}\b/;
+
+        switch (botResume.newMessageUser) {
+          case yearRegex.test(getYear(botResume.newMessageUser)) :
+            userNamespace.emit("send-bot-message", botResume, "Quel est la date de votre dernier entretien pour ce vehicule ? (jj/mm/aaaa)");
+            break;
+          case dateRegex.test(getDate(botResume.newMessageUser)):
+            if (isDateMoreThanOneYearAway(getDate(botResume.newMessageUser))) {
+              userNamespace.emit("send-bot-message", botResume, "La date de votre dernier entretien est-il antérieur à aujourd'hui ?", {
+                1 : "oui",
+                2 : "non"
+              });
+            }else {
+              userNamespace.emit("send-bot-message", botResume, "La date de votre dernier entretien est-il antérieur à aujourd'hui ?", {
+                1 : "oui",
+                2 : "non"
+              });
+            }
+            break;
+          default:
+          userNamespace.emit("send-bot-message", botResume, "Quel est la date de votre vehicule ?");
+          break;  
+        }
+      break;
       case '2':
-        userNamespace.emit("send-bot-message", botResume, "Votre véhicule est en bon état", {
-          1 : "Merci",
-          2 : "Informations de contact",
-          3 : "Merci et au revoir"
-        });
-        break;
-      case '3':
-        if(botResume.lastMessageUser === "par mail") {
-          userNamespace.emit("send-bot-message", botResume, "contact@motorcycle-exchange.com");
-          botResume.modifStep = 1;
-          userNamespace.emit("send-bot-message", botResume, "Bonjour, comment puis-je vous aider ?", {
-            1 : "Vérifier l'entretien de mon véhicule",
-            2 : "Informations sur les véhicules",
-            3 : "Informations de contact",
-            4 : "Merci et au revoir"
-          });
-        } else if (botResume.lastMessageUser === "par téléphone") {
-          userNamespace.emit("send-bot-message", botResume, "01 23 45 67 89");
-          botResume.modifStep = 1;
-          userNamespace.emit("send-bot-message", botResume, "Bonjour, comment puis-je vous aider ?", {
-            1 : "Vérifier l'entretien de mon véhicule",
-            2 : "Informations sur les véhicules",
-            3 : "Informations de contact",
-            4 : "Merci et au revoir"
-          });
-        } else {
-          userNamespace.emit("send-bot-message", botResume, "Souhaitez-vous nous contacter par mail ou téléphone ?", {
-            1 : "par mail",
-            2 : "par téléphone"
-          });
+
+        switch (botResume.newMessageUser) {
+          case 'un usage routier':
+            userNamespace.emit("send-bot-message", botResume, "Votre véhicule est-il équipé d'un kit carrosserie ?", {
+              1 : "oui",
+              2 : "non"
+            });
+            break;
+          case 'un usage tout terrain':
+            userNamespace.emit("send-bot-message", botResume, "Votre véhicule est-il équipé d'un kit carrosserie ?", {
+              1 : "oui",
+              2 : "non"
+            });
+            break;
+          case 'un usage sportif':
+            userNamespace.emit("send-bot-message", botResume, "Votre véhicule est-il équipé d'un kit carrosserie ?", {  
+              1 : "oui",
+              2 : "non"
+            });
+            break;
+          default:
+            userNamespace.emit("send-bot-message", botResume, "Quel est le type d'usage de votre véhicule ?", {
+              1 : "un usage routier",
+              2 : "un usage tout terrain",
+              3 : "un usage sportif"
+            });
+          break;
         }
         break;
+
+      case '3':
+
+        switch (botResume.newMessageUser) {
+          case 'par mail':
+            userNamespace.emit("send-bot-message", botResume, "contact@motorcycle-exchange.com");
+            botResume.modifStep = 1;
+            userNamespace.emit("send-bot-message", botResume, "Puis-je vous aidez autrement ?", {
+              1 : "Vérifier l'entretien de mon véhicule",
+              2 : "Informations sur les véhicules",
+              3 : "Informations de contact",
+              4 : "Merci et au revoir"
+            });
+            break;
+          case 'par téléphone':
+            userNamespace.emit("send-bot-message", botResume, "01 23 45 67 89");
+            botResume.modifStep = 1;
+            userNamespace.emit("send-bot-message", botResume, "Puis-je vous aidez autrement ?", {
+              1 : "Vérifier l'entretien de mon véhicule",
+              2 : "Informations sur les véhicules",
+              3 : "Informations de contact",
+              4 : "Merci et au revoir"
+            });
+            break;
+          default:
+            userNamespace.emit("send-bot-message", botResume, "Comment souhaitez-vous être contacté ?", {
+              1 : "par mail",
+              2 : "par téléphone"
+            });
+            break;
+        }
+        break;
+
       case '4':
-        userNamespace.emit("disconnect-bot", botResume, "Merci, j'espère avoir été utile");
+        userNamespace.emit("send-bot-message", botResume, "Merci, j'espère avoir été utile");
         break;
       default:
         botResume.modifStep = 1;

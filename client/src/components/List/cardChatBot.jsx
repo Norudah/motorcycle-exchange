@@ -18,7 +18,31 @@ const CardChatBot = (props) => {
 
   const [isActive, setIsActive] = useState(false);
 
+  const [botResume, setBotResume] = useState([
+    {
+      userId : null,
+      step : null,
+      lastMessageUser : null,
+      modifStep : null,
+    },
+  ]);
+;
   const handleClick = () => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token,
+      },
+    });
+
+
+    setBotResume({
+      userId : user.id,
+      step : null,
+      lastMessageUser : null,
+      modifStep : null,
+    });
+
+    socket.emit("join-room-bot", botResume);
     navigate(`p/bot`);
   };
 
@@ -38,10 +62,6 @@ const CardChatBot = (props) => {
     });
 
     socket.emit("join-room-bot", (user.id));
-
-    socket.on("welcome-bot", (userId, message) => {
-      console.log("welcome-bot", userId, message);
-    });
   }, []);
 
   return (

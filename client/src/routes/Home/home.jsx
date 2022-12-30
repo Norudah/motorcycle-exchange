@@ -11,11 +11,13 @@ const Home = () => {
 
   const [historics, sethistorics] = useState([]);
 
+  const [lastMessageUser, setlastMessageUser] = useState("");
+
   const [botResume, setBotResume] = useState([
     {
-      userId : null,
+      userId : user.id,
       step : null,
-      lastMessageUser : null,
+      newMessageUser : null,
       modifStep : null,
     },
   ]);
@@ -36,12 +38,17 @@ const Home = () => {
     });
 
     socket.on("send-bot-message", (botResume, message, response) => {
+      console.log('Response botResume', botResume, message, response);
       if(botResume.userId === user.id)
       {
-      console.log("send-bot-message", botResume, message, response);
-        // historics.concat(message);
-        if(botResume.modifStep == 1) {
-          editBotResume(botResume);
+        if(botResume.modifStep == 1)
+        {
+          setBotResume({
+            userId : botResume.userId,
+            step : botResume.step,
+            newMessageUser : botResume.newMessageUser,
+            modifStep : 1,
+          });
         }
         if(response != null)
         {
@@ -58,11 +65,10 @@ const Home = () => {
       },
     });
 
-
     setBotResume({
       userId : user.id,
       step : null,
-      lastMessageUser : null,
+      newMessageUser : null,
       modifStep : null,
     });
 
@@ -70,14 +76,14 @@ const Home = () => {
   };
 
   const sendResponse = (step, message) => {
-    console.log('before populate', step, message);
+    console.log('before populate', step, message, botResume, 'lastMessageUser', lastMessageUser);
     if(botResume.modifStep == 1 || botResume.modifStep == null)
     {
       console.log("in if");
       setBotResume({
         userId : user.id,
         step : step,
-        lastMessageUser : message,
+        newMessageUser : message,
         modifStep : 0,
       });
     }
@@ -87,11 +93,11 @@ const Home = () => {
       setBotResume({
         userId : user.id,
         step : botResume.step,
-        lastMessageUser : message,
+        newMessageUser : message,
         modifStep : 0,
       });
     }
-    console.log('after populate', botResume);
+    setlastMessageUser(botResume.newMessageUser);
   };
 
   useEffect(() => {
@@ -101,8 +107,10 @@ const Home = () => {
       },
     });
 
+    console.log('lastMessageUser', lastMessageUser);
+    console.log('after populate', botResume);
     socket.emit("response-message-bot", botResume);
-  }, [botResume]);
+  }, [lastMessageUser != botResume.newMessageUser]);
 
   return (
     <div className="main">
