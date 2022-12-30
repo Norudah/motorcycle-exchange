@@ -103,4 +103,19 @@ router.get("/request/:id", async (req, res) => {
   }
 });
 
+//update request by id
+router.patch("/request/update/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const communication = await prisma.CommunicationRequest.update({
+      where: { id },
+      data: { status: req.body.status },
+    });
+    res.json({ communication });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating communication");
+  }
+});
+
 export default router;

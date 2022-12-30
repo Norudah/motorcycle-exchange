@@ -1,6 +1,8 @@
-import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
-import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { io } from "socket.io-client";
+
+import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
 
 const CardAdvisor = (props) => {
   const { userId, status, id } = props;
@@ -8,6 +10,8 @@ const CardAdvisor = (props) => {
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
+
+  const queryClient = useQueryClient();
 
   //fetch User with id
   const { data: user } = useQuery(["user", id], fetchUser, {
@@ -29,6 +33,72 @@ const CardAdvisor = (props) => {
       }
     );
     return response.json();
+  }
+
+  const mutation = useMutation(acceptRequest, {
+    onSuccess: () => {
+      const socket = io("http://localhost:3000/admin", {
+        auth: {
+          token,
+        },
+      });
+      socket.emit("accept-communication-request", userId, id);
+    },
+  });
+
+  async function acceptRequest() {
+    const response = await fetch(
+      `http://localhost:3000/communication/request/update/${id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          status: "ACCEPTED",
+        }),
+      }
+    );
+    return response.json();
+  }
+
+  const mutationRefuse = useMutation(refuseRequest, {
+    onSuccess: () => {
+      const socket = io("http://localhost:3000/admin", {
+        auth: {
+          token,
+        },
+      });
+      socket.emit("refuse-communication-request", userId, id);
+    },
+  });
+
+  async function refuseRequest() {
+    const response = await fetch(
+      `http://localhost:3000/communication/request/update/${id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          status: "REFUSED",
+        }),
+      }
+    );
+    return response.json();
+  }
+
+  function handleAccept() {
+    mutation.mutate();
+    queryClient.invalidateQueries("requests");
+  }
+
+  function handleRefuse() {
+    mutationRefuse.mutate();
+    queryClient.invalidateQueries("requests");
   }
 
   return (
@@ -56,7 +126,7 @@ const CardAdvisor = (props) => {
         <Row>
           <Col>
             <Row justify="center">
-              <Button flat auto rounded color="success">
+              <Button flat auto rounded color="success" onClick={handleAccept}>
                 <Text
                   css={{ color: "inherit" }}
                   size={12}
@@ -67,7 +137,7 @@ const CardAdvisor = (props) => {
                 </Text>
               </Button>
               <Spacer x={1} />
-              <Button flat auto rounded color="error">
+              <Button flat auto rounded color="error" onClick={handleRefuse}>
                 <Text
                   css={{ color: "inherit" }}
                   size={12}

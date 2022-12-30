@@ -10,6 +10,7 @@ const Communication = () => {
 
   const queryClient = useQueryClient();
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
+  const userId = JSON.parse(localStorage.getItem("user")).user.id ?? null;
 
   //fetch number of advisor online
   const { data: advisorOnline } = useQuery(

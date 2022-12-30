@@ -142,6 +142,13 @@ adminNamespace.on("connection", (socket) => {
   socket.on("admin-update-availability", (userId) => {
     userNamespace.emit("admin-update-availability", userId);
   });
+
+  socket.on("accept-communication-request", (userId, idRequest) => {
+    userNamespace.emit("accept-communication-request", userId, idRequest);
+  });
+  socket.on("refuse-communication-request", (userId, idRequest) => {
+    userNamespace.emit("refuse-communication-request", userId, idRequest);
+  });
 });
 
 httpServer.listen(port, () => {

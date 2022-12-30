@@ -15,22 +15,39 @@ import {
 const CardAdvisor = (props) => {
   const { nbAdvisorOnline } = props;
 
+  const [canCreateRequest, setCanCreateRequest] = useState(true);
   const [isPending, setIsPending] = useState(false);
-  const [canCreateRequest, setCanCreateRequest] = useState();
+  const [isAccepted, setIsAccepted] = useState(false);
 
   const queryClient = useQueryClient();
 
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const userId = JSON.parse(localStorage.getItem("user")).user.id ?? null;
 
+  console.table({
+    canCreateRequest: canCreateRequest,
+    ispending: isPending,
+    isAccepted: isAccepted,
+  });
+
   //fetch request only by me
-  const { data: pendingRequest } = useQuery(
+  const { data: pendingRequest, refetch } = useQuery(
     ["pendingRequest"],
     fetchPendingResquest,
     {
       onSuccess: (data) => {
         if (data.communication.length > 0) {
+          setCanCreateRequest(false);
           setIsPending(true);
+          setIsAccepted(false);
+        }
+
+        if (data.communication[0]?.status === "ACCEPTED") {
+          setIsAccepted(true);
+          setIsPending(false);
+        } else if (data.communication[0]?.status === "REFUSED") {
+          setIsAccepted(false);
+          setIsPending(false);
         }
       },
     }
@@ -52,7 +69,9 @@ const CardAdvisor = (props) => {
 
   const mutation = useMutation(createCommunicationRequest, {
     onSuccess: () => {
+      setCanCreateRequest(false);
       setIsPending(true);
+      setIsAccepted(false);
       const socket = io("http://localhost:3000/user", {
         auth: {
           token,
@@ -80,10 +99,30 @@ const CardAdvisor = (props) => {
   }
 
   useEffect(() => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token,
+      },
+    });
+    socket.on("accept-communication-request", (iduser, idRequest) => {
+      if (userId == iduser) {
+        queryClient.invalidateQueries(["pendingRequest"]);
+      }
+    });
+    socket.on("refuse-communication-request", (iduser, idRequest) => {
+      if (userId == iduser) {
+        queryClient.invalidateQueries(["pendingRequest"]);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     if (nbAdvisorOnline > 0) {
       setCanCreateRequest(true);
+      setIsPending(false);
     } else {
-      setCanCreateRequest(false);
+      setCanCreateRequest(true);
+      setIsPending(true);
     }
   }, [nbAdvisorOnline]);
 
@@ -110,9 +149,31 @@ const CardAdvisor = (props) => {
         }}
       >
         <Row>
+          {/* <Row justify="center">
+                    <Loading size="sm" />
+                    <Spacer x={0.5} />
+                    <Text>In validation by advisor</Text>
+                  </Row> */}
+
+          {/* <Button
+                  flat
+                  auto
+                  rounded
+                  color="secondary"
+                  onClick={handleCreateCommunicationResquest}
+                >
+                  <Text
+                    css={{ color: "inherit" }}
+                    size={12}
+                    weight="bold"
+                    transform="uppercase"
+                  >
+                    Create a request
+                  </Text>
+                </Button> */}
           <Col>
             <Row justify="center">
-              {canCreateRequest && !isPending ? (
+              {canCreateRequest && !isPending && !isAccepted ? (
                 <Button
                   flat
                   auto
@@ -129,30 +190,8 @@ const CardAdvisor = (props) => {
                     Create a request
                   </Text>
                 </Button>
-              ) : isPending ? (
-                <Button
-                  flat
-                  auto
-                  rounded
-                  disabled
-                  color="secondary"
-                  onClick={handleCreateCommunicationResquest}
-                >
-                  <Row justify="center">
-                    <Loading size="sm" />
-                    <Spacer x={0.5} />
-                    <Text>In validation by advisor</Text>
-                  </Row>
-                </Button>
-              ) : (
-                <Button
-                  flat
-                  auto
-                  rounded
-                  disabled
-                  color="secondary"
-                  onClick={handleCreateCommunicationResquest}
-                >
+              ) : canCreateRequest && isPending && !isAccepted ? (
+                <Button flat auto rounded color="secondary" disabled>
                   <Text
                     css={{ color: "inherit" }}
                     size={12}
@@ -162,6 +201,36 @@ const CardAdvisor = (props) => {
                     No advisor available
                   </Text>
                 </Button>
+              ) : !canCreateRequest && isPending && !isAccepted ? (
+                <Button flat auto rounded color="gradient" disabled>
+                  <Loading size="sm" />
+                  <Spacer x={0.5} />
+                  <Text>In validation by advisor</Text>
+                </Button>
+              ) : !canCreateRequest && !isPending && isAccepted ? (
+                <Button flat auto rounded color="success">
+                  <Text
+                    css={{ color: "inherit" }}
+                    size={12}
+                    weight="bold"
+                    transform="uppercase"
+                  >
+                    Accepted: Start a chat
+                  </Text>
+                </Button>
+              ) : !canCreateRequest && !isPending && !isAccepted ? (
+                <Button flat auto rounded color="warning">
+                  <Text
+                    css={{ color: "inherit" }}
+                    size={12}
+                    weight="bold"
+                    transform="uppercase"
+                  >
+                    Refused: Create a new request
+                  </Text>
+                </Button>
+              ) : (
+                <p>ERROR</p>
               )}
             </Row>
           </Col>
