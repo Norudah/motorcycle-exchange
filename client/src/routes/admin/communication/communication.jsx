@@ -142,9 +142,7 @@ const Communication = () => {
           onChange={handleSwitch}
         />
       </Row>
-
       <Spacer y={1} />
-
       <Grid.Container gap={2} justify="center">
         {pendingRequests?.map((advisor) => (
           <Grid xs={4} sm={3} key={advisor.id}>

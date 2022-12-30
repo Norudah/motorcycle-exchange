@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 
-import { Col, Grid } from "@nextui-org/react";
+import { Col, Grid, Spacer } from "@nextui-org/react";
 import { Chats } from "phosphor-react";
 import ListPeople from "../../components/List/listPeople";
 import ListSalon from "../../components/List/listSalon";
@@ -77,14 +77,28 @@ const Chat = () => {
           <Col className="sticky-main">
             <h4>Chat room</h4>
             {result?.length > 0 ? (
-              result.map((salon) => <ListSalon key={salon.id} id={salon.id} name={salon.name} nbMaxUser={salon.nbMaxUser} nbUser={salon.nbUser} />)
+              result.map((salon) =>
+                salon.type === "ROOM" ? (
+                  <ListSalon
+                    key={salon.id}
+                    id={salon.id}
+                    name={salon.name}
+                    nbMaxUser={salon.nbMaxUser}
+                    nbUser={salon.nbUser}
+                  />
+                ) : null
+              )
             ) : (
               <p>No chat room joined</p>
             )}
+
+            <Spacer y={1} />
             <h4>People</h4>
-            {people.map((person) => (
-              <ListPeople key={person.id} id={person.id} firstname={person.firstname} lastname={person.lastname} />
-            ))}
+            {result.map((person) =>
+              person.type === "PRIVATE" ? (
+                <ListPeople key={person.id} id={person.id} name={person.name} />
+              ) : null
+            )}
           </Col>
         </Grid>
         <Grid xs={9}>
@@ -99,7 +113,8 @@ const Chat = () => {
                   flexDirection: "column",
                   justifyContent: "center",
                   alignItems: "center",
-                }}>
+                }}
+              >
                 <Chats size={80} color="#091a12" weight="light" />
                 <h2>Choose a contact or a chat room</h2>
               </div>

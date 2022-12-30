@@ -9,12 +9,14 @@ const Communication = () => {
   const [result, setResult] = useState([]);
 
   const user = JSON.parse(localStorage.getItem("user"));
-  const token = user.token;
-  const userId = user?.user.id;
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
 
-  // Fetch Salon data from API
-  const { data, refetch } = useQuery(["salon"], async () => {
-    const response = await fetch("http://localhost:3000/salon", {
+  const userId = user?.user.id;
+  const queryClient = useQueryClient();
+
+  //fetch ROOM
+  const { data } = useQuery(["room"], async () => {
+    const response = await fetch("http://localhost:3000/salon/room", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -69,6 +71,7 @@ const Communication = () => {
                 nbPerson={salon?.nbUser}
                 nbMaxUser={salon?.nbMaxUser}
                 users={salon?.users}
+                type={salon?.type}
               />
             </Grid>
           ))}

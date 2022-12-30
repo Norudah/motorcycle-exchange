@@ -7,6 +7,7 @@ import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
 const CardAdvisor = (props) => {
   const { userId, status, id } = props;
 
+  const myId = JSON.parse(localStorage.getItem("user")).user.id;
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
@@ -37,6 +38,7 @@ const CardAdvisor = (props) => {
 
   const mutation = useMutation(acceptRequest, {
     onSuccess: () => {
+      mutationChatroom.mutate();
       const socket = io("http://localhost:3000/admin", {
         auth: {
           token,
@@ -60,6 +62,30 @@ const CardAdvisor = (props) => {
         }),
       }
     );
+    return response.json();
+  }
+
+  //Create chatroom with me and the user
+  const mutationChatroom = useMutation(createChatroom, {
+    onSuccess: (data) => {
+      console.log(data);
+      console.log("chatroom created");
+    },
+  });
+
+  async function createChatroom() {
+    const response = await fetch(`http://localhost:3000/salon/create/private`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        nameRoom: `private ${userId} ${myId}`,
+        userId1: userId,
+        userId2: myId,
+      }),
+    });
     return response.json();
   }
 
