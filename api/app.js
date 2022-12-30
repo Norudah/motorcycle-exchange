@@ -135,12 +135,33 @@ app.use(SecurityRouter);
 
 app.use("/salon", checkIsAuthenticated, SalonRouter);
 
-app.get("/notification", (req, res) => {
+// TODO : Find a way to put headers into EventSource within React (pyt POST insted of GET and token in authorization header for example)
+// Because EventSource doesn't support headers and therofore can't send token or data in body
+
+// app.get("/notification", (req, res) => {
+//   const { title, messsage } = req.body;
+
+//   console.log("data notif", title, messsage);
+
+//   res.writeHead(200, {
+//     "Content-Type": "text/event-stream",
+//     "Cache-Control": "no-cache",
+//     Connection: "keep-alive",
+//   });
+
+//   res.write(`data: ${JSON.stringify({ message: "Nouvelle notification" })}\n\n`);
+// });
+
+app.get("/notification/:message", (req, res) => {
+  const messsage = req.params.message;
+
+  console.log("data notif", messsage);
+
   res.writeHead(200, {
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache",
     Connection: "keep-alive",
   });
 
-  res.write(`data: ${JSON.stringify({ message: "Nouvelle notification" })}\n\n`);
+  res.write(`data: ${JSON.stringify({ message: `${messsage ?? "Nouvelle Notification"}` })}\n\n`);
 });

@@ -1,10 +1,14 @@
 import { useEffect } from "react";
 
 const Home = () => {
-  console.log("pouet");
-
   useEffect(() => {
-    const eventSource = new EventSource("http://localhost:3000/notification");
+    // const eventSource = new EventSource("http://localhost:3000/notification", {
+    //   headers: {
+    //     Method: "POST",
+    //   },
+    // });
+
+    const eventSource = new EventSource("http://localhost:3000/notification/pourquoisamarchepas");
 
     eventSource.onmessage = (event) => {
       console.log(event.data);
