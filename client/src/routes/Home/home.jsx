@@ -39,8 +39,14 @@ const Home = () => {
       if(botResume.userId === user.id)
       {
       console.log("send-bot-message", botResume, message, response);
-        historics.concat(message);
-        setResponseButton(responseButton.concat(Object.entries(response)));
+        // historics.concat(message);
+        if(botResume.modifStep == 1) {
+          editBotResume(botResume);
+        }
+        if(response != null)
+        {
+          setResponseButton(responseButton.concat(Object.entries(response)));
+        }
       }
     });
   }, []);
@@ -57,27 +63,23 @@ const Home = () => {
       userId : user.id,
       step : null,
       lastMessageUser : null,
+      modifStep : null,
     });
 
     socket.emit("join-room-bot", botResume);
   };
 
   const sendResponse = (step, message) => {
-    const socket = io("http://localhost:3000/user", {
-      auth: {
-        token,
-      },
-    });
-
-    if(botResume.modifStep = 1)
+    console.log('before populate', step, message);
+    if(botResume.modifStep == 1 || botResume.modifStep == null)
     {
       console.log("in if");
       setBotResume({
         userId : user.id,
         step : step,
         lastMessageUser : message,
+        modifStep : 0,
       });
-      console.log('after populate', botResume.step, step);
     }
     else
     {
@@ -86,15 +88,21 @@ const Home = () => {
         userId : user.id,
         step : botResume.step,
         lastMessageUser : message,
+        modifStep : 0,
       });
     }
-
-    console.log(botResume);
-
-    if(botResume.step != null && botResume.lastMessageUser != null)
-      socket.emit("response-message-bot", botResume);
+    console.log('after populate', botResume);
   };
 
+  useEffect(() => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token,
+      },
+    });
+
+    socket.emit("response-message-bot", botResume);
+  }, [botResume]);
 
   return (
     <div className="main">
