@@ -61,7 +61,8 @@ password : azerty
 features :
 
 - [x] Join a chatRooom
-- [ ] Request a concelor to discuss with him
+- [x] Request a concelor to discuss with him
+- [ ] Discuss with a concelor in private
 - [x] Send messages inside chatRooms
 - [ ] Send private messages to a concelor
 - [ ] Discuss with the chatbot
@@ -75,7 +76,9 @@ features :
 
 - [x] All the user features
 - [x] Manage chatrooms
-- [ ] Accept / Refuse requests from users
+- [x] Accept / Refuse requests from users
+- [x] Manage if is available or not to discuss with users
+- [ ] Can emit commercial notifications to users
 
 ## Usefull commands :
 
