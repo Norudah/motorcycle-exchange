@@ -11,12 +11,13 @@ const AdminNotification = () => {
   const token = user.token;
 
   const sendNotification = async () =>
-    await fetch(`http://localhost:3000/notification/${message}`, {
-      method: "GET",
+    await fetch(`http://localhost:3000/notifications`, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token,
       },
+      body: JSON.stringify({ title: "Promotion !", message: "Remise de 10% sur les échanges entre particuliers !" }),
     });
 
   const handleSubmit = async (e) => {

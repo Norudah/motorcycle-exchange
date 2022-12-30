@@ -2,6 +2,9 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 import express from "express";
 
+// SSE
+import SSE from "express-sse";
+
 // Socket.io
 import { instrument } from "@socket.io/admin-ui";
 import { createServer } from "http";
@@ -124,6 +127,8 @@ adminNamespace.on("connection", (socket) => {
   });
 });
 
+const stream = new SSE();
+
 httpServer.listen(port, () => {
   console.log(`Server listening on port ${port} , , http://localhost:${port}`);
 });
@@ -152,16 +157,26 @@ app.use("/salon", checkIsAuthenticated, SalonRouter);
 //   res.write(`data: ${JSON.stringify({ message: "Nouvelle notification" })}\n\n`);
 // });
 
-app.get("/notification/:message", (req, res) => {
-  const messsage = req.params.message;
+// app.get("/notification/:message", (req, res) => {
+//   const messsage = req.params.message;
 
-  console.log("data notif", messsage);
+//   console.log("data notif", messsage);
 
-  res.writeHead(200, {
-    "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache",
-    Connection: "keep-alive",
-  });
+//   res.writeHead(200, {
+//     "Content-Type": "text/event-stream",
+//     "Cache-Control": "no-cache",
+//     Connection: "keep-alive",
+//   });
 
-  res.write(`data: ${JSON.stringify({ message: `${messsage ?? "Nouvelle Notification"}` })}\n\n`);
+//   res.write(`data: ${JSON.stringify({ message: `${messsage ?? "Nouvelle Notification"}` })}\n\n`);
+// });
+
+app.get("/notifications", stream.init);
+
+app.post("/notifications", (req, res) => {
+  const message = req.body.message;
+
+  stream.send(message);
+
+  res.send("Notification envoyée avec succès");
 });

@@ -8,9 +8,10 @@ const Home = () => {
     //   },
     // });
 
-    const eventSource = new EventSource("http://localhost:3000/notification/pourquoisamarchepas");
+    const eventSource = new EventSource("http://localhost:3000/notifications");
 
     eventSource.onmessage = (event) => {
+      console.log("Ici la future notification");
       console.log(event.data);
       // Affichez la notification à l'utilisateur
     };
