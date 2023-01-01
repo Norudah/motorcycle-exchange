@@ -171,6 +171,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// fetch the salon join by the user
 router.get("/users/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);

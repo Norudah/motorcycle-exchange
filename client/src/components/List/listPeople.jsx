@@ -37,7 +37,6 @@ const ListPeople = (props) => {
         }
       });
     }
-    console.log(otherUser);
   }, [data]);
 
   async function fetchUser() {
@@ -69,11 +68,13 @@ const ListPeople = (props) => {
               {otherUser.firstname} {otherUser.lastname}
             </Text>
           </Row>
-          <Row justify="center">
-            <Text small color="success">
-              {otherUser.role}
-            </Text>
-          </Row>
+          {otherUser.role === "ADMIN" ? (
+            <Row justify="center">
+              <Text small color="success">
+                {otherUser.role}
+              </Text>
+            </Row>
+          ) : null}
         </Card.Body>
       </Card>
     </div>

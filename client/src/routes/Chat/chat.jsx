@@ -23,8 +23,6 @@ const Chat = () => {
     },
   ]);
 
-  const { contactId, roomId } = useParams();
-
   const [result, setResult] = useState([]);
 
   const user = JSON.parse(localStorage.getItem("user"));
@@ -59,10 +57,6 @@ const Chat = () => {
     });
 
     socket.on("delete-user", (idOfUser) => {
-      console.table({
-        idRecu: idOfUser,
-        userId: userId,
-      });
       if (idOfUser === userId) {
         refetch();
         queryClient.invalidateQueries("salons");
@@ -103,9 +97,9 @@ const Chat = () => {
         </Grid>
         <Grid xs={9}>
           <Col>
-            {contactId || roomId ? (
-              <ChatBox id={contactId || roomId} />
-            ) : (
+            {/* {contactId || roomId ? ( */}
+            <ChatBox />
+            {/* ) : (
               <div
                 style={{
                   height: "100%",
@@ -118,7 +112,7 @@ const Chat = () => {
                 <Chats size={80} color="#091a12" weight="light" />
                 <h2>Choose a contact or a chat room</h2>
               </div>
-            )}
+            )} */}
           </Col>
         </Grid>
       </Grid.Container>

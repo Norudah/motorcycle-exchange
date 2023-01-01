@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { io } from "socket.io-client";
 
@@ -9,13 +9,15 @@ import { SendButton } from "./sendButton";
 import MessageList from "./messageList";
 
 const ChatBox = (props) => {
-  const { id } = props;
+  const roomParams = useParams();
 
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const user = JSON.parse(localStorage.getItem("user")).user ?? null;
+
   const [messages, setMessage] = useState([]);
+
   const [inputMessage, setInputMessage] = useState("");
-  const params = useParams();
+
   const queryClient = useQueryClient();
 
   const navigate = useNavigate();
@@ -27,7 +29,7 @@ const ChatBox = (props) => {
       },
     });
     socket.on("send-message", (message, room, user) => {
-      if (room === id) {
+      if (room === roomParams.roomId) {
         setMessage((messages) => [
           ...messages,
           {
@@ -43,13 +45,13 @@ const ChatBox = (props) => {
     });
 
     socket.on("delete-room", (room) => {
-      if (params.roomId == room) {
+      if (roomParams.roomId == room) {
         navigate("/chats");
       }
     });
 
     socket.on("delete-user", (idOfUser, room) => {
-      if (params.roomId == room && idOfUser == user.id) {
+      if (roomParams.roomId == room && idOfUser == user.id) {
         navigate("/chats");
         queryClient.invalidateQueries("salons");
       }
@@ -64,14 +66,14 @@ const ChatBox = (props) => {
         },
       });
 
-      socket.emit("send-message", inputMessage, id, user);
+      socket.emit("send-message", inputMessage, roomParams.roomId, user);
     }
     setInputMessage("");
   };
 
   useEffect(() => {
     setMessage([]);
-  }, [params]);
+  }, [roomParams]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
