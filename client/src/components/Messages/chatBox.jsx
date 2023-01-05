@@ -42,6 +42,25 @@ const ChatBox = (props) => {
       }
     });
 
+    socket.on("welcome-bot", (botResume, response) => {
+      console.log("welcome-bot");
+      if (botResume.userId === user.id) {
+        response.map((message) => {
+          setMessage((messages) => [
+            ...messages,
+            {
+              id: Date.now(),
+              id_person: "bot",
+              message: message.message,
+              date: Date.now(),
+              userFirstname: "--",
+              userLastname: "bot"
+            },
+          ]);
+        });
+      }
+    });
+
     socket.on("delete-room", (room) => {
       if (params.roomId == room) {
         navigate("/chats");

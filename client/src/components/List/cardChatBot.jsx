@@ -54,16 +54,6 @@ const CardChatBot = (props) => {
     }
   }, [location]);
 
-  useEffect(() => {
-    const socket = io("http://localhost:3000/user", {
-      auth: {
-        token,
-      },
-    });
-
-    socket.emit("join-room-bot", (user.id));
-  }, []);
-
   return (
     <div>
       <Spacer y={1} />

@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
+import { Button, Card, Col, Row, Spacer, Text } from "@nextui-org/react";
 import { Gear, TrashSimple, User } from "phosphor-react";
 import ModalSalon from "../Modal/modal_salon";
 import ModalSalonUsers from "../Modal/modal_salon_users";
 
 const CardAdvisor = (props) => {
   const { name, nbPerson, nbMaxUser, id, users, userId } = props;
-  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
 
   const [isDisabled, setIsDisabled] = useState(false);
   const [isInSalon, setIsInSalon] = useState(false);
@@ -19,6 +18,10 @@ const CardAdvisor = (props) => {
 
   const [visible, setVisible] = useState(false);
   const [visibleModalUser, setVisibleModalUser] = useState(false);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user.token;
+
   const handler = () => setVisible(true);
   const handlerModalUser = () => setVisibleModalUser(true);
 
@@ -54,6 +57,7 @@ const CardAdvisor = (props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify({ userId: userId }),
     });
@@ -77,6 +81,7 @@ const CardAdvisor = (props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify({ userId: userId }),
     });
@@ -97,6 +102,10 @@ const CardAdvisor = (props) => {
   async function deleteSalon() {
     const res = await fetch(`http://localhost:3000/salon/delete/${id}`, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
     });
   }
 
@@ -120,6 +129,28 @@ const CardAdvisor = (props) => {
     }
   }, [mutation.isSuccess, mutationQuit.isSuccess]);
 
+  useEffect(() => {
+    const socket = io("http://localhost:3000/admin", {
+      auth: {
+        token,
+      },
+    });
+    socket.on("user-joinded-room", (room) => {
+      console.log("user-joinded-room");
+      console.log(room, id);
+      if (room === id) {
+        queryClient.invalidateQueries("salon");
+      }
+    });
+    socket.on("user-leave-room", (room) => {
+      console.log("user-leaved-room");
+      console.log(room, id);
+      if (room === id) {
+        queryClient.invalidateQueries("salon");
+      }
+    });
+  }, []);
+
   function submitHandlerDelete() {
     mutationDelete.mutate();
   }
@@ -137,50 +168,21 @@ const CardAdvisor = (props) => {
       <Card.Header css={{ position: "absolute", zIndex: 1, top: 5 }}>
         <Col>
           <Row justify="space-around">
-            {visibleButton && (
-              <Button
-                flat
-                auto
-                rounded
-                color="primary"
-                icon={<User />}
-                onClick={handlerModalUser}
-              />
-            )}
-
-            <ModalSalonUsers
-              key={id}
-              id={id}
-              visible={visibleModalUser}
-              closeHandler={closeHandlerModalUser}
-            />
-
             <Button
               flat
               auto
               rounded
-              color="warning"
-              icon={<Gear />}
-              onClick={handler}
-            />
-            <ModalSalon
-              key={id}
-              id={id}
-              visible={visible}
-              closeHandler={closeHandler}
-              name={name}
-              nbPerson={nbPerson}
-              nbMaxUser={nbMaxUser}
+              color="primary"
+              icon={<User />}
+              onClick={handlerModalUser}
             />
 
-            <Button
-              flat
-              auto
-              rounded
-              color="error"
-              icon={<TrashSimple />}
-              onPress={submitHandlerDelete}
-            />
+            <ModalSalonUsers key={id} id={id} visible={visibleModalUser} closeHandler={closeHandlerModalUser} />
+
+            <Button flat auto rounded color="warning" icon={<Gear />} onClick={handler} />
+            <ModalSalon key={id} id={id} visible={visible} closeHandler={closeHandler} name={name} nbPerson={nbPerson} nbMaxUser={nbMaxUser} />
+
+            <Button flat auto rounded color="error" icon={<TrashSimple />} onPress={submitHandlerDelete} />
           </Row>
           <Row justify="center">
             <Text h3 color="black" position="center">
@@ -203,54 +205,26 @@ const CardAdvisor = (props) => {
           borderTop: "$borderWeights$light solid rgba(255, 255, 255, 0.2)",
           bottom: 0,
           zIndex: 1,
-        }}
-      >
+        }}>
         <Row>
           <Col>
             <Spacer y={0.5} />
             <Row justify="center">
               {isDisabled && !isInSalon ? (
                 <Button flat auto rounded color="error">
-                  <Text
-                    css={{ color: "inherit" }}
-                    size={12}
-                    weight="bold"
-                    transform="uppercase"
-                  >
+                  <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
                     Full
                   </Text>
                 </Button>
               ) : !isInSalon ? (
-                <Button
-                  flat
-                  auto
-                  rounded
-                  color="secondary"
-                  onPress={submitHandler}
-                >
-                  <Text
-                    css={{ color: "inherit" }}
-                    size={12}
-                    weight="bold"
-                    transform="uppercase"
-                  >
+                <Button flat auto rounded color="secondary" onPress={submitHandler}>
+                  <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
                     Join the salon
                   </Text>
                 </Button>
               ) : (
-                <Button
-                  flat
-                  auto
-                  rounded
-                  color="error"
-                  onPress={submitHandlerQuit}
-                >
-                  <Text
-                    css={{ color: "inherit" }}
-                    size={12}
-                    weight="bold"
-                    transform="uppercase"
-                  >
+                <Button flat auto rounded color="error" onPress={submitHandlerQuit}>
+                  <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
                     Quit salon
                   </Text>
                 </Button>

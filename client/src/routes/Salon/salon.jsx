@@ -1,21 +1,26 @@
-import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 import { Grid, Spacer } from "@nextui-org/react";
 import CardSalon from "../../components/Card/card_salon";
 
 const Communication = () => {
-  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const [result, setResult] = useState([]);
-  const queryClient = useQueryClient();
 
   const user = JSON.parse(localStorage.getItem("user"));
+  const token = user.token;
   const userId = user?.user.id;
 
   // Fetch Salon data from API
   const { data, refetch } = useQuery(["salon"], async () => {
-    const response = await fetch("http://localhost:3000/salon");
+    const response = await fetch("http://localhost:3000/salon", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
     return response.json();
   });
 

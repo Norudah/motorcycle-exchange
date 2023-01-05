@@ -1,5 +1,6 @@
-import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
+import bcryptjs from "bcryptjs";
+import { Router } from "express";
 import { createToken } from "../utils/jwt.js";
 
 const router = new Router();
@@ -8,8 +9,12 @@ const prisma = new PrismaClient();
 router.post("/signup", async (req, res) => {
   try {
     const { email, password, firstName, lastName } = req.body;
+
+    const salt = await bcryptjs.genSalt(10);
+    const encryptedPassword = await bcryptjs.hash(password, salt);
+
     const user = await prisma.user.create({
-      data: { email, password, firstName, lastName },
+      data: { email, password: encryptedPassword, firstName, lastName },
     });
     res.json({ user });
   } catch (error) {
@@ -21,16 +26,27 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    const invalidMessage = "Invalid email or password";
+
     const user = await prisma.user.findUnique({
       where: { email },
     });
-    if (user && user.password === password) {
-      const token = await createToken(user);
-      res.status(200).json({ user, token });
-      console.log("User " + user.email + " logged in with success");
-    } else {
-      res.status(401).send("Invalid email or password");
+
+    if (!user) {
+      res.status(401).send(invalidMessage);
+      return;
     }
+
+    const passwordMatch = await bcryptjs.compare(password, user.password);
+
+    if (!passwordMatch) {
+      res.status(401).send(invalidMessage);
+      return;
+    }
+
+    const token = await createToken(user);
+    res.status(200).json({ user, token });
+    console.log("User " + user.email + " logged in with success");
   } catch (error) {
     console.error(error);
     res.status(500).send("Error logging in");

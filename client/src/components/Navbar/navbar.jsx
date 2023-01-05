@@ -11,6 +11,8 @@ const CustomNavbar = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isNotif, setIsNotif] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -20,7 +22,8 @@ const CustomNavbar = () => {
   useEffect(() => {
     if (data) {
       setIsLogged(true);
-
+      setFirstName(data.user.firstName);
+      setLastName(data.user.lastName);
       data?.user?.role === "ADMIN" ? setIsAdmin(true) : setIsAdmin(false);
     }
   }, [data]);
@@ -83,25 +86,17 @@ const CustomNavbar = () => {
         </Navbar.Content>
       ) : (
         <Navbar.Content>
-          {isAdmin && (
-            <Switch
-              color="error"
-              size="xl"
-              iconOn={<BellSlash />}
-              iconOff={<Bell />}
-              checked={!isActive}
-            />
-          )}
-
           {isAdmin ? (
             <Navbar.Item>
               <Badge color="success" variant="flat">
-                Admin
+                {firstName} {lastName} - Admin
               </Badge>
             </Navbar.Item>
           ) : (
             <Navbar.Item>
-              <Badge variant="flat">User</Badge>
+              <Badge variant="flat">
+                {firstName} {lastName} - User
+              </Badge>
             </Navbar.Item>
           )}
           <Navbar.Item>

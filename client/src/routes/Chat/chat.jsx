@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 
@@ -24,12 +24,12 @@ const Chat = () => {
     },
   ]);
 
-  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const { contactId, roomId } = useParams();
 
   const [result, setResult] = useState([]);
 
   const user = JSON.parse(localStorage.getItem("user"));
+  const token = user.token;
   const userId = user?.user.id;
 
   const queryClient = useQueryClient();
@@ -41,7 +41,13 @@ const Chat = () => {
   });
 
   async function fetchSalon() {
-    const response = await fetch(`http://localhost:3000/salon/${userId}`);
+    const response = await fetch(`http://localhost:3000/salon/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
     const data = await response.json();
     return data;
   }
@@ -51,10 +57,6 @@ const Chat = () => {
       auth: {
         token,
       },
-    });
-
-    socket.on("bot", (data) => {
-      console.log(data);
     });
 
     socket.on("delete-user", (idOfUser) => {
@@ -76,26 +78,13 @@ const Chat = () => {
           <Col className="sticky-main">
             <h4>Chat room</h4>
             {result?.length > 0 ? (
-              result.map((salon) => (
-                <ListSalon
-                  key={salon.id}
-                  id={salon.id}
-                  name={salon.name}
-                  nbMaxUser={salon.nbMaxUser}
-                  nbUser={salon.nbUser}
-                />
-              ))
+              result.map((salon) => <ListSalon key={salon.id} id={salon.id} name={salon.name} nbMaxUser={salon.nbMaxUser} nbUser={salon.nbUser} />)
             ) : (
               <p>No chat room joined</p>
             )}
             <h4>People</h4>
             {people.map((person) => (
-              <ListPeople
-                key={person.id}
-                id={person.id}
-                firstname={person.firstname}
-                lastname={person.lastname}
-              />
+              <ListPeople key={person.id} id={person.id} firstname={person.firstname} lastname={person.lastname} />
             ))}
             <CardChatBot 
               id="bot"
@@ -115,8 +104,7 @@ const Chat = () => {
                   flexDirection: "column",
                   justifyContent: "center",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <Chats size={80} color="#091a12" weight="light" />
                 <h2>Choose a contact or a chat room</h2>
               </div>
