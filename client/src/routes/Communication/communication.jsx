@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 import { Grid, Spacer } from "@nextui-org/react";
@@ -52,7 +52,7 @@ const Communication = () => {
     <div className="main">
       <Spacer y={3} />
       <h1>Communication request</h1>
-      <h4>Advisor online: {nbAdvisorOnline}</h4>
+      <h4>Advisor available: {nbAdvisorOnline}</h4>
       <Spacer y={1} />
 
       <Grid.Container gap={2} justify="center">

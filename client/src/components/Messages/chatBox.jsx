@@ -1,26 +1,24 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 
 import { Input } from "@nextui-org/react";
 import { PaperPlaneTilt } from "phosphor-react";
-import { SendButton } from "./sendButton";
 import MessageList from "./messageList";
+import { SendButton } from "./sendButton";
 
 const ChatBox = (props) => {
-  const roomParams = useParams();
+  const { params } = props;
 
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const user = JSON.parse(localStorage.getItem("user")).user ?? null;
 
-  const [messages, setMessage] = useState([]);
-
-  const [inputMessage, setInputMessage] = useState("");
-
   const queryClient = useQueryClient();
-
   const navigate = useNavigate();
+
+  const [messages, setMessage] = useState([]);
+  const [inputMessage, setInputMessage] = useState("");
 
   useEffect(() => {
     const socket = io("http://localhost:3000/user", {
@@ -29,7 +27,7 @@ const ChatBox = (props) => {
       },
     });
     socket.on("send-message", (message, room, user) => {
-      if (room === roomParams.roomId) {
+      if (params === room) {
         setMessage((messages) => [
           ...messages,
           {
@@ -45,18 +43,18 @@ const ChatBox = (props) => {
     });
 
     socket.on("delete-room", (room) => {
-      if (roomParams.roomId == room) {
+      if (params == room) {
         navigate("/chats");
       }
     });
 
     socket.on("delete-user", (idOfUser, room) => {
-      if (roomParams.roomId == room && idOfUser == user.id) {
+      if (params == room && idOfUser == user.id) {
         navigate("/chats");
         queryClient.invalidateQueries("salons");
       }
     });
-  }, []);
+  }, [params]);
 
   const sendMessage = () => {
     if (inputMessage) {
@@ -66,14 +64,14 @@ const ChatBox = (props) => {
         },
       });
 
-      socket.emit("send-message", inputMessage, roomParams.roomId, user);
+      socket.emit("send-message", inputMessage, params, user);
     }
     setInputMessage("");
   };
 
   useEffect(() => {
     setMessage([]);
-  }, [roomParams]);
+  }, [params]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {

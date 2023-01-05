@@ -1,14 +1,9 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
 import { io } from "socket.io-client";
 
-import { Grid, Spacer, Switch, Text, Row } from "@nextui-org/react";
-import { BellSlash, Bell } from "phosphor-react";
+import { Grid, Row, Spacer, Switch, Text } from "@nextui-org/react";
+import { Bell, BellSlash } from "phosphor-react";
 import CardAdminAdvisor from "../../../components/Card/card_admin_advisor";
 
 const Communication = () => {

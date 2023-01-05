@@ -11,6 +11,7 @@ import {
   Loading,
   Spacer,
 } from "@nextui-org/react";
+import { useNavigate } from "react-router-dom";
 
 const CardAdvisor = (props) => {
   const { nbAdvisorOnline } = props;
@@ -18,8 +19,10 @@ const CardAdvisor = (props) => {
   const [canCreateRequest, setCanCreateRequest] = useState(true);
   const [isPending, setIsPending] = useState(false);
   const [isAccepted, setIsAccepted] = useState(false);
+  const [chatRoomId, setChatRoomId] = useState("");
 
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const userId = JSON.parse(localStorage.getItem("user")).user.id ?? null;

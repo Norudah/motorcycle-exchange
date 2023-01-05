@@ -211,4 +211,28 @@ router.post("/user/delete/:id", checkIsAdmin, async (req, res) => {
   }
 });
 
+// fetch the last salon join by the user with include name "private"
+router.get("/last/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const salon = await prisma.ChatRoom.findFirst({
+      where: {
+        users: {
+          some: {
+            id,
+          },
+        },
+        name: "private",
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    res.json({ salon });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error getting salon");
+  }
+});
+
 export default router;

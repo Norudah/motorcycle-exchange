@@ -1,28 +1,14 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 
 import { Col, Grid, Spacer } from "@nextui-org/react";
-import { Chats } from "phosphor-react";
+import { useParams } from "react-router-dom";
 import ListPeople from "../../components/List/listPeople";
 import ListSalon from "../../components/List/listSalon";
 import ChatBox from "../../components/Messages/chatBox";
 
 const Chat = () => {
-  const [people, setPeople] = useState([
-    {
-      id: 1,
-      firstname: "Romain",
-      lastname: "Pierron",
-    },
-    {
-      id: 2,
-      firstname: "John",
-      lastname: "Leclerc",
-    },
-  ]);
-
   const [result, setResult] = useState([]);
 
   const user = JSON.parse(localStorage.getItem("user"));
@@ -30,6 +16,8 @@ const Chat = () => {
   const userId = user?.user.id;
 
   const queryClient = useQueryClient();
+  const params = useParams();
+  const { roomId, contactId } = useParams();
 
   const { refetch } = useQuery(["salon"], fetchSalon, {
     onSuccess: (data) => {
@@ -97,22 +85,7 @@ const Chat = () => {
         </Grid>
         <Grid xs={9}>
           <Col>
-            {/* {contactId || roomId ? ( */}
-            <ChatBox />
-            {/* ) : (
-              <div
-                style={{
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Chats size={80} color="#091a12" weight="light" />
-                <h2>Choose a contact or a chat room</h2>
-              </div>
-            )} */}
+            <ChatBox params={roomId ? roomId : contactId} />
           </Col>
         </Grid>
       </Grid.Container>

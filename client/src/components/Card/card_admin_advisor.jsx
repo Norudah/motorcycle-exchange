@@ -1,17 +1,21 @@
-import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { io } from "socket.io-client";
 
-import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
+import { Button, Card, Col, Row, Spacer, Text } from "@nextui-org/react";
+import { useNavigate } from "react-router-dom";
 
 const CardAdvisor = (props) => {
   const { userId, status, id } = props;
 
-  const myId = JSON.parse(localStorage.getItem("user")).user.id;
-  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
+  const [chatRoomId, setChatRoomId] = useState("");
 
+  const myId = JSON.parse(localStorage.getItem("user")).user.id;
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
+
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   //fetch User with id
@@ -68,8 +72,7 @@ const CardAdvisor = (props) => {
   //Create chatroom with me and the user
   const mutationChatroom = useMutation(createChatroom, {
     onSuccess: (data) => {
-      console.log(data);
-      console.log("chatroom created");
+      navigate(`/chats/p/${data.salon.id}`);
     },
   });
 
@@ -119,12 +122,12 @@ const CardAdvisor = (props) => {
 
   function handleAccept() {
     mutation.mutate();
-    queryClient.invalidateQueries("requests");
+    // queryClient.invalidateQueries("requests");
   }
 
   function handleRefuse() {
     mutationRefuse.mutate();
-    queryClient.invalidateQueries("requests");
+    // queryClient.invalidateQueries("requests");
   }
 
   return (
