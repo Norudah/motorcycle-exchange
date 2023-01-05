@@ -140,7 +140,6 @@ userNamespace.on("connection", (socket) => {
         }
       break;
       case '2':
-
         switch (botResume.newMessageUser) {
           case 'un usage routier':
             userNamespace.emit("send-bot-message", botResume, "Votre véhicule est-il équipé d'un kit carrosserie ?", {
@@ -169,9 +168,7 @@ userNamespace.on("connection", (socket) => {
           break;
         }
         break;
-
       case '3':
-
         switch (botResume.newMessageUser) {
           case 'par mail':
             userNamespace.emit("send-bot-message", botResume, "contact@motorcycle-exchange.com");
@@ -201,9 +198,12 @@ userNamespace.on("connection", (socket) => {
             break;
         }
         break;
-
       case '4':
         userNamespace.emit("send-bot-message", botResume, "Merci, j'espère avoir été utile");
+        break;
+      case 'reservation':
+        userNamespace.emit("send-bot-message", botResume, "Voici les heures disponibles pour votre réservation :", {
+        });
         break;
       default:
         botResume.modifStep = 1;
