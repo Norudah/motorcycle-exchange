@@ -14,56 +14,6 @@ const Home = () => {
     }
   }, [listening, facts]);
 
-  // useEffect(() => {
-  //   const url = "http://localhost:3000/stream";
-
-  //   if ("EventSource" in window) {
-  //     let source = new EventSource(url, { withCredentials: true });
-  //   }
-
-  //   source.addEventListener(
-  //     "message",
-  //     function (e) {
-  //       console.log(e.data);
-  //     },
-  //     false
-  //   );
-
-  //   source.addEventListener(
-  //     "open",
-  //     function (e) {
-  //       // successful connection.
-  //     },
-  //     false
-  //   );
-
-  //   source.addEventListener(
-  //     "error",
-  //     function (e) {
-  //       // error occurred
-  //     },
-  //     false
-  //   );
-  // }, []);
-
-  // useEffect(() => {
-  //   // const eventSource = new EventSource("http://localhost:3000/notification", {
-  //   //   headers: {
-  //   //     Method: "POST",
-  //   //   },
-  //   // });
-
-  //   const eventSource = new EventSource("http://localhost:3000/notifications");
-
-  //   eventSource.onmessage = (event) => {
-  //     console.log("Ici la future notification");
-  //     console.log(event.data);
-  //     // Affichez la notification à l'utilisateur
-  //   };
-
-  //   return () => eventSource.close();
-  // }, []);
-
   return (
     <div className="main">
       <section className="bg-white dark:bg-gray-900">

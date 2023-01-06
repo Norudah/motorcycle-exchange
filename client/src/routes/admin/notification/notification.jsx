@@ -17,7 +17,7 @@ const AdminNotification = () => {
         "Content-Type": "application/json",
         // Authorization: "Bearer " + token,
       },
-      body: JSON.stringify({ title: "Promotion !", message: "Remise de 10% sur les échanges entre particuliers !" }),
+      body: JSON.stringify({ title: title, message: message }),
     });
     console.log("notification sent");
   };

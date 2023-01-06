@@ -1,16 +1,10 @@
+import { instrument } from "@socket.io/admin-ui";
 import cors from "cors";
 import * as dotenv from "dotenv";
 import express from "express";
-
-// SSE
-// import SSE from "express-sse";
-
-// Socket.io
-import { instrument } from "@socket.io/admin-ui";
 import { createServer } from "http";
 import { Server } from "socket.io";
 
-// Import routes
 import SalonRouter from "./routes/Salon.js";
 import SecurityRouter from "./routes/Security.js";
 
@@ -127,8 +121,6 @@ adminNamespace.on("connection", (socket) => {
   });
 });
 
-// const stream = new SSE();
-
 httpServer.listen(port, () => {
   console.log(`Server listening on port ${port} , , http://localhost:${port}`);
 });
@@ -140,71 +132,7 @@ app.use(SecurityRouter);
 
 app.use("/salon", checkIsAuthenticated, SalonRouter);
 
-// TODO : Find a way to put headers into EventSource within React (pyt POST insted of GET and token in authorization header for example)
-// Because EventSource doesn't support headers and therofore can't send token or data in body
-
-// app.get("/notification", (req, res) => {
-//   const { title, messsage } = req.body;
-
-//   console.log("data notif", title, messsage);
-
-//   res.writeHead(200, {
-//     "Content-Type": "text/event-stream",
-//     "Cache-Control": "no-cache",
-//     Connection: "keep-alive",
-//   });
-
-//   res.write(`data: ${JSON.stringify({ message: "Nouvelle notification" })}\n\n`);
-// });
-
-// app.get("/notification/:message", (req, res) => {
-//   const messsage = req.params.message;
-
-//   console.log("data notif", messsage);
-
-//   res.writeHead(200, {
-//     "Content-Type": "text/event-stream",
-//     "Cache-Control": "no-cache",
-//     Connection: "keep-alive",
-//   });
-
-//   res.write(`data: ${JSON.stringify({ message: `${messsage ?? "Nouvelle Notification"}` })}\n\n`);
-// });
-
-// app.get("/notifications", stream.init);
-
-// app.post("/notifications", (req, res) => {
-//   const message = req.body.message;
-
-//   stream.send(message);
-
-//   res.send("Notification envoyée avec succès");
-// });
-
-// const emitSSE = (res, id, data) => {
-//   res.write("id: " + id + "\n");
-//   res.write("data: " + data + "\n\n");
-//   res.flush();
-// };
-
-// const handleSSE = (req, res) => {
-//   res.writeHead(200, {
-//     "Content-Type": "text/event-stream",
-//     "Cache-Control": "no-cache",
-//     Connection: "keep-alive",
-//   });
-//   const id = new Date().toLocaleTimeString();
-//   // Sends a SSE every 3 seconds on a single connection.
-//   setInterval(function () {
-//     emitSSE(res, id, new Date().toLocaleTimeString());
-//   }, 3000);
-
-//   emitSSE(res, id, new Date().toLocaleTimeString());
-// };
-
-// //use it
-
-// app.get("/stream", handleSSE);
+// SSE
 
 let clients = [];
 let testData = [];
@@ -229,11 +157,6 @@ app.get("/events", (request, response, next) => {
     response,
   };
 
-  /**
-   * register client's response stream which eventually
-   * will get used to send events to client
-   */
-
   clients.push(newClient);
 
   request.on("close", () => {
@@ -242,15 +165,11 @@ app.get("/events", (request, response, next) => {
   });
 });
 
-/**
- * Route just to simulate the send events scenario,
- * In your case it could be DB update or any async operation completion
- */
-
 app.post("/notify", (request, res, next) => {
   console.log("notification reçus du front");
 
   const { title, message } = request.body;
+  console.log("params", title, message);
 
   if (!title || !message) {
     return res.status(400).json({ error: "title and message are required" });
