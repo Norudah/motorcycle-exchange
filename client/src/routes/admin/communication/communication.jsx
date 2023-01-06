@@ -7,24 +7,6 @@ import { Bell, BellSlash } from "phosphor-react";
 import CardAdminAdvisor from "../../../components/Card/card_admin_advisor";
 
 const Communication = () => {
-  const advisor = [
-    {
-      id: 1,
-      firstname: "John",
-      lastname: "Doe",
-    },
-    {
-      id: 2,
-      firstname: "Jane",
-      lastname: "Doe",
-    },
-    {
-      id: 3,
-      firstname: "Jean",
-      lastname: "Didier",
-    },
-  ];
-
   const [isAvailable, setIsAvailable] = useState();
   const [pendingRequests, setPendingRequest] = useState();
   const queryClient = useQueryClient();

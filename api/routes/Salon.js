@@ -188,6 +188,29 @@ router.get("/users/:id", async (req, res) => {
   }
 });
 
+// fetch the salon and the user in it
+router.get("/user/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const salon = await prisma.ChatRoom.findMany({
+      where: {
+        users: {
+          some: {
+            id,
+          },
+        },
+      },
+      include: {
+        users: true,
+      },
+    });
+    res.json({ salon });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error getting salon");
+  }
+});
+
 router.post("/user/delete/:id", checkIsAdmin, async (req, res) => {
   try {
     const id = parseInt(req.params.id);

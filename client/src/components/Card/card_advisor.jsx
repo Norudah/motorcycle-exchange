@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 import {
+  Button,
   Card,
   Col,
-  Row,
-  Button,
-  Text,
   Loading,
+  Row,
   Spacer,
+  Text,
 } from "@nextui-org/react";
 import { useNavigate } from "react-router-dom";
 
@@ -123,6 +123,10 @@ const CardAdvisor = (props) => {
     }
   }, [nbAdvisorOnline]);
 
+  function handleGoToChat() {
+    navigate(`/chats/`);
+  }
+
   return (
     <Card css={{ w: "100%", h: "150px" }}>
       <Card.Header css={{ position: "absolute", zIndex: 1, top: 5 }}>
@@ -183,7 +187,13 @@ const CardAdvisor = (props) => {
                   <Text>In validation by advisor</Text>
                 </Button>
               ) : !canCreateRequest && !isPending && isAccepted ? (
-                <Button flat auto rounded color="success">
+                <Button
+                  flat
+                  auto
+                  rounded
+                  color="success"
+                  onClick={handleGoToChat}
+                >
                   <Text
                     css={{ color: "inherit" }}
                     size={12}
