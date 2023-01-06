@@ -1,9 +1,8 @@
-import { Badge, Button, Image, Navbar, Switch } from "@nextui-org/react";
+import { Badge, Button, Image, Navbar } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
-import { Bell, BellSlash } from "phosphor-react";
 import { toast } from "react-hot-toast";
 import Logo from "../../assets/Yamaha_logo.svg";
 import CustomToast from "../CustomToast/CustomToast";
@@ -45,7 +44,9 @@ const CustomNavbar = () => {
       events.onmessage = (event) => {
         const { title, message } = JSON.parse(event.data);
         if (title && message) {
-          toast.custom(<CustomToast title={title} message={message} isCommercial={true} />);
+          toast.custom(
+            <CustomToast title={title} message={message} isCommercial={true} />
+          );
         }
       };
       setListening(true);
@@ -106,8 +107,6 @@ const CustomNavbar = () => {
         </Navbar.Content>
       ) : (
         <Navbar.Content>
-          {isAdmin && <Switch color="error" size="xl" iconOn={<BellSlash />} iconOff={<Bell />} checked={!isActive} />}
-
           {isAdmin ? (
             <Navbar.Item>
               <Badge color="success" variant="flat">

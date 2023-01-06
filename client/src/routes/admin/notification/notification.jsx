@@ -37,7 +37,13 @@ const AdminNotification = () => {
       <h1>Notify your users</h1>
       <Spacer y={1} />
       <form className={classes.formContainer}>
-        <Input label="Title" placeholder="Promotion !" size="xl" value={title} onChange={(e) => setTitle(e.target.value)} />
+        <Input
+          label="Title"
+          placeholder="Promotion !"
+          size="xl"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
         <Spacer y={1} />
         <Input
           label="Message"
@@ -47,7 +53,12 @@ const AdminNotification = () => {
           onChange={(e) => setMessage(e.target.value)}
         />
         <Spacer y={1} />
-        <Button icon={<BellSimpleRinging size={32} weight="fill" />} color="secondary" onPress={handleSubmit}>
+        <Button
+          icon={<BellSimpleRinging size={25} weight="fill" />}
+          color="secondary"
+          size="lg"
+          onPress={handleSubmit}
+        >
           Notify !
         </Button>
       </form>

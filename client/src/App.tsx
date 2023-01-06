@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-
 import { NextUIProvider } from "@nextui-org/react";
-import "./App.css";
-import CustomNavbar from "./components/Navbar/navbar";
-
+import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
-import AdminCommunication from "./routes/admin/communication/communication";
-import AdminNotification from "./routes/admin/notification/notification";
-import AdminSalon from "./routes/admin/salon/salon";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import "./App.css";
+
+import CustomNavbar from "./components/Navbar/navbar";
+import AdminCommunication from "./routes/Admin/Communication/communication";
+import AdminNotification from "./routes/Admin/notification/notification";
+import AdminSalon from "./routes/Admin/Salon/salon";
 import Chat from "./routes/Chat/chat";
 import Communication from "./routes/Communication/communication";
 import Home from "./routes/Home/home";
