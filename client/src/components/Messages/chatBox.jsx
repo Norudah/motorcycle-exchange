@@ -1,24 +1,58 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 
 import { Input } from "@nextui-org/react";
 import { PaperPlaneTilt } from "phosphor-react";
-import { SendButton } from "./sendButton";
 import MessageList from "./messageList";
+import { SendButton } from "./sendButton";
 
 const ChatBox = (props) => {
-  const { id } = props;
+  const { params } = props;
 
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const user = JSON.parse(localStorage.getItem("user")).user ?? null;
+
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   const [messages, setMessage] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
-  const params = useParams();
-  const queryClient = useQueryClient();
+  const [usersInRoom, setUsersInRoom] = useState([]);
 
-  const navigate = useNavigate();
+  //verify if the user is in the room
+
+  const { data } = useQuery(["usersInRoom", params], fetchUserInRoom, {
+    onSuccess: (data) => {
+      setUsersInRoom(data?.salon?.users);
+
+      if (
+        !data?.salon?.users?.some((userInRoom) => userInRoom.id === user.id)
+      ) {
+        navigate("/chats");
+      } else {
+        console.log("ok");
+      }
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  async function fetchUserInRoom() {
+    const response = await fetch(
+      `http://localhost:3000/salon/users/${params}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.json();
+  }
 
   useEffect(() => {
     const socket = io("http://localhost:3000/user", {
@@ -27,7 +61,7 @@ const ChatBox = (props) => {
       },
     });
     socket.on("send-message", (message, room, user) => {
-      if (room === id) {
+      if (params === room) {
         setMessage((messages) => [
           ...messages,
           {
@@ -43,18 +77,18 @@ const ChatBox = (props) => {
     });
 
     socket.on("delete-room", (room) => {
-      if (params.roomId == room) {
+      if (params == room) {
         navigate("/chats");
       }
     });
 
     socket.on("delete-user", (idOfUser, room) => {
-      if (params.roomId == room && idOfUser == user.id) {
+      if (params == room && idOfUser == user.id) {
         navigate("/chats");
         queryClient.invalidateQueries("salons");
       }
     });
-  }, []);
+  }, [params]);
 
   const sendMessage = () => {
     if (inputMessage) {
@@ -64,7 +98,7 @@ const ChatBox = (props) => {
         },
       });
 
-      socket.emit("send-message", inputMessage, id, user);
+      socket.emit("send-message", inputMessage, params, user);
     }
     setInputMessage("");
   };

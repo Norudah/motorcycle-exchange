@@ -1,35 +1,12 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
 import { io } from "socket.io-client";
 
-import { Grid, Spacer, Switch, Text, Row } from "@nextui-org/react";
-import { BellSlash, Bell } from "phosphor-react";
+import { Grid, Row, Spacer, Switch, Text } from "@nextui-org/react";
+import { Bell, BellSlash } from "phosphor-react";
 import CardAdminAdvisor from "../../../components/Card/card_admin_advisor";
 
 const Communication = () => {
-  const advisor = [
-    {
-      id: 1,
-      firstname: "John",
-      lastname: "Doe",
-    },
-    {
-      id: 2,
-      firstname: "Jane",
-      lastname: "Doe",
-    },
-    {
-      id: 3,
-      firstname: "Jean",
-      lastname: "Didier",
-    },
-  ];
-
   const [isAvailable, setIsAvailable] = useState();
   const [pendingRequests, setPendingRequest] = useState();
   const queryClient = useQueryClient();
@@ -142,9 +119,7 @@ const Communication = () => {
           onChange={handleSwitch}
         />
       </Row>
-
       <Spacer y={1} />
-
       <Grid.Container gap={2} justify="center">
         {pendingRequests?.map((advisor) => (
           <Grid xs={4} sm={3} key={advisor.id}>

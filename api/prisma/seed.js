@@ -35,7 +35,7 @@ async function main() {
           {
             name: chatRommUser1VSUser2Name,
             nbUser: 2,
-            nbMaxUser: 2,
+            nbMaxUser: 3,
           },
         ],
       },

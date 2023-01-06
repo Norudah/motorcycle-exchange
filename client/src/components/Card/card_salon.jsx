@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 const CardAdvisor = (props) => {
-  const { name, nbPerson, nbMaxUser, id, userId, users } = props;
+  const { name, nbPerson, nbMaxUser, id, userId, users, type } = props;
 
   const [isDisabled, setIsDisabled] = useState(false);
   const [isInSalon, setIsInSalon] = useState(false);
   const queryClient = useQueryClient();
   const userInSalon = users?.find((user) => user.id === userId);
+  const [typeIsRoom, setTypeIsRoom] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const token = user.token;
@@ -110,6 +111,14 @@ const CardAdvisor = (props) => {
   }, [userInSalon]);
 
   useEffect(() => {
+    if (type === "ROOM") {
+      setTypeIsRoom(true);
+    } else {
+      setTypeIsRoom(false);
+    }
+  }, [type]);
+
+  useEffect(() => {
     if (mutation.isSuccess || mutationQuit.isSuccess) {
       queryClient.invalidateQueries("salon");
     }
@@ -150,25 +159,53 @@ const CardAdvisor = (props) => {
           borderTop: "$borderWeights$light solid rgba(255, 255, 255, 0.2)",
           bottom: 0,
           zIndex: 1,
-        }}>
+        }}
+      >
         <Row>
           <Col>
             <Row justify="center">
               {isDisabled && !isInSalon ? (
                 <Button flat auto rounded color="error">
-                  <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
+                  <Text
+                    css={{ color: "inherit" }}
+                    size={12}
+                    weight="bold"
+                    transform="uppercase"
+                  >
                     Full
                   </Text>
                 </Button>
               ) : !isInSalon ? (
-                <Button flat auto rounded color="secondary" onPress={submitHandler}>
-                  <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
+                <Button
+                  flat
+                  auto
+                  rounded
+                  color="secondary"
+                  onPress={submitHandler}
+                >
+                  <Text
+                    css={{ color: "inherit" }}
+                    size={12}
+                    weight="bold"
+                    transform="uppercase"
+                  >
                     Join the salon
                   </Text>
                 </Button>
               ) : (
-                <Button flat auto rounded color="error" onPress={submitHandlerQuit}>
-                  <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
+                <Button
+                  flat
+                  auto
+                  rounded
+                  color="error"
+                  onPress={submitHandlerQuit}
+                >
+                  <Text
+                    css={{ color: "inherit" }}
+                    size={12}
+                    weight="bold"
+                    transform="uppercase"
+                  >
                     Quit salon
                   </Text>
                 </Button>

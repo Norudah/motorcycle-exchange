@@ -32,7 +32,10 @@ const Communication = () => {
   });
 
   useEffect(() => {
-    setResult(data?.salon);
+    if (data?.salon) {
+      const result = data?.salon.filter((salon) => salon.type === "ROOM");
+      setResult(result);
+    }
   }, [data]);
 
   return (
@@ -45,7 +48,11 @@ const Communication = () => {
           Add a new chat room
         </Button>
       </Row>
-      <ModalSalonAdd visible={visible} closeHandler={closeHandler} refetch={refetch()} />
+      <ModalSalonAdd
+        visible={visible}
+        closeHandler={closeHandler}
+        refetch={refetch()}
+      />
       <Spacer y={1} />
 
       {result?.length > 0 ? (

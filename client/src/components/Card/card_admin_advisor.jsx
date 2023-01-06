@@ -1,16 +1,21 @@
-import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { io } from "socket.io-client";
 
-import { Card, Col, Row, Button, Text, Spacer } from "@nextui-org/react";
+import { Button, Card, Col, Row, Spacer, Text } from "@nextui-org/react";
+import { useNavigate } from "react-router-dom";
 
 const CardAdvisor = (props) => {
   const { userId, status, id } = props;
 
-  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
+  const [chatRoomId, setChatRoomId] = useState("");
 
+  const myId = JSON.parse(localStorage.getItem("user")).user.id;
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
+
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   //fetch User with id
@@ -37,6 +42,7 @@ const CardAdvisor = (props) => {
 
   const mutation = useMutation(acceptRequest, {
     onSuccess: () => {
+      mutationChatroom.mutate();
       const socket = io("http://localhost:3000/admin", {
         auth: {
           token,
@@ -60,6 +66,29 @@ const CardAdvisor = (props) => {
         }),
       }
     );
+    return response.json();
+  }
+
+  //Create chatroom with me and the user
+  const mutationChatroom = useMutation(createChatroom, {
+    onSuccess: (data) => {
+      navigate(`/chats/p/${data.salon.id}`);
+    },
+  });
+
+  async function createChatroom() {
+    const response = await fetch(`http://localhost:3000/salon/create/private`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        nameRoom: `private ${userId} ${myId}`,
+        userId1: userId,
+        userId2: myId,
+      }),
+    });
     return response.json();
   }
 
@@ -93,12 +122,12 @@ const CardAdvisor = (props) => {
 
   function handleAccept() {
     mutation.mutate();
-    queryClient.invalidateQueries("requests");
+    // queryClient.invalidateQueries("requests");
   }
 
   function handleRefuse() {
     mutationRefuse.mutate();
-    queryClient.invalidateQueries("requests");
+    // queryClient.invalidateQueries("requests");
   }
 
   return (
