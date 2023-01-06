@@ -65,6 +65,7 @@ features :
 - [x] Send messages inside chatRooms
 - [ ] Send private messages to a concelor
 - [ ] Discuss with the chatbot
+- [x] Get notified at anytime
 
 ---
 
@@ -76,6 +77,7 @@ features :
 - [x] All the user features
 - [x] Manage chatrooms
 - [ ] Accept / Refuse requests from users
+- [x] Dispatch commercial message to all connecter users
 
 ## Usefull commands :
 
