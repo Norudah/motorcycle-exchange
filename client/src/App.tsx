@@ -5,8 +5,10 @@ import { NextUIProvider } from "@nextui-org/react";
 import "./App.css";
 import CustomNavbar from "./components/Navbar/navbar";
 
-import AdminCommunication from "./routes/Admin/Communication/communication";
-import AdminSalon from "./routes/Admin/Salon/salon";
+import { Toaster } from "react-hot-toast";
+import AdminCommunication from "./routes/admin/communication/communication";
+import AdminNotification from "./routes/admin/notification/notification";
+import AdminSalon from "./routes/admin/salon/salon";
 import Chat from "./routes/Chat/chat";
 import Communication from "./routes/Communication/communication";
 import Home from "./routes/Home/home";
@@ -34,6 +36,7 @@ function App() {
     <BrowserRouter>
       <NextUIProvider>
         <CustomNavbar />
+        <Toaster position="bottom-right" />
 
         <Routes>
           <Route path="/" element={<Home />} />
@@ -52,6 +55,7 @@ function App() {
 
           <Route path="/admin/communication" element={<AdminCommunication />} />
           <Route path="/admin/salon" element={<AdminSalon />} />
+          <Route path="/admin/notification" element={<AdminNotification />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </NextUIProvider>

@@ -16,10 +16,7 @@ async function main() {
   };
 
   const password = "azerty";
-  const encryptedPassword = await bcryptjs.hash(
-    password,
-    await bcryptjs.genSalt(10)
-  );
+  const encryptedPassword = await bcryptjs.hash(password, await bcryptjs.genSalt(10));
 
   const user1 = await prisma.User.upsert({
     where: { email: userEmail1 },
@@ -68,19 +65,6 @@ async function main() {
       password: encryptedPassword,
     },
   });
-
-  // const chatRoom2 = await prisma.ChatRoom.upsert({
-  //   where: { name: chatRoomGroup },
-  //   update: {},
-  //   create: {
-  //     name: chatRoomGroup,
-  //     nbUser: 3,
-  //     nbMaxUser: 10,
-  //     users: {
-  //       connect: [{ id: user1.id }, { id: user2.id }, { id: admin.id }],
-  //     },
-  //   },
-  // });
 }
 
 main()

@@ -1,16 +1,13 @@
+import { instrument } from "@socket.io/admin-ui";
 import cors from "cors";
 import * as dotenv from "dotenv";
 import express from "express";
-
-// Socket.io
-import { instrument } from "@socket.io/admin-ui";
 import { createServer } from "http";
 import { Server } from "socket.io";
 
-// Import routes
+import CommunicationRouter from "./routes/Communication.js";
 import SalonRouter from "./routes/Salon.js";
 import SecurityRouter from "./routes/Security.js";
-import CommunicationRouter from "./routes/Communication.js";
 
 import { checkIsAuthenticated } from "./middlewares/checkIsAuthenticated.js";
 import { checkToken } from "./utils/jwt.js";
@@ -23,11 +20,7 @@ const port = process.env.API_PORT || 3000;
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: [
-      "https://admin.socket.io",
-      "http://localhost:5173",
-      "http://localhost:3000",
-    ],
+    origin: ["https://admin.socket.io", "http://localhost:5173", "http://localhost:3000"],
     credentials: true,
   },
 });
@@ -159,10 +152,66 @@ httpServer.listen(port, () => {
 app.use(express.json());
 app.use(cors({ credentials: true, origin: "*" }));
 
-app.get("/", (req, res) => {
-  res.send("Hellow World!");
+app.use(SecurityRouter);
+
+app.use("/salon", checkIsAuthenticated, SalonRouter);
+
+// SSE
+
+let clients = [];
+let testData = [];
+
+app.get("/events", (request, response, next) => {
+  const headers = {
+    "Content-Type": "text/event-stream",
+    Connection: "keep-alive",
+    "Cache-Control": "no-cache",
+  };
+
+  response.writeHead(200, headers);
+
+  const data = `data: ${JSON.stringify(testData)}\n\n`;
+
+  response.write(data);
+
+  const clientId = Date.now();
+
+  const newClient = {
+    id: clientId,
+    response,
+  };
+
+  clients.push(newClient);
+
+  request.on("close", () => {
+    console.log(`${clientId} Connection closed`);
+    clients = clients.filter((client) => client.id !== clientId);
+  });
+});
+
+app.post("/notify", (request, res, next) => {
+  console.log("notification reçus du front");
+
+  const { title, message } = request.body;
+  console.log("params", title, message);
+
+  if (!title || !message) {
+    return res.status(400).json({ error: "title and message are required" });
+  }
+
+  const notification = {
+    title,
+    message,
+  };
+
+  console.log("clients");
+  console.table(clients);
+
+  res.json(notification);
+  return clients.forEach((client) => client.response.write(`data: ${JSON.stringify(notification)}\n\n`));
 });
 
 app.use(SecurityRouter);
+
 app.use("/salon", checkIsAuthenticated, SalonRouter);
 app.use("/communication", checkIsAuthenticated, CommunicationRouter);
