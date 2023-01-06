@@ -1,6 +1,6 @@
 import { Button, Input, Modal, Text } from "@nextui-org/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { io } from "socket.io-client";
 
 const ModalSalon = (props) => {
@@ -42,23 +42,18 @@ const ModalSalon = (props) => {
     return await res.json();
   }
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Enter") {
-        submitUpdatehandler();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
   function submitUpdatehandler() {
     mutation.mutate();
     closeHandler();
   }
 
   return (
-    <Modal closeButton aria-labelledby="modal-title" open={visible} onClose={closeHandler}>
+    <Modal
+      closeButton
+      aria-labelledby="modal-title"
+      open={visible}
+      onClose={closeHandler}
+    >
       <Modal.Header>
         <Text id="modal-title" size={18}>
           <Text b size={18}>
@@ -67,8 +62,21 @@ const ModalSalon = (props) => {
         </Text>
       </Modal.Header>
       <Modal.Body>
-        <Input autoFocus label="Salon Name" value={salonName} bordered clearable onChange={(e) => setSalonName(e.target.value)} />
-        <Input label="Max person per salon" value={salonMaxPerson} onChange={(e) => setSalonMaxPerson(e.target.value)} bordered clearable />
+        <Input
+          autoFocus
+          label="Salon Name"
+          value={salonName}
+          bordered
+          clearable
+          onChange={(e) => setSalonName(e.target.value)}
+        />
+        <Input
+          label="Max person per salon"
+          value={salonMaxPerson}
+          onChange={(e) => setSalonMaxPerson(e.target.value)}
+          bordered
+          clearable
+        />
       </Modal.Body>
       <Modal.Footer>
         <Button auto onPress={submitUpdatehandler}>
