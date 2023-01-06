@@ -1,4 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
@@ -19,6 +19,40 @@ const ChatBox = (props) => {
 
   const [messages, setMessage] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
+  const [usersInRoom, setUsersInRoom] = useState([]);
+
+  //verify if the user is in the room
+
+  const { data } = useQuery(["usersInRoom", params], fetchUserInRoom, {
+    onSuccess: (data) => {
+      setUsersInRoom(data?.salon?.users);
+
+      if (
+        !data?.salon?.users?.some((userInRoom) => userInRoom.id === user.id)
+      ) {
+        navigate("/chats");
+      } else {
+        console.log("ok");
+      }
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  async function fetchUserInRoom() {
+    const response = await fetch(
+      `http://localhost:3000/salon/users/${params}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.json();
+  }
 
   useEffect(() => {
     const socket = io("http://localhost:3000/user", {

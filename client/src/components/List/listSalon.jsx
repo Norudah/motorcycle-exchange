@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 
-import { Avatar, Card, css, Row, Spacer, Text } from "@nextui-org/react";
+import { Avatar, Card, Row, Spacer, Text } from "@nextui-org/react";
 
 const ListSalon = (props) => {
   const { name, nbUser, nbMaxUser, id } = props;

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 import { Col, Grid, Spacer } from "@nextui-org/react";
+import { ChatCenteredDots } from "phosphor-react";
 import { useParams } from "react-router-dom";
 import ListPeople from "../../components/List/listPeople";
 import ListSalon from "../../components/List/listSalon";
@@ -84,9 +85,18 @@ const Chat = () => {
           </Col>
         </Grid>
         <Grid xs={9}>
-          <Col>
-            <ChatBox params={roomId ? roomId : contactId} />
-          </Col>
+          {roomId || contactId ? (
+            <Col>
+              <ChatBox params={roomId ? roomId : contactId} />
+            </Col>
+          ) : (
+            <Col className="alignItemsCenter alignCenter">
+              <div>
+                <ChatCenteredDots size={60} color="#091a12" weight="light" />
+                <h3>Choose a chat room or a person</h3>
+              </div>
+            </Col>
+          )}
         </Grid>
       </Grid.Container>
     </div>
