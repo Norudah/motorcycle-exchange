@@ -1,19 +1,4 @@
-import { useEffect, useState } from "react";
-
 const Home = () => {
-  const [facts, setFacts] = useState([]);
-  const [listening, setListening] = useState(false);
-
-  useEffect(() => {
-    const events = new EventSource("http://localhost:3000/events");
-    if (!listening) {
-      events.onmessage = (event) => {
-        console.log("SSE Event : ", event.data);
-      };
-      setListening(true);
-    }
-  }, [listening, facts]);
-
   return (
     <div className="main">
       <section className="bg-white dark:bg-gray-900">

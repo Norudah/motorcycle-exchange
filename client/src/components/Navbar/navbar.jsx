@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { Badge, Button, Image, Navbar, Switch } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { Navbar, Button, Image, Switch, Badge } from "@nextui-org/react";
 
-import Logo from "../../assets/Yamaha_logo.svg";
 import { Bell, BellSlash } from "phosphor-react";
+import { toast } from "react-hot-toast";
+import Logo from "../../assets/Yamaha_logo.svg";
+import CustomToast from "../CustomToast/CustomToast";
 
 const CustomNavbar = () => {
   const [isLogged, setIsLogged] = useState(false);
@@ -31,6 +33,21 @@ const CustomNavbar = () => {
     setIsLogged(false);
     navigate("/");
   };
+
+  const [listening, setListening] = useState(false);
+
+  useEffect(() => {
+    const events = new EventSource("http://localhost:3000/events");
+    if (!listening) {
+      events.onmessage = (event) => {
+        const { title, message } = JSON.parse(event.data);
+        if (title && message) {
+          toast.custom(<CustomToast title={title} message={message} isCommercial={true} />);
+        }
+      };
+      setListening(true);
+    }
+  }, [listening]);
 
   return (
     <Navbar>
