@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 import { Grid, Spacer } from "@nextui-org/react";
+import { toast } from "react-hot-toast";
 import CardAdvisor from "../../components/Card/card_advisor";
 
 const Communication = () => {
@@ -13,27 +14,28 @@ const Communication = () => {
   const userId = JSON.parse(localStorage.getItem("user")).user.id ?? null;
 
   //fetch number of advisor online
-  const { data: advisorOnline } = useQuery(
-    ["advisorOnline"],
-    fetchAdvisorOnline,
-    {
-      onSuccess: (data) => {
-        setNbAdvisorOnline(data.users.length);
-      },
-    }
-  );
+  const { data: advisorOnline } = useQuery(["advisorOnline"], fetchAdvisorOnline, {
+    onSuccess: (data) => {
+      setNbAdvisorOnline(data.users.length);
+
+      if (data.users.length > nbAdvisorOnline) {
+        toast.success("Un nouveau conseiller est disponible");
+      }
+    },
+
+    onError: (error) => {
+      toast.error("Une erreur est survenue");
+    },
+  });
 
   async function fetchAdvisorOnline() {
-    const response = await fetch(
-      "http://localhost:3000/communication/advisor",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch("http://localhost:3000/communication/advisor", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.json();
   }
 

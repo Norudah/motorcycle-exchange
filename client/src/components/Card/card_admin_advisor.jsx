@@ -3,6 +3,7 @@ import { useState } from "react";
 import { io } from "socket.io-client";
 
 import { Button, Card, Col, Row, Spacer, Text } from "@nextui-org/react";
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const CardAdvisor = (props) => {
@@ -27,16 +28,13 @@ const CardAdvisor = (props) => {
   });
 
   async function fetchUser() {
-    const response = await fetch(
-      `http://localhost:3000/communication/advisor/${userId}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch(`http://localhost:3000/communication/advisor/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.json();
   }
 
@@ -49,23 +47,25 @@ const CardAdvisor = (props) => {
         },
       });
       socket.emit("accept-communication-request", userId, id);
+      toast.success("Demande de communication acceptée");
+    },
+
+    onError: (error) => {
+      toast.error("Une erreur est survenue");
     },
   });
 
   async function acceptRequest() {
-    const response = await fetch(
-      `http://localhost:3000/communication/request/update/${id}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          status: "ACCEPTED",
-        }),
-      }
-    );
+    const response = await fetch(`http://localhost:3000/communication/request/update/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        status: "ACCEPTED",
+      }),
+    });
     return response.json();
   }
 
@@ -73,6 +73,11 @@ const CardAdvisor = (props) => {
   const mutationChatroom = useMutation(createChatroom, {
     onSuccess: (data) => {
       navigate(`/chats/p/${data.salon.id}`);
+      toast.success("Vous avez démarré une nouvelle conversation privée");
+    },
+
+    onError: (error) => {
+      toast.error("Une erreur est survenue");
     },
   });
 
@@ -100,23 +105,25 @@ const CardAdvisor = (props) => {
         },
       });
       socket.emit("refuse-communication-request", userId, id);
+      toast.success("Demande de communication refusée");
+    },
+
+    onError: (error) => {
+      toast.error("Une erreur est survenue");
     },
   });
 
   async function refuseRequest() {
-    const response = await fetch(
-      `http://localhost:3000/communication/request/update/${id}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          status: "REFUSED",
-        }),
-      }
-    );
+    const response = await fetch(`http://localhost:3000/communication/request/update/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        status: "REFUSED",
+      }),
+    });
     return response.json();
   }
 
@@ -150,29 +157,18 @@ const CardAdvisor = (props) => {
           borderTop: "$borderWeights$light solid rgba(255, 255, 255, 0.2)",
           bottom: 0,
           zIndex: 1,
-        }}
-      >
+        }}>
         <Row>
           <Col>
             <Row justify="center">
               <Button flat auto rounded color="success" onClick={handleAccept}>
-                <Text
-                  css={{ color: "inherit" }}
-                  size={12}
-                  weight="bold"
-                  transform="uppercase"
-                >
+                <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
                   Accept
                 </Text>
               </Button>
               <Spacer x={1} />
               <Button flat auto rounded color="error" onClick={handleRefuse}>
-                <Text
-                  css={{ color: "inherit" }}
-                  size={12}
-                  weight="bold"
-                  transform="uppercase"
-                >
+                <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
                   Refuse
                 </Text>
               </Button>

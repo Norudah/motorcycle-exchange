@@ -1,6 +1,7 @@
 import { Button, Card, Col, Row, Spacer, Text } from "@nextui-org/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { io } from "socket.io-client";
 
 const CardAdvisor = (props) => {
@@ -25,6 +26,11 @@ const CardAdvisor = (props) => {
         },
       });
       socket.emit("join-room", id);
+      toast.success("Vous avez rejoint le salon");
+    },
+
+    onError: (error) => {
+      toast.error("Une erreur est survenue");
     },
   });
 
@@ -49,6 +55,11 @@ const CardAdvisor = (props) => {
         },
       });
       socket.emit("leave-room", id);
+      toast.success("Vous avez quitté le salon");
+    },
+
+    onError: (error) => {
+      toast.error("Une erreur est survenue");
     },
   });
 
@@ -159,53 +170,25 @@ const CardAdvisor = (props) => {
           borderTop: "$borderWeights$light solid rgba(255, 255, 255, 0.2)",
           bottom: 0,
           zIndex: 1,
-        }}
-      >
+        }}>
         <Row>
           <Col>
             <Row justify="center">
               {isDisabled && !isInSalon ? (
                 <Button flat auto rounded color="error">
-                  <Text
-                    css={{ color: "inherit" }}
-                    size={12}
-                    weight="bold"
-                    transform="uppercase"
-                  >
+                  <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
                     Full
                   </Text>
                 </Button>
               ) : !isInSalon ? (
-                <Button
-                  flat
-                  auto
-                  rounded
-                  color="secondary"
-                  onPress={submitHandler}
-                >
-                  <Text
-                    css={{ color: "inherit" }}
-                    size={12}
-                    weight="bold"
-                    transform="uppercase"
-                  >
+                <Button flat auto rounded color="secondary" onPress={submitHandler}>
+                  <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
                     Join the salon
                   </Text>
                 </Button>
               ) : (
-                <Button
-                  flat
-                  auto
-                  rounded
-                  color="error"
-                  onPress={submitHandlerQuit}
-                >
-                  <Text
-                    css={{ color: "inherit" }}
-                    size={12}
-                    weight="bold"
-                    transform="uppercase"
-                  >
+                <Button flat auto rounded color="error" onPress={submitHandlerQuit}>
+                  <Text css={{ color: "inherit" }} size={12} weight="bold" transform="uppercase">
                     Quit salon
                   </Text>
                 </Button>

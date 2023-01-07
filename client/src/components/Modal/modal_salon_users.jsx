@@ -2,6 +2,7 @@ import { Button, Modal, Table, Text } from "@nextui-org/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { TrashSimple } from "phosphor-react";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { io } from "socket.io-client";
 
 const ModalSalon = (props) => {
@@ -62,6 +63,11 @@ const ModalSalon = (props) => {
       });
 
       socket.emit("delete-user", variables, id);
+      toast.success("Utilisateur supprimé");
+    },
+
+    onError: (error, variables, context) => {
+      toast.error("Une erreur est survenue");
     },
   });
 

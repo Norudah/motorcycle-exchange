@@ -1,6 +1,7 @@
-import { Button, Checkbox, Form, Input, Select } from "antd";
 import { Spacer } from "@nextui-org/react";
 import { useMutation } from "@tanstack/react-query";
+import { Button, Checkbox, Form, Input } from "antd";
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const formItemLayout = {
@@ -34,9 +35,11 @@ const Signup = () => {
   const mutation = useMutation(insertUser, {
     onSuccess: () => {
       navigate("/login");
+      toast.success("Votre compte a été créé avec succès ! Bienvenue !");
     },
     onError: () => {
       console.log("error");
+      toast.error("Une erreur est survenue. Votre compte n'a pas pu être créé.");
     },
   });
 
@@ -66,14 +69,7 @@ const Signup = () => {
       <h1>Sign up</h1>
       <Spacer y={1} />
 
-      <Form
-        {...formItemLayout}
-        form={form}
-        name="register"
-        className="signup-form"
-        onFinish={handleSubmit}
-        scrollToFirstError
-      >
+      <Form {...formItemLayout} form={form} name="register" className="signup-form" onFinish={handleSubmit} scrollToFirstError>
         <Form.Item
           name="firstname"
           label="Firstname"
@@ -83,8 +79,7 @@ const Signup = () => {
               message: "Please input your firstname!",
               whitespace: true,
             },
-          ]}
-        >
+          ]}>
           <Input />
         </Form.Item>
         <Form.Item
@@ -96,8 +91,7 @@ const Signup = () => {
               message: "Please input your lastname!",
               whitespace: true,
             },
-          ]}
-        >
+          ]}>
           <Input />
         </Form.Item>
         <Form.Item
@@ -112,8 +106,7 @@ const Signup = () => {
               required: true,
               message: "Please input your E-mail!",
             },
-          ]}
-        >
+          ]}>
           <Input />
         </Form.Item>
         <Form.Item
@@ -125,8 +118,7 @@ const Signup = () => {
               message: "Please input your password!",
             },
           ]}
-          hasFeedback
-        >
+          hasFeedback>
           <Input.Password />
         </Form.Item>
         <Form.Item
@@ -144,13 +136,10 @@ const Signup = () => {
                 if (!value || getFieldValue("password") === value) {
                   return Promise.resolve();
                 }
-                return Promise.reject(
-                  new Error("The two passwords that you entered do not match!")
-                );
+                return Promise.reject(new Error("The two passwords that you entered do not match!"));
               },
             }),
-          ]}
-        >
+          ]}>
           <Input.Password />
         </Form.Item>
         <Form.Item
@@ -158,14 +147,10 @@ const Signup = () => {
           valuePropName="checked"
           rules={[
             {
-              validator: (_, value) =>
-                value
-                  ? Promise.resolve()
-                  : Promise.reject(new Error("Should accept agreement")),
+              validator: (_, value) => (value ? Promise.resolve() : Promise.reject(new Error("Should accept agreement"))),
             },
           ]}
-          {...tailFormItemLayout}
-        >
+          {...tailFormItemLayout}>
           <Checkbox>
             I have read the <a href="">agreement</a>
           </Checkbox>
