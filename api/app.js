@@ -9,6 +9,7 @@ import CommunicationRouter from "./routes/Communication.js";
 import SalonRouter from "./routes/Salon.js";
 import SecurityRouter from "./routes/Security.js";
 
+import { checkIsAdmin } from "./middlewares/checkIsAdmin.js";
 import { checkIsAuthenticated } from "./middlewares/checkIsAuthenticated.js";
 import { checkToken } from "./utils/jwt.js";
 
@@ -100,8 +101,6 @@ userNamespace.on("connection", (socket) => {
   });
 });
 
-//
-
 adminNamespace.on("connection", (socket) => {
   // console.log("Authenticated admin connected");
 
@@ -189,7 +188,7 @@ app.get("/events", (request, response, next) => {
   });
 });
 
-app.post("/notify", (request, res, next) => {
+app.post("/notify", checkIsAuthenticated, checkIsAdmin, (request, res, next) => {
   console.log("notification reçus du front");
 
   const { title, message } = request.body;
