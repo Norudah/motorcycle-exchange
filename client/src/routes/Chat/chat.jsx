@@ -62,13 +62,7 @@ const Chat = () => {
             {result?.length > 0 ? (
               result.map((salon) =>
                 salon.type === "ROOM" ? (
-                  <ListSalon
-                    key={salon.id}
-                    id={salon.id}
-                    name={salon.name}
-                    nbMaxUser={salon.nbMaxUser}
-                    nbUser={salon.nbUser}
-                  />
+                  <ListSalon key={salon.id} id={salon.id} name={salon.name} nbMaxUser={salon.nbMaxUser} nbUser={salon.nbUser} />
                 ) : null
               )
             ) : (
@@ -77,11 +71,7 @@ const Chat = () => {
 
             <Spacer y={1} />
             <h4>People</h4>
-            {result.map((person) =>
-              person.type === "PRIVATE" ? (
-                <ListPeople key={person.id} id={person.id} name={person.name} />
-              ) : null
-            )}
+            {result.map((person) => (person.type === "PRIVATE" ? <ListPeople key={person.id} id={person.id} name={person.name} /> : null))}
           </Col>
         </Grid>
         <Grid xs={9}>

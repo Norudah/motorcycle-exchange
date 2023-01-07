@@ -1,8 +1,8 @@
 import { Button, Input, Modal, Text } from "@nextui-org/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { io } from "socket.io-client";
 import { toast } from "react-hot-toast";
+import { io } from "socket.io-client";
 
 const ModalSalon = (props) => {
   const { id, visible, closeHandler, name, nbMaxUser, nbPerson } = props;
@@ -11,9 +11,6 @@ const ModalSalon = (props) => {
   const [salonName, setSalonName] = useState(name);
   const [salonMaxPerson, setSalonMaxPerson] = useState(nbMaxUser);
   const queryClient = useQueryClient();
-
-  // si on essaye de mettre un nombre négatif, on met 0
-  // si on essaye de mettre un nombre inférieur au nombre de personne , on renvoie une erreur et cancel la mutation
 
   const mutation = useMutation(updateSalon, {
     onSuccess: (data) => {

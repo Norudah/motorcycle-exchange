@@ -16,7 +16,6 @@ const CardAdvisor = (props) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const token = user.token;
 
-  // join salon
   const mutation = useMutation(joinSalon, {
     onSuccess: () => {
       setIsInSalon(true);
@@ -45,7 +44,6 @@ const CardAdvisor = (props) => {
     });
   }
 
-  // quit salon
   const mutationQuit = useMutation(quitSalon, {
     onSuccess: () => {
       setIsInSalon(false);

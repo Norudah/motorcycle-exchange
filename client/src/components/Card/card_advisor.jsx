@@ -20,7 +20,6 @@ const CardAdvisor = (props) => {
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const userId = JSON.parse(localStorage.getItem("user")).user.id ?? null;
 
-  //fetch request only by me
   const { data: pendingRequest, refetch } = useQuery(["pendingRequest"], fetchPendingResquest, {
     onSuccess: (data) => {
       if (data.communication.length > 0) {

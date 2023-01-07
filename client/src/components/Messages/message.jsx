@@ -20,27 +20,13 @@ const Message = (props) => {
   };
 
   return (
-    <div
-      className={
-        isMyMessage ? "message message--right" : "message message--left"
-      }
-    >
+    <div className={isMyMessage ? "message message--right" : "message message--left"}>
       <div className="message__main">
-        <div className="message__header">
-          {isMyMessage ? null : (
-            <p className="message__header">{(firstname, lastname)}</p>
-          )}
-        </div>
+        <div className="message__header">{isMyMessage ? null : <p className="message__header">{(firstname, lastname)}</p>}</div>
         <p className="message__header__date ">{dateToString(date)}</p>
 
         <div className="message__content">
-          <p
-            className={
-              isMyMessage
-                ? "message--right__content__text message__content__text"
-                : "message--left__content__text message__content__text"
-            }
-          >
+          <p className={isMyMessage ? "message--right__content__text message__content__text" : "message--left__content__text message__content__text"}>
             {message}
           </p>
         </div>

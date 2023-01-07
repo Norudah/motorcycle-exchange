@@ -78,12 +78,7 @@ const ListSalon = (props) => {
   return (
     <div>
       <Spacer y={1} />
-      <Card
-        css={isActive ? { background: "#cee5ff" } : null}
-        isPressable
-        isHoverable
-        onPress={handleClick}
-      >
+      <Card css={isActive ? { background: "#cee5ff" } : null} isPressable isHoverable onPress={handleClick}>
         <Card.Body>
           <Row className="alignItemsCenter">
             <Avatar squared text={name} />
@@ -97,19 +92,9 @@ const ListSalon = (props) => {
               </Text>
             </Row>
             <Row>
-              <Button
-                auto
-                color="primary"
-                icon={<User size={15} fill="currentColor" filled />}
-                onClick={handler}
-              />
+              <Button auto color="primary" icon={<User size={15} fill="currentColor" filled />} onClick={handler} />
             </Row>
-            <ModalChatUsers
-              key={id}
-              id={id}
-              visible={visible}
-              closeHandler={closeHandler}
-            />
+            <ModalChatUsers key={id} id={id} visible={visible} closeHandler={closeHandler} />
           </Row>
         </Card.Body>
       </Card>

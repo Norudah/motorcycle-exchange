@@ -1,6 +1,7 @@
 import { Button, Input, Spacer } from "@nextui-org/react";
 import { BellSimpleRinging } from "phosphor-react";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 import classes from "./notification.module.css";
 
 const AdminNotification = () => {
@@ -15,11 +16,10 @@ const AdminNotification = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // Authorization: "Bearer " + token,
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify({ title: title, message: message }),
     });
-    console.log("notification sent");
   };
 
   const handleSubmit = async (e) => {
@@ -28,6 +28,7 @@ const AdminNotification = () => {
       await sendNotification();
     } catch (error) {
       console.error("error during send notification", error);
+      toast.error("Une erreur est survenue");
     }
   };
 

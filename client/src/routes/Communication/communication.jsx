@@ -13,7 +13,6 @@ const Communication = () => {
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const userId = JSON.parse(localStorage.getItem("user")).user.id ?? null;
 
-  //fetch number of advisor online
   const { data: advisorOnline } = useQuery(["advisorOnline"], fetchAdvisorOnline, {
     onSuccess: (data) => {
       setNbAdvisorOnline(data.users.length);

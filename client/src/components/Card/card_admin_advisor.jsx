@@ -19,7 +19,6 @@ const CardAdvisor = (props) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  //fetch User with id
   const { data: user } = useQuery(["user", id], fetchUser, {
     onSuccess: (data) => {
       setFirstName(data.user.firstName);

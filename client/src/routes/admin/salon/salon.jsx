@@ -19,7 +19,6 @@ const Communication = () => {
     setVisible(false);
   };
 
-  // Fetch Salon data from API
   const { data, refetch } = useQuery(["salon"], async () => {
     const response = await fetch("http://localhost:3000/salon", {
       method: "GET",
@@ -48,11 +47,7 @@ const Communication = () => {
           Add a new chat room
         </Button>
       </Row>
-      <ModalSalonAdd
-        visible={visible}
-        closeHandler={closeHandler}
-        refetch={refetch()}
-      />
+      <ModalSalonAdd visible={visible} closeHandler={closeHandler} refetch={refetch()} />
       <Spacer y={1} />
 
       {result?.length > 0 ? (

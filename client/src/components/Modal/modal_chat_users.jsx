@@ -2,9 +2,9 @@ import { Button, Modal, Table, Text } from "@nextui-org/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChatCenteredDots } from "phosphor-react";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
-import { toast } from "react-hot-toast";
 
 const ModalSalon = (props) => {
   const { id, visible, closeHandler } = props;
@@ -36,7 +36,6 @@ const ModalSalon = (props) => {
     return data;
   }
 
-  //Create chatroom with me and the user
   const mutationChatroom = useMutation(createChatroom, {
     onSuccess: (data) => {
       navigate(`/chats/p/${data.salon.id}`);
