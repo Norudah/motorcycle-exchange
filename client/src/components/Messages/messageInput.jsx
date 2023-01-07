@@ -1,6 +1,6 @@
 import { Input } from "@nextui-org/react";
 
-import { Circle, PaperPlaneTilt } from "phosphor-react";
+import { PaperPlaneTilt } from "phosphor-react";
 import { SendButton } from "./sendButton";
 
 const MessageInput = () => {

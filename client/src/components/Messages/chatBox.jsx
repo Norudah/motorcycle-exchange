@@ -21,15 +21,11 @@ const ChatBox = (props) => {
   const [inputMessage, setInputMessage] = useState("");
   const [usersInRoom, setUsersInRoom] = useState([]);
 
-  //verify if the user is in the room
-
   const { data } = useQuery(["usersInRoom", params], fetchUserInRoom, {
     onSuccess: (data) => {
       setUsersInRoom(data?.salon?.users);
 
-      if (
-        !data?.salon?.users?.some((userInRoom) => userInRoom.id === user.id)
-      ) {
+      if (!data?.salon?.users?.some((userInRoom) => userInRoom.id === user.id)) {
         navigate("/chats");
       } else {
         console.log("ok");
@@ -41,16 +37,13 @@ const ChatBox = (props) => {
   });
 
   async function fetchUserInRoom() {
-    const response = await fetch(
-      `http://localhost:3000/salon/users/${params}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch(`http://localhost:3000/salon/users/${params}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.json();
   }
 

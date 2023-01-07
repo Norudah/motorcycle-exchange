@@ -19,7 +19,6 @@ const ListPeople = (props) => {
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const myId = JSON.parse(localStorage.getItem("user")).user.id;
 
-  // fetch the user join the room
   const { data: user } = useQuery(["user", id], fetchUser, {
     onSuccess: (data) => {
       setData(data.salon.users);
@@ -69,12 +68,7 @@ const ListPeople = (props) => {
   return (
     <div>
       <Spacer y={1} />
-      <Card
-        css={isActive ? { background: "#cee5ff" } : null}
-        isPressable
-        isHoverable
-        onPress={handleClick}
-      >
+      <Card css={isActive ? { background: "#cee5ff" } : null} isPressable isHoverable onPress={handleClick}>
         <Card.Body>
           <Row className="alignItemsCenter">
             <Avatar squared text={otherUser.firstname} />

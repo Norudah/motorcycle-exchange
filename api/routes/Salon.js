@@ -19,7 +19,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-// get salon when type is ROOM
 router.get("/room", async (req, res) => {
   try {
     const salon = await prisma.ChatRoom.findMany({
@@ -78,7 +77,6 @@ router.put("/update/:id", checkIsAdmin, async (req, res) => {
   }
 });
 
-// create salon with two users in it
 router.post("/create/private", async (req, res) => {
   try {
     const { userId1, userId2, nameRoom } = req.body;
@@ -118,10 +116,7 @@ router.post("/join/:id", async (req, res) => {
     });
 
     res.json({ salon });
-    console.log(
-      "User " + userId + " joined salon " + salon.name,
-      "nbUser: " + salon.nbUser
-    );
+    console.log("User " + userId + " joined salon " + salon.name, "nbUser: " + salon.nbUser);
   } catch (error) {
     console.error(error);
     res.status(500).send("Error joining salon");
@@ -151,7 +146,6 @@ router.post("/leave/:id", async (req, res) => {
   }
 });
 
-// fetch the salon join by the user
 router.get("/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -171,7 +165,6 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// fetch the salon join by the user
 router.get("/users/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -188,7 +181,6 @@ router.get("/users/:id", async (req, res) => {
   }
 });
 
-// fetch the salon and the user in it
 router.get("/user/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -234,7 +226,6 @@ router.post("/user/delete/:id", checkIsAdmin, async (req, res) => {
   }
 });
 
-// fetch the last salon join by the user with include name "private"
 router.get("/last/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);

@@ -33,7 +33,6 @@ const Communication = () => {
     return response.json();
   }
 
-  //fetch request
   const { data: request } = useQuery(["pendingRequest"], fetchPendingResquest, {
     onSuccess: (data) => {
       setPendingRequest(data.communication);

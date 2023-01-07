@@ -42,7 +42,6 @@ model ChatRoom {
   messages  Message[]
 }
 
-// create many to many relation between user and ChatRoom
 model Notification {
   id        Int                  @id @default(autoincrement())
   title     String?

@@ -14,7 +14,6 @@ const Communication = () => {
   const userId = user?.user.id;
   const queryClient = useQueryClient();
 
-  //fetch ROOM
   const { data } = useQuery(["room"], async () => {
     const response = await fetch("http://localhost:3000/salon/room", {
       method: "GET",

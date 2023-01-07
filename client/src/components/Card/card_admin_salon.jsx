@@ -40,7 +40,6 @@ const CardAdvisor = (props) => {
     }
   }, [nbPerson]);
 
-  // Join salon
   const mutation = useMutation(joinSalon, {
     onSuccess: () => {
       setIsInSalon(true);
@@ -68,7 +67,6 @@ const CardAdvisor = (props) => {
     });
   }
 
-  // Quit salon
   const mutationQuit = useMutation(quitSalon, {
     onSuccess: () => {
       setIsInSalon(false);
