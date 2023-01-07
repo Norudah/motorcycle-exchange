@@ -4,6 +4,7 @@ import { io } from "socket.io-client";
 
 import { Button, Card, Col, Row, Spacer, Text } from "@nextui-org/react";
 import { Gear, TrashSimple, User } from "phosphor-react";
+import { toast } from "react-hot-toast";
 import ModalSalon from "../Modal/modal_salon";
 import ModalSalonUsers from "../Modal/modal_salon_users";
 
@@ -49,6 +50,10 @@ const CardAdvisor = (props) => {
         },
       });
       socket.emit("join-room", id);
+      toast.success("Vous avez rejoint le salon");
+    },
+    onError: (error) => {
+      toast.error("Une erreur est survenue");
     },
   });
 
@@ -73,6 +78,11 @@ const CardAdvisor = (props) => {
         },
       });
       socket.emit("leave-room", id);
+      toast.success("Vous avez quitté le salon");
+    },
+
+    onError: (error) => {
+      toast.error("Une erreur est survenue");
     },
   });
 
@@ -96,6 +106,11 @@ const CardAdvisor = (props) => {
         },
       });
       socket.emit("delete-room", id);
+      toast.success("Salon supprimé avec succès");
+    },
+
+    onError: (error) => {
+      toast.error("Une erreur est survenue");
     },
   });
 
@@ -168,14 +183,7 @@ const CardAdvisor = (props) => {
       <Card.Header css={{ position: "absolute", zIndex: 1, top: 5 }}>
         <Col>
           <Row justify="space-around">
-            <Button
-              flat
-              auto
-              rounded
-              color="primary"
-              icon={<User />}
-              onClick={handlerModalUser}
-            />
+            <Button flat auto rounded color="primary" icon={<User />} onClick={handlerModalUser} />
 
             <ModalSalonUsers key={id} id={id} visible={visibleModalUser} closeHandler={closeHandlerModalUser} />
 

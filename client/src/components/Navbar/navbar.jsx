@@ -34,6 +34,7 @@ const CustomNavbar = () => {
     queryClient.clear();
     setIsLogged(false);
     navigate("/");
+    toast.success("Vous êtes maintenant déconnecté");
   };
 
   const [listening, setListening] = useState(false);

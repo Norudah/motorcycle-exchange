@@ -4,6 +4,7 @@ import { ChatCenteredDots } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
+import { toast } from "react-hot-toast";
 
 const ModalSalon = (props) => {
   const { id, visible, closeHandler } = props;
@@ -46,6 +47,11 @@ const ModalSalon = (props) => {
         },
       });
       socket.emit("add-room", data.salon.id);
+      toast.success("Communication établie");
+    },
+
+    onError: (error) => {
+      toast.error("Erreur de communication");
     },
   });
 
@@ -101,11 +107,7 @@ const ModalSalon = (props) => {
   }
 
   function handleChatWithUser(userId) {
-    const salon = resultSalon.find(
-      (salon) =>
-        salon.users.find((user) => user.id === userId) &&
-        salon.users.find((user) => user.id === myId)
-    );
+    const salon = resultSalon.find((salon) => salon.users.find((user) => user.id === userId) && salon.users.find((user) => user.id === myId));
     if (!salon) {
       mutationChatroom.mutate(userId);
       closeHandler();
@@ -117,13 +119,7 @@ const ModalSalon = (props) => {
   }
 
   return (
-    <Modal
-      closeButton
-      aria-labelledby="modal-title"
-      open={visible}
-      onClose={closeHandler}
-      width="700px"
-    >
+    <Modal closeButton aria-labelledby="modal-title" open={visible} onClose={closeHandler} width="700px">
       <Modal.Header>
         <Text id="modal-title" size={18}>
           <Text b size={18}>
@@ -137,8 +133,7 @@ const ModalSalon = (props) => {
           css={{
             height: "auto",
             minWidth: "100%",
-          }}
-        >
+          }}>
           <Table.Header>
             <Table.Column>NAME</Table.Column>
             <Table.Column>ROLE</Table.Column>
@@ -154,14 +149,7 @@ const ModalSalon = (props) => {
                   <Table.Cell>{result?.role}</Table.Cell>
                   <Table.Cell>
                     {result?.role === "USER" && (
-                      <Button
-                        flat
-                        auto
-                        rounded
-                        color="primary"
-                        icon={<ChatCenteredDots />}
-                        onClick={() => handleChatWithUser(result?.id)}
-                      />
+                      <Button flat auto rounded color="primary" icon={<ChatCenteredDots />} onClick={() => handleChatWithUser(result?.id)} />
                     )}
                   </Table.Cell>
                 </Table.Row>

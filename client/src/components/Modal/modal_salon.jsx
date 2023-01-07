@@ -2,6 +2,7 @@ import { Button, Input, Modal, Text } from "@nextui-org/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { io } from "socket.io-client";
+import { toast } from "react-hot-toast";
 
 const ModalSalon = (props) => {
   const { id, visible, closeHandler, name, nbMaxUser, nbPerson } = props;
@@ -23,8 +24,11 @@ const ModalSalon = (props) => {
         },
       });
       socket.emit("update-room", data.salon.id);
+      toast.success("Le salon a été modifié avec succès");
     },
-    onError: (error) => {},
+    onError: (error) => {
+      toast.error("Une erreur est survenue");
+    },
   });
 
   async function updateSalon() {
@@ -48,12 +52,7 @@ const ModalSalon = (props) => {
   }
 
   return (
-    <Modal
-      closeButton
-      aria-labelledby="modal-title"
-      open={visible}
-      onClose={closeHandler}
-    >
+    <Modal closeButton aria-labelledby="modal-title" open={visible} onClose={closeHandler}>
       <Modal.Header>
         <Text id="modal-title" size={18}>
           <Text b size={18}>
@@ -62,21 +61,8 @@ const ModalSalon = (props) => {
         </Text>
       </Modal.Header>
       <Modal.Body>
-        <Input
-          autoFocus
-          label="Salon Name"
-          value={salonName}
-          bordered
-          clearable
-          onChange={(e) => setSalonName(e.target.value)}
-        />
-        <Input
-          label="Max person per salon"
-          value={salonMaxPerson}
-          onChange={(e) => setSalonMaxPerson(e.target.value)}
-          bordered
-          clearable
-        />
+        <Input autoFocus label="Salon Name" value={salonName} bordered clearable onChange={(e) => setSalonName(e.target.value)} />
+        <Input label="Max person per salon" value={salonMaxPerson} onChange={(e) => setSalonMaxPerson(e.target.value)} bordered clearable />
       </Modal.Body>
       <Modal.Footer>
         <Button auto onPress={submitUpdatehandler}>
