@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-
 import { NextUIProvider } from "@nextui-org/react";
+import { useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-import CustomNavbar from "./components/Navbar/navbar";
 
+import CustomNavbar from "./components/Navbar/navbar";
 import AdminCommunication from "./routes/Admin/Communication/communication";
+import AdminNotification from "./routes/Admin/notification/notification";
 import AdminSalon from "./routes/Admin/Salon/salon";
 import Chat from "./routes/Chat/chat";
 import Communication from "./routes/Communication/communication";
@@ -34,6 +35,7 @@ function App() {
     <BrowserRouter>
       <NextUIProvider>
         <CustomNavbar />
+        <Toaster position="bottom-right" />
 
         <Routes>
           <Route path="/" element={<Home />} />
@@ -52,6 +54,7 @@ function App() {
 
           <Route path="/admin/communication" element={<AdminCommunication />} />
           <Route path="/admin/salon" element={<AdminSalon />} />
+          <Route path="/admin/notification" element={<AdminNotification />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </NextUIProvider>

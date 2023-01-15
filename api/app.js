@@ -1,17 +1,15 @@
+import { instrument } from "@socket.io/admin-ui";
 import cors from "cors";
 import * as dotenv from "dotenv";
 import express from "express";
-
-// Socket.io
-import { instrument } from "@socket.io/admin-ui";
 import { createServer } from "http";
 import { Server } from "socket.io";
 
-// Import routes
+import CommunicationRouter from "./routes/Communication.js";
 import SalonRouter from "./routes/Salon.js";
 import SecurityRouter from "./routes/Security.js";
-import CommunicationRouter from "./routes/Communication.js";
 
+import { checkIsAdmin } from "./middlewares/checkIsAdmin.js";
 import { checkIsAuthenticated } from "./middlewares/checkIsAuthenticated.js";
 import { checkToken } from "./utils/jwt.js";
 import { getYear, getDate, isDateMoreThanOneYearAway } from "./utils/helps.js";
@@ -71,7 +69,6 @@ const isAdminMiddleware = (socket, next) => {
   socket.disconnect();
   next(new Error("Authentication error from adminNamespace"));
 };
-
 // Namespaces
 
 const userNamespace = io.of("/user");
@@ -108,129 +105,146 @@ userNamespace.on("connection", (socket) => {
   });
 
   socket.on("join-room-bot", (botResume) => {
-    console.log("join-room-bot", botResume);
+    userNamespace.emit("clear-bot");
     userNamespace.emit("welcome-bot", botResume, [
-      {step: null, message: "Bonjour, comment puis-je vous aider ?"},
-      {step: 1, message: "Vérifier l'entretien de mon véhicule"},
-      {step: 2, message: "Informations sur les véhicules"},
-      {step: 3, message: "Informations de contact"},
-      {step: 4, message: "Merci et au revoir"}
+      { step: null, message: "Bonjour, comment puis-je vous aider ?" },
+      { step: 1, message: " * Vérifier l'entretien de mon véhicule" },
+      { step: 2, message: " * Informations sur les véhicules" },
+      { step: 3, message: " * Informations de contact" },
+      { step: 4, message: " * Merci et au revoir" },
     ]);
   });
 
   socket.on("response-message-bot", (botResume) => {
-
-    console.log("response-message-bot", botResume.newMessageUser);
-    console.log("response-message-bot", botResume.step);
-
+    console.log("response-message-bot", botResume);
     switch (botResume.step) {
-      case '1':
-
+      case 1:
         const yearRegex = /\b(?:20|19)\d{2}\b/;
         const dateRegex = /\b\d{2}\/\d{2}\/\d{4}\b/;
 
         switch (botResume.newMessageUser) {
           case yearRegex.test(getYear(botResume.newMessageUser)):
-            userNamespace.emit("send-bot-message", botResume, "Quel est la date de votre dernier entretien pour ce vehicule ? (jj/mm/aaaa)");
+            userNamespace.emit(
+              "send-bot-message",
+              botResume,
+              "Quel est la date de votre dernier entretien pour ce vehicule ? (jj/mm/aaaa)"
+            );
             break;
           case dateRegex.test(getDate(botResume.newMessageUser)):
             if (isDateMoreThanOneYearAway(getDate(botResume.newMessageUser))) {
-              userNamespace.emit("send-bot-message", botResume, "La date de votre dernier entretien est-il antérieur à aujourd'hui ?", {
-                1: "oui",
-                2: "non"
-              });
+              userNamespace.emit(
+                "send-bot-message",
+                botResume,
+                "La date de votre dernier entretien est-il antérieur à aujourd'hui ?",
+                {
+                  1: "oui",
+                  2: "non",
+                }
+              );
             } else {
-              userNamespace.emit("send-bot-message", botResume, "La date de votre dernier entretien est-il antérieur à aujourd'hui ?", {
-                1: "oui",
-                2: "non"
-              });
+              userNamespace.emit(
+                "send-bot-message",
+                botResume,
+                "La date de votre dernier entretien est-il antérieur à aujourd'hui ?",
+                {
+                  1: "oui",
+                  2: "non",
+                }
+              );
             }
             break;
           default:
-            userNamespace.emit("send-bot-message", botResume, "Quel est la date de votre vehicule ?");
+            userNamespace.emit("clear-bot");
+            userNamespace.emit("send-bot-message", botResume, [
+              {
+                step: 1,
+                message: "Quel est la date de votre vehicule ?",
+              },
+            ]);
             break;
         }
         break;
-      case '2':
+      case 2:
+        userNamespace.emit("clear-bot");
+        userNamespace.emit("send-bot-message", botResume, [
+          {
+            step: null,
+            message: "Quel est le type d'usage de votre véhicule ?",
+          },
+          { step: 5, message: "un usage routier" },
+          { step: 5, message: "un usage tout terrain" },
+          { step: 5, message: "un usage sportif" },
+        ]);
+        break;
+      case 3:
         switch (botResume.newMessageUser) {
-          case 'un usage routier':
-            userNamespace.emit("send-bot-message", botResume, "Votre véhicule est-il équipé d'un kit carrosserie ?", {
-              1: "oui",
-              2: "non"
-            });
+          case "par mail":
+            userNamespace.emit("clear-bot");
+            userNamespace.emit("send-bot-message", botResume, [
+              { step: null, message: "contact@motorcycle-exchange.com" },
+            ]);
+            userNamespace.emit("welcome-bot", botResume, [
+              { step: null, message: "Bonjour, comment puis-je vous aider ?" },
+              { step: 1, message: " * Vérifier l'entretien de mon véhicule" },
+              { step: 2, message: " * Informations sur les véhicules" },
+              { step: 3, message: " * Informations de contact" },
+              { step: 4, message: " * Merci et au revoir" },
+            ]);
             break;
-          case 'un usage tout terrain':
-            userNamespace.emit("send-bot-message", botResume, "Votre véhicule est-il équipé d'un kit carrosserie ?", {
-              1: "oui",
-              2: "non"
-            });
-            break;
-          case 'un usage sportif':
-            userNamespace.emit("send-bot-message", botResume, "Votre véhicule est-il équipé d'un kit carrosserie ?", {
-              1: "oui",
-              2: "non"
-            });
+          case "par téléphone":
+            userNamespace.emit("clear-bot");
+            userNamespace.emit("send-bot-message", botResume, [
+              { step: null, message: "01 23 45 67 89" },
+            ]);
+            userNamespace.emit("welcome-bot", botResume, [
+              { step: null, message: "Bonjour, comment puis-je vous aider ?" },
+              { step: 1, message: " * Vérifier l'entretien de mon véhicule" },
+              { step: 2, message: " * Informations sur les véhicules" },
+              { step: 3, message: " * Informations de contact" },
+              { step: 4, message: " * Merci et au revoir" },
+            ]);
             break;
           default:
-            userNamespace.emit("send-bot-message", botResume, "Quel est le type d'usage de votre véhicule ?", {
-              1: "un usage routier",
-              2: "un usage tout terrain",
-              3: "un usage sportif"
-            });
+            userNamespace.emit("clear-bot");
+            userNamespace.emit("send-bot-message", botResume, [
+              { step: null, message: "Comment souhaitez-vous être contacté ?" },
+              { step: 3, message: "par mail" },
+              { step: 3, message: "par téléphone" },
+            ]);
             break;
         }
         break;
-      case '3':
-        switch (botResume.newMessageUser) {
-          case 'par mail':
-            userNamespace.emit("send-bot-message", botResume, "contact@motorcycle-exchange.com");
-            botResume.modifStep = 1;
-            userNamespace.emit("send-bot-message", botResume, "Puis-je vous aidez autrement ?", {
-              1: "Vérifier l'entretien de mon véhicule",
-              2: "Informations sur les véhicules",
-              3: "Informations de contact",
-              4: "Merci et au revoir"
-            });
-            break;
-          case 'par téléphone':
-            userNamespace.emit("send-bot-message", botResume, "01 23 45 67 89");
-            botResume.modifStep = 1;
-            userNamespace.emit("send-bot-message", botResume, "Puis-je vous aidez autrement ?", {
-              1: "Vérifier l'entretien de mon véhicule",
-              2: "Informations sur les véhicules",
-              3: "Informations de contact",
-              4: "Merci et au revoir"
-            });
-            break;
-          default:
-            userNamespace.emit("send-bot-message", botResume, "Comment souhaitez-vous être contacté ?", {
-              1: "par mail",
-              2: "par téléphone"
-            });
-            break;
-        }
+      case 4:
+        userNamespace.emit("clear-bot");
+        userNamespace.emit("send-bot-message", botResume, [
+          { step: null, message: "Merci, j'espère avoir été utile" },
+        ]);
         break;
-      case '4':
-        userNamespace.emit("send-bot-message", botResume, "Merci, j'espère avoir été utile");
-        break;
-      case 'reservation':
-        userNamespace.emit("send-bot-message", botResume, "Voici les heures disponibles pour votre réservation :", {
-        });
+      case 5:
+        userNamespace.emit("clear-bot");
+        userNamespace.emit("send-bot-message", botResume, [
+          {
+            step: null,
+            message: "Voici les heures disponibles pour votre réservation :",
+          },
+        ]);
         break;
       default:
-        botResume.modifStep = 1;
-        userNamespace.emit("welcome-bot", botResume, "Bonjour, comment puis-je vous aider ?", {
-          1: "Vérifier l'entretien de mon véhicule",
-          2: "Informations sur les véhicules",
-          3: "Informations de contact",
-          4: "Merci et au revoir"
-        });
+        userNamespace.emit(
+          "welcome-bot",
+          botResume,
+          "Bonjour, comment puis-je vous aider ?",
+          {
+            1: "Vérifier l'entretien de mon véhicule",
+            2: "Informations sur les véhicules",
+            3: "Informations de contact",
+            4: "Merci et au revoir",
+          }
+        );
         break;
     }
   });
 });
-
-//
 
 adminNamespace.on("connection", (socket) => {
   // console.log("Authenticated admin connected");
@@ -275,7 +289,6 @@ adminNamespace.on("connection", (socket) => {
   });
 });
 
-
 httpServer.listen(port, () => {
   console.log(`Server listening on port ${port} , , http://localhost:${port}`);
 });
@@ -283,10 +296,73 @@ httpServer.listen(port, () => {
 app.use(express.json());
 app.use(cors({ credentials: true, origin: "*" }));
 
-app.get("/", (req, res) => {
-  res.send("Hellow World!");
+app.use(SecurityRouter);
+
+app.use("/salon", checkIsAuthenticated, SalonRouter);
+
+// SSE
+
+let clients = [];
+let testData = [];
+
+app.get("/events", (request, response, next) => {
+  const headers = {
+    "Content-Type": "text/event-stream",
+    Connection: "keep-alive",
+    "Cache-Control": "no-cache",
+  };
+
+  response.writeHead(200, headers);
+
+  const data = `data: ${JSON.stringify(testData)}\n\n`;
+
+  response.write(data);
+
+  const clientId = Date.now();
+
+  const newClient = {
+    id: clientId,
+    response,
+  };
+
+  clients.push(newClient);
+
+  request.on("close", () => {
+    console.log(`${clientId} Connection closed`);
+    clients = clients.filter((client) => client.id !== clientId);
+  });
 });
 
+app.post(
+  "/notify",
+  checkIsAuthenticated,
+  checkIsAdmin,
+  (request, res, next) => {
+    console.log("notification reçus du front");
+
+    const { title, message } = request.body;
+    console.log("params", title, message);
+
+    if (!title || !message) {
+      return res.status(400).json({ error: "title and message are required" });
+    }
+
+    const notification = {
+      title,
+      message,
+    };
+
+    console.log("clients");
+    console.table(clients);
+
+    res.json(notification);
+    return clients.forEach((client) =>
+      client.response.write(`data: ${JSON.stringify(notification)}\n\n`)
+    );
+  }
+);
+
 app.use(SecurityRouter);
+
 app.use("/salon", checkIsAuthenticated, SalonRouter);
 app.use("/communication", checkIsAuthenticated, CommunicationRouter);

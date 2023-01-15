@@ -1,11 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { io } from "socket.io-client";
 
 const BotMessage = (props) => {
-  const { message, id, firstname, lastname, date, id_person } = props;
-  const [show, setShow] = useState(false);
-  const [isMyMessage, setIsMyMessage] = useState(false);
+  const { message, id_person, step } = props;
 
+  const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const userId = JSON.parse(localStorage.getItem("user")).user.id ?? null;
+
+  const [lastMessageUser, setlastMessageUser] = useState("");
+
+  const [botResume, setBotResume] = useState([
+    {
+      userId: userId,
+      step: null,
+      newMessageUser: null,
+    },
+  ]);
 
   useState(() => {
     if (id_person === userId) {
@@ -13,34 +23,34 @@ const BotMessage = (props) => {
     }
   }, []);
 
-  const dateToString = (date) => {
-    const dateObj = new Date(date);
-    const dateStr = dateObj.toLocaleString();
-    return dateStr;
+  const handleClick = (step, message) => {
+    setBotResume({
+      userId: userId,
+      step: step,
+      newMessageUser: message,
+    });
+
+    setlastMessageUser(botResume.newMessageUser);
   };
+
+  useEffect(() => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token,
+      },
+    });
+    console.log("in useEffect");
+    socket.emit("response-message-bot", botResume);
+  }, [lastMessageUser != botResume.newMessageUser]);
 
   return (
     <div
-      className={
-        isMyMessage ? "message message--right" : "message message--left"
-      }
+      className="cursor message message--left"
+      onClick={() => handleClick(step, message)}
     >
       <div className="message__main">
-        <div className="message__header">
-          {isMyMessage ? null : (
-            <p className="message__header">{(firstname, lastname)}</p>
-          )}
-        </div>
-        <p className="message__header__date ">{dateToString(date)}</p>
-
         <div className="message__content">
-          <p
-            className={
-              isMyMessage
-                ? "message--right__content__text message__content__text"
-                : "message--left__content__text message__content__text"
-            }
-          >
+          <p className="message--right__content__text message__content__text">
             {message}
           </p>
         </div>
@@ -49,4 +59,4 @@ const BotMessage = (props) => {
   );
 };
 
-export default BotMessagec;
+export default BotMessage;

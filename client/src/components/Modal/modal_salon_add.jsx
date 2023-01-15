@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 import { Button, Input, Modal, Text } from "@nextui-org/react";
+import { toast } from "react-hot-toast";
 
 const ModalSalon = (props) => {
   const { id, visible, closeHandler, name, maxPerson } = props;
@@ -24,8 +25,11 @@ const ModalSalon = (props) => {
         },
       });
       socket.emit("add-room", data.salon.id);
+      toast.success("Votre salon a été créé avec succès");
     },
-    onError: (error) => {},
+    onError: (error) => {
+      toast.error("Une erreur est survenue");
+    },
   });
 
   async function addSalon() {

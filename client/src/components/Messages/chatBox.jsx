@@ -1,24 +1,61 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 
 import { Input } from "@nextui-org/react";
 import { PaperPlaneTilt } from "phosphor-react";
-import { SendButton } from "./sendButton";
 import MessageList from "./messageList";
+import MessageBotList from "./messageBotList";
+import { SendButton } from "./sendButton";
+import BotMessage from "./botMessage";
 
 const ChatBox = (props) => {
-  const { id } = props;
+  const { params } = props;
 
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const user = JSON.parse(localStorage.getItem("user")).user ?? null;
-  const [messages, setMessage] = useState([]);
-  const [inputMessage, setInputMessage] = useState("");
-  const params = useParams();
-  const queryClient = useQueryClient();
 
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  const [messages, setMessage] = useState([]);
+  const [botMessages, setBotMessage] = useState([]);
+  const [inputMessage, setInputMessage] = useState("");
+  const [usersInRoom, setUsersInRoom] = useState([]);
+
+  if (params !== "bot") {
+    const { data } = useQuery(["usersInRoom", params], fetchUserInRoom, {
+      onSuccess: (data) => {
+        setUsersInRoom(data?.salon?.users);
+
+        if (
+          !data?.salon?.users?.some((userInRoom) => userInRoom.id === user.id)
+        ) {
+          navigate("/chats");
+        } else {
+          console.log("ok");
+        }
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+    });
+  }
+
+  async function fetchUserInRoom() {
+    const response = await fetch(
+      `http://localhost:3000/salon/users/${params}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.json();
+  }
 
   useEffect(() => {
     const socket = io("http://localhost:3000/user", {
@@ -27,7 +64,7 @@ const ChatBox = (props) => {
       },
     });
     socket.on("send-message", (message, room, user) => {
-      if (room === id) {
+      if (params === room) {
         setMessage((messages) => [
           ...messages,
           {
@@ -43,18 +80,15 @@ const ChatBox = (props) => {
     });
 
     socket.on("welcome-bot", (botResume, response) => {
-      console.log("welcome-bot");
       if (botResume.userId === user.id) {
         response.map((message) => {
-          setMessage((messages) => [
-            ...messages,
+          setBotMessage((botMessages) => [
+            ...botMessages,
             {
               id: Date.now(),
               id_person: "bot",
               message: message.message,
-              date: Date.now(),
-              userFirstname: "--",
-              userLastname: "bot"
+              step: message.step,
             },
           ]);
         });
@@ -62,16 +96,53 @@ const ChatBox = (props) => {
     });
 
     socket.on("delete-room", (room) => {
-      if (params.roomId == room) {
+      if (params == room) {
         navigate("/chats");
       }
     });
 
     socket.on("delete-user", (idOfUser, room) => {
-      if (params.roomId == room && idOfUser == user.id) {
+      if (params == room && idOfUser == user.id) {
         navigate("/chats");
         queryClient.invalidateQueries("salons");
       }
+    });
+  }, [params]);
+
+  useEffect(() => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token,
+      },
+    });
+
+    socket.on("send-bot-message", (botResume, response) => {
+      if (botResume.userId === user.id) {
+        response.map((message) => {
+          setBotMessage((botMessages) => [
+            ...botMessages,
+            {
+              id: Date.now(),
+              id_person: "bot",
+              message: message.message,
+              step: message.step,
+            },
+          ]);
+        });
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token,
+      },
+    });
+
+    socket.on("clear-bot", () => {
+      console.log("clear");
+      setBotMessage([]);
     });
   }, []);
 
@@ -83,13 +154,17 @@ const ChatBox = (props) => {
         },
       });
 
-      socket.emit("send-message", inputMessage, id, user);
+      socket.emit("send-message", inputMessage, params, user);
     }
     setInputMessage("");
   };
 
   useEffect(() => {
     setMessage([]);
+  }, [params]);
+
+  useEffect(() => {
+    setBotMessage([]);
   }, [params]);
 
   useEffect(() => {
@@ -104,7 +179,10 @@ const ChatBox = (props) => {
 
   return (
     <div className="mainChatbox">
-      <MessageList messages={messages} />
+      <div className="messageList">
+        <MessageList messages={messages} />
+        <MessageBotList messages={botMessages} />
+      </div>
 
       <div className="messageInput">
         <Input

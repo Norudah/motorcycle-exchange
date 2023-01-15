@@ -1,12 +1,10 @@
 import { styled } from "@nextui-org/react";
 
 export const SendButton = styled("button", {
-  // reset button styles
   background: "transparent",
   border: "none",
   padding: 0,
 
-  // styles
   width: "24px",
   margin: "0 10px",
   dflex: "center",

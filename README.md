@@ -66,6 +66,7 @@ features :
 - [x] Send messages inside chatRooms
 - [ ] Send private messages to a concelor
 - [ ] Discuss with the chatbot
+- [x] Get notified at anytime
 
 ---
 

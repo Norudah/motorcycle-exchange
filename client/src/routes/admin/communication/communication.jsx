@@ -1,35 +1,13 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
 import { io } from "socket.io-client";
 
-import { Grid, Spacer, Switch, Text, Row } from "@nextui-org/react";
-import { BellSlash, Bell } from "phosphor-react";
+import { Grid, Row, Spacer, Switch, Text } from "@nextui-org/react";
+import { Bell, BellSlash } from "phosphor-react";
+import { toast } from "react-hot-toast";
 import CardAdminAdvisor from "../../../components/Card/card_admin_advisor";
 
 const Communication = () => {
-  const advisor = [
-    {
-      id: 1,
-      firstname: "John",
-      lastname: "Doe",
-    },
-    {
-      id: 2,
-      firstname: "Jane",
-      lastname: "Doe",
-    },
-    {
-      id: 3,
-      firstname: "Jean",
-      lastname: "Didier",
-    },
-  ];
-
   const [isAvailable, setIsAvailable] = useState();
   const [pendingRequests, setPendingRequest] = useState();
   const queryClient = useQueryClient();
@@ -45,20 +23,16 @@ const Communication = () => {
   });
 
   async function fetchAdvisor() {
-    const response = await fetch(
-      `http://localhost:3000/communication/advisor/${userId}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch(`http://localhost:3000/communication/advisor/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.json();
   }
 
-  //fetch request
   const { data: request } = useQuery(["pendingRequest"], fetchPendingResquest, {
     onSuccess: (data) => {
       setPendingRequest(data.communication);
@@ -66,42 +40,39 @@ const Communication = () => {
   });
 
   async function fetchPendingResquest() {
-    const response = await fetch(
-      `http://localhost:3000/communication/pending-request`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch(`http://localhost:3000/communication/pending-request`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.json();
   }
 
   const mutation = useMutation(updateAvailability, {
     onSuccess: (data) => {
       setIsAvailable(data.user.availability);
+      const message = isAvailable ? "Vous êtes maintenant disponible" : "Vous êtes maintenant indisponible";
+      toast.success(message);
     },
     onError: (error) => {
       console.log(error);
+      toast.error("Une erreur est survenue");
     },
   });
 
   async function updateAvailability() {
-    const res = await fetch(
-      `http://localhost:3000/communication/available/advisor/${userId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          availability: !isAvailable,
-        }),
-      }
-    );
+    const res = await fetch(`http://localhost:3000/communication/available/advisor/${userId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        availability: !isAvailable,
+      }),
+    });
     return res.json();
   }
 
@@ -133,26 +104,13 @@ const Communication = () => {
       <Row justify="center">
         <Text h3>Show me to User : </Text>
         <Spacer x={1} />
-        <Switch
-          color="error"
-          size="xl"
-          iconOn={<BellSlash />}
-          iconOff={<Bell />}
-          checked={!isAvailable}
-          onChange={handleSwitch}
-        />
+        <Switch color="success" size="xl" iconOff={<BellSlash />} iconOn={<Bell />} checked={isAvailable} onChange={handleSwitch} />
       </Row>
-
       <Spacer y={1} />
-
       <Grid.Container gap={2} justify="center">
         {pendingRequests?.map((advisor) => (
           <Grid xs={4} sm={3} key={advisor.id}>
-            <CardAdminAdvisor
-              id={advisor.id}
-              userId={advisor.userId}
-              status={advisor.status}
-            />
+            <CardAdminAdvisor id={advisor.id} userId={advisor.userId} status={advisor.status} />
           </Grid>
         ))}
       </Grid.Container>

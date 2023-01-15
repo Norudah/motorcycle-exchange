@@ -1,20 +1,21 @@
 import { Button, Card, Col, Row, Spacer, Text } from "@nextui-org/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { io } from "socket.io-client";
 
 const CardAdvisor = (props) => {
-  const { name, nbPerson, nbMaxUser, id, userId, users } = props;
+  const { name, nbPerson, nbMaxUser, id, userId, users, type } = props;
 
   const [isDisabled, setIsDisabled] = useState(false);
   const [isInSalon, setIsInSalon] = useState(false);
   const queryClient = useQueryClient();
   const userInSalon = users?.find((user) => user.id === userId);
+  const [typeIsRoom, setTypeIsRoom] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const token = user.token;
 
-  // join salon
   const mutation = useMutation(joinSalon, {
     onSuccess: () => {
       setIsInSalon(true);
@@ -24,6 +25,11 @@ const CardAdvisor = (props) => {
         },
       });
       socket.emit("join-room", id);
+      toast.success("Vous avez rejoint le salon");
+    },
+
+    onError: (error) => {
+      toast.error("Une erreur est survenue");
     },
   });
 
@@ -38,7 +44,6 @@ const CardAdvisor = (props) => {
     });
   }
 
-  // quit salon
   const mutationQuit = useMutation(quitSalon, {
     onSuccess: () => {
       setIsInSalon(false);
@@ -48,6 +53,11 @@ const CardAdvisor = (props) => {
         },
       });
       socket.emit("leave-room", id);
+      toast.success("Vous avez quitté le salon");
+    },
+
+    onError: (error) => {
+      toast.error("Une erreur est survenue");
     },
   });
 
@@ -108,6 +118,14 @@ const CardAdvisor = (props) => {
       setIsInSalon(true);
     }
   }, [userInSalon]);
+
+  useEffect(() => {
+    if (type === "ROOM") {
+      setTypeIsRoom(true);
+    } else {
+      setTypeIsRoom(false);
+    }
+  }, [type]);
 
   useEffect(() => {
     if (mutation.isSuccess || mutationQuit.isSuccess) {

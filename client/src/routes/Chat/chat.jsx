@@ -1,31 +1,16 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 
-import { Col, Grid } from "@nextui-org/react";
-import { Chats } from "phosphor-react";
+import { Col, Grid, Spacer } from "@nextui-org/react";
+import { ChatCenteredDots } from "phosphor-react";
+import { useParams } from "react-router-dom";
 import ListPeople from "../../components/List/listPeople";
 import CardChatBot from "../../components/List/cardChatBot";
 import ChatBox from "../../components/Messages/chatBox";
 import ListSalon from "../../components/List/listSalon";
 
 const Chat = () => {
-  const [people, setPeople] = useState([
-    {
-      id: 1,
-      firstname: "Romain",
-      lastname: "Pierron",
-    },
-    {
-      id: 2,
-      firstname: "John",
-      lastname: "Leclerc",
-    },
-  ]);
-
-  const { contactId, roomId } = useParams();
-
   const [result, setResult] = useState([]);
 
   const user = JSON.parse(localStorage.getItem("user"));
@@ -33,6 +18,8 @@ const Chat = () => {
   const userId = user?.user.id;
 
   const queryClient = useQueryClient();
+  const params = useParams();
+  const { roomId, contactId } = useParams();
 
   const { refetch } = useQuery(["salon"], fetchSalon, {
     onSuccess: (data) => {
@@ -60,10 +47,6 @@ const Chat = () => {
     });
 
     socket.on("delete-user", (idOfUser) => {
-      console.table({
-        idRecu: idOfUser,
-        userId: userId,
-      });
       if (idOfUser === userId) {
         refetch();
         queryClient.invalidateQueries("salons");
@@ -78,14 +61,19 @@ const Chat = () => {
           <Col className="sticky-main">
             <h4>Chat room</h4>
             {result?.length > 0 ? (
-              result.map((salon) => <ListSalon key={salon.id} id={salon.id} name={salon.name} nbMaxUser={salon.nbMaxUser} nbUser={salon.nbUser} />)
+              result.map((salon) =>
+                salon.type === "ROOM" ? (
+                  <ListSalon key={salon.id} id={salon.id} name={salon.name} nbMaxUser={salon.nbMaxUser} nbUser={salon.nbUser} />
+                ) : null
+              )
             ) : (
               <p>No chat room joined</p>
             )}
+
+            <Spacer y={1} />
             <h4>People</h4>
-            {people.map((person) => (
-              <ListPeople key={person.id} id={person.id} firstname={person.firstname} lastname={person.lastname} />
-            ))}
+            {result.map((person) => (person.type === "PRIVATE" ? <ListPeople key={person.id} id={person.id} name={person.name} /> : null))}
+            <h4>ChatBot</h4>
             <CardChatBot 
               id="bot"
               firstname="chatBot"
@@ -93,23 +81,18 @@ const Chat = () => {
           </Col>
         </Grid>
         <Grid xs={9}>
-          <Col>
-            {contactId || roomId ? (
-              <ChatBox id={contactId || roomId} />
-            ) : (
-              <div
-                style={{
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}>
-                <Chats size={80} color="#091a12" weight="light" />
-                <h2>Choose a contact or a chat room</h2>
+          {roomId || contactId ? (
+            <Col>
+              <ChatBox params={roomId ? roomId : contactId} />
+            </Col>
+          ) : (
+            <Col className="alignItemsCenter alignCenter">
+              <div>
+                <ChatCenteredDots size={60} color="#091a12" weight="light" />
+                <h3>Choose a chat room or a person</h3>
               </div>
-            )}
-          </Col>
+            </Col>
+          )}
         </Grid>
       </Grid.Container>
     </div>

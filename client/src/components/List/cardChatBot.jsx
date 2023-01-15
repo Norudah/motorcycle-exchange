@@ -4,8 +4,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-
-
 const CardChatBot = (props) => {
   const { firstname, id } = props;
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
@@ -20,13 +18,11 @@ const CardChatBot = (props) => {
 
   const [botResume, setBotResume] = useState([
     {
-      userId : null,
-      step : null,
-      lastMessageUser : null,
-      modifStep : null,
+      userId: null,
+      step: null,
+      lastMessageUser: null,
     },
   ]);
-;
   const handleClick = () => {
     const socket = io("http://localhost:3000/user", {
       auth: {
@@ -34,12 +30,10 @@ const CardChatBot = (props) => {
       },
     });
 
-
     setBotResume({
-      userId : user.id,
-      step : null,
-      lastMessageUser : null,
-      modifStep : null,
+      userId: user.id,
+      step: null,
+      lastMessageUser: null,
     });
 
     socket.emit("join-room-bot", botResume);
@@ -57,18 +51,17 @@ const CardChatBot = (props) => {
   return (
     <div>
       <Spacer y={1} />
-      <Card  
+      <Card
         css={isActive ? { background: "#cee5ff" } : null}
         isPressable
         isHoverable
-        onPress={handleClick}>
+        onPress={handleClick}
+      >
         <Card.Body>
           <Row className="alignItemsCenter">
             <Avatar squared text="Bot" color="primary" />
             <Spacer x={1} />
-            <Text>
-              { firstname }
-            </Text>
+            <Text>{firstname}</Text>
           </Row>
         </Card.Body>
       </Card>

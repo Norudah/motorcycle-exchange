@@ -1,6 +1,7 @@
 import { Button, Input, Modal, Text } from "@nextui-org/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
 import { io } from "socket.io-client";
 
 const ModalSalon = (props) => {
@@ -11,9 +12,6 @@ const ModalSalon = (props) => {
   const [salonMaxPerson, setSalonMaxPerson] = useState(nbMaxUser);
   const queryClient = useQueryClient();
 
-  // si on essaye de mettre un nombre négatif, on met 0
-  // si on essaye de mettre un nombre inférieur au nombre de personne , on renvoie une erreur et cancel la mutation
-
   const mutation = useMutation(updateSalon, {
     onSuccess: (data) => {
       queryClient.invalidateQueries("salon");
@@ -23,8 +21,11 @@ const ModalSalon = (props) => {
         },
       });
       socket.emit("update-room", data.salon.id);
+      toast.success("Le salon a été modifié avec succès");
     },
-    onError: (error) => {},
+    onError: (error) => {
+      toast.error("Une erreur est survenue");
+    },
   });
 
   async function updateSalon() {
@@ -41,16 +42,6 @@ const ModalSalon = (props) => {
     });
     return await res.json();
   }
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Enter") {
-        submitUpdatehandler();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
 
   function submitUpdatehandler() {
     mutation.mutate();

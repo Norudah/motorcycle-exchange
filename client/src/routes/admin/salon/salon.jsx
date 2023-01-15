@@ -19,7 +19,6 @@ const Communication = () => {
     setVisible(false);
   };
 
-  // Fetch Salon data from API
   const { data, refetch } = useQuery(["salon"], async () => {
     const response = await fetch("http://localhost:3000/salon", {
       method: "GET",
@@ -32,7 +31,10 @@ const Communication = () => {
   });
 
   useEffect(() => {
-    setResult(data?.salon);
+    if (data?.salon) {
+      const result = data?.salon.filter((salon) => salon.type === "ROOM");
+      setResult(result);
+    }
   }, [data]);
 
   return (

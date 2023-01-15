@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 
-import { Avatar, Card, css, Row, Spacer, Text } from "@nextui-org/react";
+import { Avatar, Button, Card, Row, Spacer, Text } from "@nextui-org/react";
+import { User } from "phosphor-react";
+
+import ModalChatUsers from "../Modal/modal_chat_users.jsx";
 
 const ListSalon = (props) => {
   const { name, nbUser, nbMaxUser, id } = props;
@@ -16,6 +19,9 @@ const ListSalon = (props) => {
   const location = useLocation();
 
   const [isActive, setIsActive] = useState(false);
+  const [visible, setVisible] = useState(false);
+
+  const handler = () => setVisible(true);
 
   useEffect(() => {
     if (location.pathname === `/chats/g/${id}`) {
@@ -61,6 +67,10 @@ const ListSalon = (props) => {
     });
   }, []);
 
+  const closeHandler = () => {
+    setVisible(false);
+  };
+
   const handleClick = () => {
     navigate(`g/${id}`);
   };
@@ -68,12 +78,7 @@ const ListSalon = (props) => {
   return (
     <div>
       <Spacer y={1} />
-      <Card
-        css={isActive ? { background: "#cee5ff" } : null}
-        isPressable
-        isHoverable
-        onPress={handleClick}
-      >
+      <Card css={isActive ? { background: "#cee5ff" } : null} isPressable isHoverable onPress={handleClick}>
         <Card.Body>
           <Row className="alignItemsCenter">
             <Avatar squared text={name} />
@@ -86,6 +91,10 @@ const ListSalon = (props) => {
                 {nbUser ? nbUser : 0} / {nbMaxUser}
               </Text>
             </Row>
+            <Row>
+              <Button auto color="primary" icon={<User size={15} fill="currentColor" filled />} onClick={handler} />
+            </Row>
+            <ModalChatUsers key={id} id={id} visible={visible} closeHandler={closeHandler} />
           </Row>
         </Card.Body>
       </Card>

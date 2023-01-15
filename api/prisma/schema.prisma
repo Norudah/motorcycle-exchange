@@ -12,6 +12,13 @@ enum Role {
   USER
 }
 
+enum BookinType {
+  ROAD
+  OFFROAD
+  SPORTIVE
+  REVIEW
+}
+
 model User {
   id                   Int                    @id @default(autoincrement())
   email                String                 @unique
@@ -27,6 +34,7 @@ model User {
   notifications        NotificationOnUser[]
   messages             Message[]
   CommunicationRequest CommunicationRequest[]
+  Booking              Booking[]
 }
 
 model ChatRoom {
@@ -42,7 +50,6 @@ model ChatRoom {
   messages  Message[]
 }
 
-// create many to many relation between user and ChatRoom
 model Notification {
   id        Int                  @id @default(autoincrement())
   title     String?
@@ -85,5 +92,15 @@ model CommunicationRequest {
   status    String    @default("PENDING")
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Booking {
+  id        Int        @id @default(autoincrement())
+  user      User       @relation(fields: [userId], references: [id])
+  userId    Int
+  type      BookinType
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   deletedAt DateTime?
 }
