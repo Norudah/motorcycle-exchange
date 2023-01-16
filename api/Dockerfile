@@ -1,6 +1,9 @@
-FROM node:alpine
+FROM node:17-slim
 
 # RUN npm install -g nodemon
+
+RUN apt-get update
+RUN apt-get install -y openssl
 
 WORKDIR /app
 
