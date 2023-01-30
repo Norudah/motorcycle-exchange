@@ -6,13 +6,18 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 
 import CommunicationRouter from "./routes/Communication.js";
+import ReservationRouter from "./routes/Reservation.js";
 import SalonRouter from "./routes/Salon.js";
 import SecurityRouter from "./routes/Security.js";
 
 import { checkIsAdmin } from "./middlewares/checkIsAdmin.js";
 import { checkIsAuthenticated } from "./middlewares/checkIsAuthenticated.js";
 import { checkToken } from "./utils/jwt.js";
-import { getYear, getDate, isDateMoreThanOneYearAway } from "./utils/helps.js";
+import {
+  isValidYear,
+  isDateMoreThanOneYearAway,
+  isValidDate,
+} from "./utils/helps.js";
 
 dotenv.config();
 
@@ -107,61 +112,63 @@ userNamespace.on("connection", (socket) => {
   socket.on("join-room-bot", (botResume) => {
     userNamespace.emit("clear-bot");
     userNamespace.emit("welcome-bot", botResume, [
-      { step: null, message: "Bonjour, comment puis-je vous aider ?" },
-      { step: 1, message: " * Vérifier l'entretien de mon véhicule" },
-      { step: 2, message: " * Informations sur les véhicules" },
-      { step: 3, message: " * Informations de contact" },
-      { step: 4, message: " * Merci et au revoir" },
+      {
+        step: null,
+        anwers: 0,
+        message: "Bonjour, comment puis-je vous aider ?",
+      },
+      {
+        step: 1,
+        anwers: 1,
+        message: " * Vérifier l'entretien de mon véhicule",
+      },
+      { step: 2, anwers: 1, message: " * Informations sur les véhicules" },
+      { step: 3, anwers: 1, message: " * Informations de contact" },
+      { step: 4, anwers: 1, message: " * Merci et au revoir" },
     ]);
   });
 
   socket.on("response-message-bot", (botResume) => {
-    console.log("response-message-bot", botResume);
     switch (botResume.step) {
       case 1:
-        const yearRegex = /\b(?:20|19)\d{2}\b/;
-        const dateRegex = /\b\d{2}\/\d{2}\/\d{4}\b/;
+        if (
+          botResume.newMessageUser == " * Vérifier l'entretien de mon véhicule"
+        ) {
+          userNamespace.emit("send-bot-message", botResume, [
+            {
+              step: 1,
+              message: "Votre véhicule est de quel année ? (aaaa)",
+            },
+          ]);
+        }
 
-        switch (botResume.newMessageUser) {
-          case yearRegex.test(getYear(botResume.newMessageUser)):
-            userNamespace.emit(
-              "send-bot-message",
-              botResume,
-              "Quel est la date de votre dernier entretien pour ce vehicule ? (jj/mm/aaaa)"
-            );
-            break;
-          case dateRegex.test(getDate(botResume.newMessageUser)):
-            if (isDateMoreThanOneYearAway(getDate(botResume.newMessageUser))) {
-              userNamespace.emit(
-                "send-bot-message",
-                botResume,
-                "La date de votre dernier entretien est-il antérieur à aujourd'hui ?",
-                {
-                  1: "oui",
-                  2: "non",
-                }
-              );
-            } else {
-              userNamespace.emit(
-                "send-bot-message",
-                botResume,
-                "La date de votre dernier entretien est-il antérieur à aujourd'hui ?",
-                {
-                  1: "oui",
-                  2: "non",
-                }
-              );
-            }
-            break;
-          default:
-            userNamespace.emit("clear-bot");
+        if (isValidYear(botResume.newMessageUser) == true) {
+          userNamespace.emit("send-bot-message", botResume, [
+            {
+              step: 1,
+              message:
+                "Quel est la date de votre dernier entretien ? (jj/mm/aaaa)",
+            },
+          ]);
+        }
+        if (isValidDate(botResume.newMessageUser) == true) {
+          if (isDateMoreThanOneYearAway(botResume.newMessageUser) == true) {
+            userNamespace.emit("send-bot-message", botResume, [
+              {
+                step: 5,
+                message:
+                  "Nombre de kilomètres parcourus depuis votre dernier entretien ?n,xcnv,xcnv,",
+              },
+            ]);
+          } else {
             userNamespace.emit("send-bot-message", botResume, [
               {
                 step: 1,
-                message: "Quel est la date de votre vehicule ?",
+                message:
+                  "Nombre de kilomètres parcourus depuis votre dernier entretien ?qsdqds",
               },
             ]);
-            break;
+          }
         }
         break;
       case 2:
@@ -169,11 +176,12 @@ userNamespace.on("connection", (socket) => {
         userNamespace.emit("send-bot-message", botResume, [
           {
             step: null,
+            anwers: 0,
             message: "Quel est le type d'usage de votre véhicule ?",
           },
-          { step: 5, message: "un usage routier" },
-          { step: 5, message: "un usage tout terrain" },
-          { step: 5, message: "un usage sportif" },
+          { step: 5, anwers: 1, message: "un usage routier" },
+          { step: 5, anwers: 1, message: "un usage tout terrain" },
+          { step: 5, anwers: 1, message: "un usage sportif" },
         ]);
         break;
       case 3:
@@ -185,10 +193,18 @@ userNamespace.on("connection", (socket) => {
             ]);
             userNamespace.emit("welcome-bot", botResume, [
               { step: null, message: "Bonjour, comment puis-je vous aider ?" },
-              { step: 1, message: " * Vérifier l'entretien de mon véhicule" },
-              { step: 2, message: " * Informations sur les véhicules" },
-              { step: 3, message: " * Informations de contact" },
-              { step: 4, message: " * Merci et au revoir" },
+              {
+                step: 1,
+                anwers: 1,
+                message: " * Vérifier l'entretien de mon véhicule",
+              },
+              {
+                step: 2,
+                anwers: 1,
+                message: " * Informations sur les véhicules",
+              },
+              { step: 3, anwers: 1, message: " * Informations de contact" },
+              { step: 4, anwers: 1, message: " * Merci et au revoir" },
             ]);
             break;
           case "par téléphone":
@@ -198,18 +214,30 @@ userNamespace.on("connection", (socket) => {
             ]);
             userNamespace.emit("welcome-bot", botResume, [
               { step: null, message: "Bonjour, comment puis-je vous aider ?" },
-              { step: 1, message: " * Vérifier l'entretien de mon véhicule" },
-              { step: 2, message: " * Informations sur les véhicules" },
-              { step: 3, message: " * Informations de contact" },
-              { step: 4, message: " * Merci et au revoir" },
+              {
+                step: 1,
+                anwers: 1,
+                message: " * Vérifier l'entretien de mon véhicule",
+              },
+              {
+                step: 2,
+                anwers: 1,
+                message: " * Informations sur les véhicules",
+              },
+              { step: 3, anwers: 1, message: " * Informations de contact" },
+              { step: 4, anwers: 1, message: " * Merci et au revoir" },
             ]);
             break;
           default:
             userNamespace.emit("clear-bot");
             userNamespace.emit("send-bot-message", botResume, [
-              { step: null, message: "Comment souhaitez-vous être contacté ?" },
-              { step: 3, message: "par mail" },
-              { step: 3, message: "par téléphone" },
+              {
+                step: null,
+                anwers: 0,
+                message: "Comment souhaitez-vous être contacté ?",
+              },
+              { step: 3, anwers: 1, message: "par mail" },
+              { step: 3, anwers: 1, message: "par téléphone" },
             ]);
             break;
         }
@@ -222,9 +250,11 @@ userNamespace.on("connection", (socket) => {
         break;
       case 5:
         userNamespace.emit("clear-bot");
+        botResume.query = true;
         userNamespace.emit("send-bot-message", botResume, [
           {
-            step: null,
+            step: 5,
+            query: true,
             message: "Voici les heures disponibles pour votre réservation :",
           },
         ]);
@@ -366,3 +396,4 @@ app.use(SecurityRouter);
 
 app.use("/salon", checkIsAuthenticated, SalonRouter);
 app.use("/communication", checkIsAuthenticated, CommunicationRouter);
+app.use("/reservation", checkIsAuthenticated, ReservationRouter);

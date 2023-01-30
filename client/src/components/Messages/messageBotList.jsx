@@ -7,10 +7,11 @@ const messageBotList = (props) => {
     <div>
       {messages.map((message) => (
         <MessageBot
-          key={message.id}
+          key={message.message}
           id_person={message.id_person}
           message={message.message}
           step={message.step}
+          anwers={message.anwers}
         />
       ))}
     </div>

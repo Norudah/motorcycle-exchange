@@ -43,6 +43,20 @@ const ChatBox = (props) => {
     });
   }
 
+  async function fetchReservation() {
+    const response = await fetch(
+      `http://localhost:3000/reservation/getFreeReservation}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.json();
+  }
+
   async function fetchUserInRoom() {
     const response = await fetch(
       `http://localhost:3000/salon/users/${params}`,
@@ -79,22 +93,6 @@ const ChatBox = (props) => {
       }
     });
 
-    socket.on("welcome-bot", (botResume, response) => {
-      if (botResume.userId === user.id) {
-        response.map((message) => {
-          setBotMessage((botMessages) => [
-            ...botMessages,
-            {
-              id: Date.now(),
-              id_person: "bot",
-              message: message.message,
-              step: message.step,
-            },
-          ]);
-        });
-      }
-    });
-
     socket.on("delete-room", (room) => {
       if (params == room) {
         navigate("/chats");
@@ -116,6 +114,23 @@ const ChatBox = (props) => {
       },
     });
 
+    socket.on("welcome-bot", (botResume, response) => {
+      if (botResume.userId === user.id) {
+        response.map((message) => {
+          setBotMessage((botMessages) => [
+            ...botMessages,
+            {
+              id: Date.now(),
+              id_person: "bot",
+              message: message.message,
+              step: message.step,
+              anwers: message.anwers,
+            },
+          ]);
+        });
+      }
+    });
+
     socket.on("send-bot-message", (botResume, response) => {
       if (botResume.userId === user.id) {
         response.map((message) => {
@@ -126,22 +141,14 @@ const ChatBox = (props) => {
               id_person: "bot",
               message: message.message,
               step: message.step,
+              anwers: message.anwers,
             },
           ]);
         });
       }
     });
-  }, []);
-
-  useEffect(() => {
-    const socket = io("http://localhost:3000/user", {
-      auth: {
-        token,
-      },
-    });
 
     socket.on("clear-bot", () => {
-      console.log("clear");
       setBotMessage([]);
     });
   }, []);
@@ -154,7 +161,16 @@ const ChatBox = (props) => {
         },
       });
 
-      socket.emit("send-message", inputMessage, params, user);
+      if (params == "bot") {
+        let botResume = {
+          userId: user.id,
+          step: 1,
+          newMessageUser: inputMessage,
+        };
+        socket.emit("response-message-bot", botResume);
+      } else {
+        socket.emit("send-message", inputMessage, params, user);
+      }
     }
     setInputMessage("");
   };
