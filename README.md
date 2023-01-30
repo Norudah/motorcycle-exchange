@@ -62,10 +62,10 @@ features :
 
 - [x] Join a chatRooom
 - [x] Request a concelor to discuss with him
-- [ ] Discuss with a concelor in private
+- [x] Discuss with a concelor in private
 - [x] Send messages inside chatRooms
-- [ ] Send private messages to a concelor
-- [ ] Discuss with the chatbot
+- [x] Send private messages to a concelor
+- [x] Discuss with the chatbot
 - [x] Get notified at anytime
 
 ---
@@ -79,7 +79,7 @@ features :
 - [x] Manage chatrooms
 - [x] Accept / Refuse requests from users
 - [x] Manage if is available or not to discuss with users
-- [ ] Can emit commercial notifications to users
+- [x] Can emit commercial notifications to users
 
 ## Usefull commands :
 
