@@ -1,7 +1,7 @@
 import { Avatar, Card, Row, Spacer, Text } from "@nextui-org/react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 
 const CardChatBot = (props) => {
@@ -61,7 +61,8 @@ const CardChatBot = (props) => {
           <Row className="alignItemsCenter">
             <Avatar squared text="Bot" color="primary" />
             <Spacer x={1} />
-            <Text>{firstname}</Text>
+            <Text>{firstname} / click 2 times</Text>
+            
           </Row>
         </Card.Body>
       </Card>

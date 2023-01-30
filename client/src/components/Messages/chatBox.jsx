@@ -5,14 +5,14 @@ import { io } from "socket.io-client";
 
 import { Input } from "@nextui-org/react";
 import { PaperPlaneTilt } from "phosphor-react";
-import MessageList from "./messageList";
 import MessageBotList from "./messageBotList";
+import MessageList from "./messageList";
 import { SendButton } from "./sendButton";
-import BotMessage from "./botMessage";
 
 const ChatBox = (props) => {
   const { params } = props;
 
+  
   const token = JSON.parse(localStorage.getItem("user")).token ?? null;
   const user = JSON.parse(localStorage.getItem("user")).user ?? null;
 
@@ -24,7 +24,8 @@ const ChatBox = (props) => {
   const [inputMessage, setInputMessage] = useState("");
   const [usersInRoom, setUsersInRoom] = useState([]);
 
-  if (params !== "bot") {
+  
+
     const { data } = useQuery(["usersInRoom", params], fetchUserInRoom, {
       onSuccess: (data) => {
         setUsersInRoom(data?.salon?.users);
@@ -33,15 +34,13 @@ const ChatBox = (props) => {
           !data?.salon?.users?.some((userInRoom) => userInRoom.id === user.id)
         ) {
           navigate("/chats");
-        } else {
-          console.log("ok");
         }
       },
       onError: (error) => {
         console.log(error);
       },
     });
-  }
+  
 
   async function fetchReservation() {
     const response = await fetch(
