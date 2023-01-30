@@ -6,7 +6,9 @@ import { io } from "socket.io-client";
 import { Input } from "@nextui-org/react";
 import { PaperPlaneTilt } from "phosphor-react";
 import MessageList from "./messageList";
+import MessageBotList from "./messageBotList";
 import { SendButton } from "./sendButton";
+import BotMessage from "./botMessage";
 
 const ChatBox = (props) => {
   const { params } = props;
@@ -18,32 +20,54 @@ const ChatBox = (props) => {
   const navigate = useNavigate();
 
   const [messages, setMessage] = useState([]);
+  const [botMessages, setBotMessage] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [usersInRoom, setUsersInRoom] = useState([]);
 
-  const { data } = useQuery(["usersInRoom", params], fetchUserInRoom, {
-    onSuccess: (data) => {
-      setUsersInRoom(data?.salon?.users);
+  if (params !== "bot") {
+    const { data } = useQuery(["usersInRoom", params], fetchUserInRoom, {
+      onSuccess: (data) => {
+        setUsersInRoom(data?.salon?.users);
 
-      if (!data?.salon?.users?.some((userInRoom) => userInRoom.id === user.id)) {
-        navigate("/chats");
-      } else {
-        console.log("ok");
-      }
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
-
-  async function fetchUserInRoom() {
-    const response = await fetch(`http://localhost:3000/salon/users/${params}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        if (
+          !data?.salon?.users?.some((userInRoom) => userInRoom.id === user.id)
+        ) {
+          navigate("/chats");
+        } else {
+          console.log("ok");
+        }
+      },
+      onError: (error) => {
+        console.log(error);
       },
     });
+  }
+
+  async function fetchReservation() {
+    const response = await fetch(
+      `http://localhost:3000/reservation/getFreeReservation}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.json();
+  }
+
+  async function fetchUserInRoom() {
+    const response = await fetch(
+      `http://localhost:3000/salon/users/${params}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.json();
   }
 
@@ -83,6 +107,52 @@ const ChatBox = (props) => {
     });
   }, [params]);
 
+  useEffect(() => {
+    const socket = io("http://localhost:3000/user", {
+      auth: {
+        token,
+      },
+    });
+
+    socket.on("welcome-bot", (botResume, response) => {
+      if (botResume.userId === user.id) {
+        response.map((message) => {
+          setBotMessage((botMessages) => [
+            ...botMessages,
+            {
+              id: Date.now(),
+              id_person: "bot",
+              message: message.message,
+              step: message.step,
+              anwers: message.anwers,
+            },
+          ]);
+        });
+      }
+    });
+
+    socket.on("send-bot-message", (botResume, response) => {
+      if (botResume.userId === user.id) {
+        response.map((message) => {
+          setBotMessage((botMessages) => [
+            ...botMessages,
+            {
+              id: Date.now(),
+              id_person: "bot",
+              message: message.message,
+              step: message.step,
+              anwers: message.anwers,
+            },
+          ]);
+        });
+      }
+    });
+
+    socket.on("clear-bot", () => {
+      setBotMessage([]);
+    });
+  }, []);
+
   const sendMessage = () => {
     if (inputMessage) {
       const socket = io("http://localhost:3000/user", {
@@ -91,13 +161,26 @@ const ChatBox = (props) => {
         },
       });
 
-      socket.emit("send-message", inputMessage, params, user);
+      if (params == "bot") {
+        let botResume = {
+          userId: user.id,
+          step: 1,
+          newMessageUser: inputMessage,
+        };
+        socket.emit("response-message-bot", botResume);
+      } else {
+        socket.emit("send-message", inputMessage, params, user);
+      }
     }
     setInputMessage("");
   };
 
   useEffect(() => {
     setMessage([]);
+  }, [params]);
+
+  useEffect(() => {
+    setBotMessage([]);
   }, [params]);
 
   useEffect(() => {
@@ -112,7 +195,10 @@ const ChatBox = (props) => {
 
   return (
     <div className="mainChatbox">
-      <MessageList messages={messages} />
+      <div className="messageList">
+        <MessageList messages={messages} />
+        <MessageBotList messages={botMessages} />
+      </div>
 
       <div className="messageInput">
         <Input

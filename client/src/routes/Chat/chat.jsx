@@ -6,8 +6,9 @@ import { Col, Grid, Spacer } from "@nextui-org/react";
 import { ChatCenteredDots } from "phosphor-react";
 import { useParams } from "react-router-dom";
 import ListPeople from "../../components/List/listPeople";
-import ListSalon from "../../components/List/listSalon";
+import CardChatBot from "../../components/List/cardChatBot";
 import ChatBox from "../../components/Messages/chatBox";
+import ListSalon from "../../components/List/listSalon";
 
 const Chat = () => {
   const [result, setResult] = useState([]);
@@ -72,6 +73,11 @@ const Chat = () => {
             <Spacer y={1} />
             <h4>People</h4>
             {result.map((person) => (person.type === "PRIVATE" ? <ListPeople key={person.id} id={person.id} name={person.name} /> : null))}
+            <h4>ChatBot</h4>
+            <CardChatBot 
+              id="bot"
+              firstname="chatBot"
+            />
           </Col>
         </Grid>
         <Grid xs={9}>
