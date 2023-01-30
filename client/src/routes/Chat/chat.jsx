@@ -5,6 +5,7 @@ import { io } from "socket.io-client";
 import { Col, Grid, Spacer } from "@nextui-org/react";
 import { ChatCenteredDots } from "phosphor-react";
 import { useParams } from "react-router-dom";
+import CardChatBot from "../../components/List/cardChatBot";
 import ListPeople from "../../components/List/listPeople";
 import ListSalon from "../../components/List/listSalon";
 import ChatBox from "../../components/Messages/chatBox";
@@ -70,9 +71,20 @@ const Chat = () => {
             )}
 
             <Spacer y={1} />
+
             <h4>People</h4>
             {result.map((person) => (person.type === "PRIVATE" ? <ListPeople key={person.id} id={person.id} name={person.name} /> : null))}
+
+            <Spacer y={1} />
+            
+            <h4>ChatBot</h4>
+            <p>Click 2 times</p>
+            <CardChatBot 
+              id="bot"
+              firstname="chatBot"
+            />
           </Col>
+
         </Grid>
         <Grid xs={9}>
           {roomId || contactId ? (

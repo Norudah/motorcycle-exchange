@@ -3,12 +3,8 @@ import Message from "./message";
 const MessageList = (props) => {
   const { messages } = props;
 
-  if (messages.length === 0) {
-    return <div className="messageList">No messages</div>;
-  }
-
   return (
-    <div className="messageList">
+    <div>
       {messages.map((message) => (
         <Message
           key={message.id}
